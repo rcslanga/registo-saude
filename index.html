@@ -3,45 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECHO Project Moçambique</title>
+    <title>ECHO Project Moçambique - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .container { max-width: 600px; }
-        .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-top: 20px; border-top: 8px solid #C8102E; }
+        .container { max-width: 600px; margin-top: 30px; }
+        .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 8px solid #C8102E; }
         .logo-container { text-align: center; margin-bottom: 15px; }
-        .logo-container img { max-width: 250px; height: auto; }
-        .header-main { text-align: center; margin-bottom: 30px; }
-        .header-main h2 { color: #003366; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-top: 10px; }
-        .header-main small { color: #C8102E; font-weight: 600; }
-        .section-header { background: #003366; color: white; padding: 10px 15px; border-radius: 5px; margin: 25px 0 15px 0; font-weight: bold; font-size: 0.9rem; }
-        .form-label { font-weight: 600; color: #003366; }
-        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
-        .btn-submit { background-color: #003366; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; color: white; transition: 0.3s; }
-        .btn-submit:hover { background-color: #C8102E; transform: translateY(-2px); color: white; }
-        #nid { background-color: #fff9f9; border: 2px solid #ced4da; font-family: monospace; font-size: 1.1rem; }
-        #camposConfidente { display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px dashed #003366; margin-top: 10px; }
+        .logo-container img { max-width: 220px; }
+        .section-header { background: #003366; color: white; padding: 8px 15px; border-radius: 5px; margin: 20px 0 15px 0; font-weight: bold; font-size: 0.9rem; }
+        #appContent { display: none; } /* Escondido até login */
+        #loginScreen { text-align: center; padding: 50px 20px; }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
-<div class="container mb-5">
-    <div class="form-card">
-        <div class="logo-container">
-            <img src="Novo logo ECHO 2025.png" alt="ECHO Project Logo" onerror="this.src='https://via.placeholder.com/250x100?text=ECHO+PROJECT'">
-        </div>
+<div class="loading-overlay" id="loader">
+    <div class="spinner-border text-danger" role="status"></div>
+    <p class="mt-2 fw-bold">A processar...</p>
+</div>
 
-        <div class="header-main">
-            <h2>Projecto ECHO Moçambique</h2>
-            <small>App Actualização de Endereços</small>
+<div class="container mb-5">
+    <div id="loginScreen" class="form-card">
+        <div class="logo-container">
+            <img src="Novo logo ECHO 2025.png" alt="Logo ECHO" onerror="this.src='https://via.placeholder.com/200x80?text=ECHO+PROJECT'">
+        </div>
+        <h4 class="mb-4" style="color:#003366">Acesso Restrito</h4>
+        <p class="text-muted mb-4">Por favor, faça login com o seu e-mail autorizado para aceder ao formulário de actualização.</p>
+        <div id="g_id_onload"
+             data-client_id="COLOQUE_AQUI_SEU_CLIENT_ID_GOOGLE.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse">
+        </div>
+        <div class="g_id_signin d-flex justify-content-center" data-type="standard"></div>
+    </div>
+
+    <div id="appContent" class="form-card">
+        <div class="logo-container">
+            <img src="Novo logo ECHO 2025.png" alt="Logo ECHO">
+        </div>
+        <div class="text-center mb-4">
+            <h2 style="color: #003366; font-weight: 800; font-size: 1.4rem;">PROJECTO ECHO</h2>
+            <small class="fw-bold" style="color: #C8102E;">Actualização de Endereços e Contactos</small>
         </div>
 
         <form id="appForm">
-            <div class="section-header">📍 LOCALIZAÇÃO</div>
+            <div class="section-header">📍 LOCALIZAÇÃO DA US</div>
             <div class="mb-3">
                 <label class="form-label">Província</label>
                 <select id="prov" class="form-select" required onchange="filtrarDistritos()">
-                    <option value="">Seleccione a Província...</option>
+                    <option value="">Seleccione...</option>
                     <option value="Manica">Manica</option>
                     <option value="Niassa">Niassa</option>
                     <option value="Sofala">Sofala</option>
@@ -69,45 +81,42 @@
 
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                <label class="form-check-label" for="temConfidente" style="font-weight: bold; color: #C8102E;">
-                    Tem Confidente / Contacto de Emergência?
-                </label>
+                <label class="form-check-label fw-bold" for="temConfidente" style="color: #C8102E;">Tem Confidente?</label>
             </div>
 
-            <div id="camposConfidente">
+            <div id="camposConfidente" style="display:none; background:#f8f9fa; padding:15px; border-radius:10px; border:1px dashed #003366">
                 <div class="mb-3">
                     <label class="form-label">Nome do Confidente</label>
                     <input type="text" id="nomeConfidente" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Telefone do Confidente</label>
-                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}">
+                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84/82...">
                 </div>
             </div>
 
-            <div class="section-header">📞 CONTACTO E RESIDÊNCIA</div>
+            <div class="section-header">📞 CONTACTOS E MORADA</div>
             <div class="row">
                 <div class="col-6 mb-3">
                     <label class="form-label">Telefone 1</label>
-                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}">
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84...">
                 </div>
                 <div class="col-6 mb-3">
                     <label class="form-label">Telefone 2</label>
-                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}">
+                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
                 </div>
             </div>
             <div class="mb-3">
-                <label class="form-label">Endereço Físico</label>
-                <textarea id="endereco" class="form-control" rows="3" required></textarea>
+                <label class="form-label">Endereço Físico (Bairro, Q, Casa)</label>
+                <textarea id="endereco" class="form-control" rows="2" required></textarea>
             </div>
 
-            <div class="section-header">✍️ RESPONSÁVEL</div>
             <div class="mb-4">
-                <label class="form-label">Nome</label>
+                <label class="form-label">Nome do Digitador</label>
                 <input type="text" id="responsavel" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-submit w-100 shadow">SUBMETER</button>
+            <button type="submit" class="btn btn-primary w-100 p-3 fw-bold shadow" style="background-color:#003366; border:none">SUBMETER REGISTO</button>
         </form>
     </div>
 </div>
@@ -115,8 +124,8 @@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #003366; color: white;">
-                <h5 class="modal-title">Confirmar Registo</h5>
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Rever Dados</h5>
             </div>
             <div class="modal-body" id="resumoDados"></div>
             <div class="modal-footer">
@@ -129,10 +138,27 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// --- CONFIGURAÇÕES ---
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
+let userEmail = "";
 let dadosTemporarios = {};
 
-// Base de Dados Completa (151 Unidades)
+// --- LOGIN E SEGURANÇA ---
+function parseJwt(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(window.atob(base64));
+}
+
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    userEmail = data.email;
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appContent").style.display = "block";
+    alert("Bem-vindo, " + data.name + " (" + userEmail + ")");
+}
+
+// --- BASE DE DADOS (151 US) ---
 const baseDados = {
     "Manica": {
         "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
@@ -181,16 +207,15 @@ const baseDados = {
     }
 };
 
+// --- LOGICA FORMULÁRIO ---
 function filtrarDistritos() {
     const prov = document.getElementById("prov").value;
     const distSelect = document.getElementById("dist");
-    const usSelect = document.getElementById("us");
     distSelect.innerHTML = '<option value="">Seleccione...</option>';
-    usSelect.innerHTML = '<option value="">Seleccione...</option>';
     if (prov) {
         distSelect.disabled = false;
         Object.keys(baseDados[prov]).sort().forEach(d => distSelect.options.add(new Option(d, d)));
-    } else { distSelect.disabled = true; usSelect.disabled = true; }
+    }
 }
 
 function filtrarUS() {
@@ -201,29 +226,28 @@ function filtrarUS() {
     if (dist) {
         usSelect.disabled = false;
         baseDados[prov][dist].sort().forEach(u => usSelect.options.add(new Option(u, u)));
-    } else { usSelect.disabled = true; }
+    }
 }
 
 function aplicarMascaraNID(input) {
-    let valor = input.value.replace(/\D/g, "");
-    if (valor.length > 19) valor = valor.slice(0, 19);
-    let formatado = "";
-    if (valor.length > 0) {
-        formatado = valor.slice(0, 10);
-        if (valor.length > 10) formatado += "/" + valor.slice(10, 14);
-        if (valor.length > 14) formatado += "/" + valor.slice(14, 19);
-    }
-    input.value = formatado;
+    let v = input.value.replace(/\D/g, "");
+    if (v.length > 19) v = v.slice(0, 19);
+    let f = "";
+    if (v.length > 0) f = v.slice(0, 10);
+    if (v.length > 10) f += "/" + v.slice(10, 14);
+    if (v.length > 14) f += "/" + v.slice(14, 19);
+    input.value = f;
 }
 
 function toggleConfidente() {
-    const box = document.getElementById("temConfidente");
-    document.getElementById("camposConfidente").style.display = box.checked ? "block" : "none";
+    document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none";
 }
 
+// --- SUBMISSÃO E GPS ---
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     dadosTemporarios = {
+        email_usuario: userEmail,
         provincia: document.getElementById("prov").value,
         distrito: document.getElementById("dist").value,
         us: document.getElementById("us").value,
@@ -238,24 +262,38 @@ document.getElementById('appForm').onsubmit = function(e) {
     };
 
     document.getElementById("resumoDados").innerHTML = `
-        <p><b>US:</b> ${dadosTemporarios.us} (${dadosTemporarios.distrito})</p>
-        <p><b>NID:</b> ${dadosTemporarios.nid}</p>
-        <p><b>Confidente:</b> ${dadosTemporarios.tem_confidente} (${dadosTemporarios.nome_confidente})</p>
-        <p><b>Morada:</b> ${dadosTemporarios.endereco}</p>
-        <hr><p class="text-center">Confirmar gravação por ${dadosTemporarios.responsavel}?</p>
+        <p><b>📍 US:</b> ${dadosTemporarios.us}</p>
+        <p><b>🆔 NID:</b> ${dadosTemporarios.nid}</p>
+        <p><b>📞 Tel:</b> ${dadosTemporarios.tel1} / ${dadosTemporarios.tel2}</p>
+        <hr><p class="text-center fw-bold">Deseja gravar este registo?</p>
     `;
     new bootstrap.Modal(document.getElementById('confirmModal')).show();
 };
 
 document.getElementById('btnFinalConfirm').onclick = function() {
-    this.disabled = true;
-    this.innerText = "A gravar...";
+    const btn = this;
+    btn.disabled = true;
+    document.getElementById("loader").style.display = "flex";
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+        dadosTemporarios.latitude = pos.coords.latitude;
+        dadosTemporarios.longitude = pos.coords.longitude;
+        enviarParaGoogle();
+    }, () => {
+        dadosTemporarios.latitude = "GPS Off";
+        dadosTemporarios.longitude = "GPS Off";
+        enviarParaGoogle();
+    }, { timeout: 5000 });
+};
+
+function enviarParaGoogle() {
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
     .then(() => {
-        alert("Olá " + dadosTemporarios.responsavel + ", o seu registo foi lançado com sucesso!");
+        alert("Olá " + dadosTemporarios.responsavel + ", registo enviado com sucesso!");
         location.reload();
-    });
-};
+    })
+    .catch(() => alert("Erro ao enviar. Tente novamente."));
+}
 </script>
 </body>
 </html>
