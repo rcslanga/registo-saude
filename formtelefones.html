@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIS - Recolha de Dados Moçambique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { max-width: 600px; }
+        .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; border-top: 5px solid #0056b3; }
+        .header-main { text-align: center; margin-bottom: 30px; }
+        .header-main h2 { color: #0056b3; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
+        .section-header { background: #e9ecef; padding: 10px 15px; border-left: 5px solid #28a745; margin: 25px 0 15px 0; font-weight: bold; font-size: 0.9rem; color: #333; }
+        .form-label { font-weight: 600; color: #495057; }
+        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
+        .btn-submit { background-color: #0056b3; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; }
+        .btn-submit:hover { background-color: #004494; transform: translateY(-2px); }
+        .btn-submit:disabled { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div class="container mb-5">
+    <div class="form-card">
+        <div class="header-main">
+            <h2>Recolha de Dados</h2>
+            <small class="text-muted">Sistema de Registo de Pacientes</small>
+        </div>
+
+        <form id="appForm">
+            <div class="section-header">📍 LOCALIZAÇÃO</div>
+            
+            <div class="mb-3">
+                <label class="form-label">Província</label>
+                <select id="prov" class="form-select" required onchange="filtrarDistritos()">
+                    <option value="">Seleccione a Província...</option>
+                    <option value="Manica">Manica</option>
+                    <option value="Niassa">Niassa</option>
+                    <option value="Sofala">Sofala</option>
+                    <option value="Tete">Tete</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Distrito</label>
+                <select id="dist" class="form-select" required disabled onchange="filtrarUS()">
+                    <option value="">Seleccione o distrito...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Unidade Sanitária (US)</label>
+                <select id="us" class="form-select" required disabled>
+                    <option value="">Seleccione a US...</option>
+                </select>
+            </div>
+
+            <div class="section-header">🆔 DADOS DO PACIENTE</div>
+            
+            <div class="mb-3">
+                <label class="form-label">NID (Formato: 000000/00/0)</label>
+                <input type="text" id="nid" class="form-control" pattern="\d{6}/\d{2}/\d{1}" placeholder="Ex: 123456/24/1" required title="O NID deve ter o formato 000000/00/0">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nome Completo do Paciente</label>
+                <input type="text" id="nome" class="form-control" placeholder="Introduza o nome completo" required>
+            </div>
+
+            <div class="section-header">📞 CONTACTO E RESIDÊNCIA</div>
+            
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label">Telefone 1</label>
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84..." required title="Deve ser um número válido de Moçambique (9 dígitos)">
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label">Telefone 2</label>
+                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Endereço Físico</label>
+                <textarea id="endereco" class="form-control" rows="3" placeholder="Bairro, Quarteirão, Casa nº..." required></textarea>
+            </div>
+
+            <div class="section-header">✍️ RESPONSÁVEL PELO REGISTO</div>
+            
+            <div class="mb-4">
+                <label class="form-label">Nome do Agente / Digitador</label>
+                <input type="text" id="responsavel" class="form-control" placeholder="Quem está a introduzir os dados?" required>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn btn-primary btn-submit w-100 shadow">SUBMETER PARA O EXCEL</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// --- CONFIGURAÇÃO ---
+const SCRIPT_URL = "URL_DO_SEU_GOOGLE_SCRIPT_AQUI";
+
+// --- BASE DE DADOS COMPLETA ---
+const baseDados = {
+    "Manica": {
+        "Barue": ["Catandica HD", "Chuala CS", "Cruz de Macossa CS", "Honde CS", "Nhampassa CS", "Nhassacara CS", "Nhazonia CS"],
+        "Chimoio": ["1º Maio CS", "7 de Abril CS", "Chimoio HP", "Chimoio_PCdVC", "Chissui CS", "Eduardo Mondlane CS", "Nhamaonha CS", "Vila Nova CS"],
+        "Gondola": ["Amatongas CS", "Gondola Sede CS", "Inchope CS", "Muda Serração CS"],
+        "Guro": ["Guro - Sede CS", "Mandie CS"],
+        "Macate": ["Macate CS", "Marera CS", "Zembe Centro CS"],
+        "Machaze": ["Bassane CS", "Chipopopo CS", "Chipudji CS", "Chitobe CS", "Mavende CS", "Mazwissanga CS", "Save CS"],
+        "Manica": ["4º Congresso CS", "Machipanda CS", "Manica HD", "Messica CS"],
+        "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabera CS", "Garagua CS", "Gunhe CS", "Mude CS", "Mupengo CS"],
+        "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga CS", "Sembezea CS", "Sussundenga CS"],
+        "Vanduzi": ["Chigodole CS", "IAC CS", "Matsinho CS", "Pungue Sul CS", "Vanduzi CS"]
+    },
+    "Niassa": {
+        "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba HR", "Meripo CS", "Mitucué CS"],
+        "Lago": ["Metangula CS"],
+        "Lichinga": ["Chiuaula PS", "CS Lichinga", "Lichinga HP", "Lulimire CS", "Namacula CS"],
+        "Mandimba": ["Mandimba CS", "Mitande CS"],
+        "Mecanhelas": ["Chissaua CS", "Entre-Lagos CS", "Mecanhelas CS"],
+        "Metarica": ["Metarica CS"],
+        "Ngauma": ["Massangulo CS"]
+    },
+    "Sofala": {
+        "Beira": ["Cadeia Provincial", "Cerâmica CS", "Chamba PS", "Chota PS", "Hospital Central da Beira HC", "M. Mascarenha CS", "Macurungo PSA", "Manga Loforte", "Manga Nhaconjo PS", "Marrocanhe", "Matadouro PS", "Munhava CS", "Nhangau CS", "Ponta Gêa PS", "Inhamizua CS"],
+        "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede HR", "Guara-Guara PS"],
+        "Caia": ["Caia HD", "Murraça CS", "Nhambalo CS", "Sena CS"],
+        "Cheringoma": ["Inhaminga CS"],
+        "Chibabava": ["Chibabava-Sede CS", "Hoode PS", "Mutindire CS", "Muxungue CS III"],
+        "Dondo": ["Canhandula PS", "Dondo Sede CS I", "Igreja Baptista CS", "Mafambisse CS", "Maxarote PS", "Mutua PS", "Samora Machel PS", "Savane PS"],
+        "Gorongosa": ["Gorongoza-Sede CS"],
+        "Machanga": ["Machang CS"],
+        "Marromeu": ["Marromeu HR", "Nensa CS"],
+        "Nhamatanda": ["Chirassicua CS", "Lamego CS", "Metuchira Lomaco CS", "Nhamatanda HR", "Nharuchonga PS", "Siluvo PS", "Tica PS"]
+    },
+    "Tete": {
+        "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue HR"],
+        "Cahora Bassa": ["Chitima CS", "Songo HR"],
+        "Changara": ["Changara CS", "Dzunga CS", "M'Saua CS", "Mazoe Ponte CS"],
+        "Chiuta": ["Manje CS"],
+        "Macanga": ["Furancungo CS"],
+        "Magoe": ["Daque CS", "Magoe CS", "Mucumbura CS"],
+        "Marara": ["Boroma CS", "Cachembe CS"],
+        "Moatize": ["25 de Setembro CS", "Caphirizange PS", "Cateme CS", "CFM CS", "Mameme II CS", "Moatize CS", "Ncondezi CS", "Zobue CS"],
+        "Mutarara": ["Inhangoma CS", "Mutarara HR"],
+        "Tete": ["Mpadue CS", "Nº 1 - Bairro Magaia", "Nº 2 - Bairro Matundo", "Nº 3 - Bairro Manyanga", "Nº 4 - Bairro Muthemba", "Tete HP"]
+    }
+};
+
+// --- LÓGICA DE FILTROS ---
+function filtrarDistritos() {
+    const prov = document.getElementById("prov").value;
+    const distSelect = document.getElementById("dist");
+    const usSelect = document.getElementById("us");
+    distSelect.innerHTML = '<option value="">Seleccione o Distrito</option>';
+    usSelect.innerHTML = '<option value="">Seleccione a US</option>';
+    if (prov) {
+        distSelect.disabled = false;
+        Object.keys(baseDados[prov]).forEach(d => distSelect.options.add(new Option(d, d)));
+    } else { distSelect.disabled = true; usSelect.disabled = true; }
+}
+
+function filtrarUS() {
+    const prov = document.getElementById("prov").value;
+    const dist = document.getElementById("dist").value;
+    const usSelect = document.getElementById("us");
+    usSelect.innerHTML = '<option value="">Seleccione a US</option>';
+    if (dist) {
+        usSelect.disabled = false;
+        baseDados[prov][dist].forEach(u => usSelect.options.add(new Option(u, u)));
+    } else { usSelect.disabled = true; }
+}
+
+// --- SUBMISSÃO DOS DADOS ---
+document.getElementById('appForm').onsubmit = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerText = "A enviar dados...";
+
+    const dados = {
+        provincia: document.getElementById("prov").value,
+        distrito: document.getElementById("dist").value,
+        us: document.getElementById("us").value,
+        nid: document.getElementById("nid").value,
+        nome: document.getElementById("nome").value,
+        tel1: document.getElementById("tel1").value,
+        tel2: document.getElementById("tel2").value,
+        endereco: document.getElementById("endereco").value,
+        responsavel: document.getElementById("responsavel").value
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(dados)
+    })
+    .then(() => {
+        alert("✅ SUCESSO! O registo foi guardado na folha Excel.");
+        document.getElementById('appForm').reset();
+        filtrarDistritos(); // Reset dos dropdowns
+    })
+    .catch((error) => {
+        alert("❌ ERRO de ligação. Verifique a internet.");
+        console.error(error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "SUBMETER PARA O EXCEL";
+    });
+};
+</script>
+
+</body>
+</html>
