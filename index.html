@@ -6,16 +6,9 @@
     <title>ECHO Project Moçambique</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
         .container { max-width: 600px; }
-        .form-card { 
-            background: white; 
-            border-radius: 15px; 
-            padding: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-            margin-top: 20px; 
-            border-top: 8px solid #C8102E; 
-        }
+        .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-top: 20px; border-top: 8px solid #C8102E; }
         .logo-container { text-align: center; margin-bottom: 15px; }
         .logo-container img { max-width: 250px; height: auto; }
         .header-main { text-align: center; margin-bottom: 30px; }
@@ -26,9 +19,8 @@
         .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
         .btn-submit { background-color: #003366; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; color: white; transition: 0.3s; }
         .btn-submit:hover { background-color: #C8102E; transform: translateY(-2px); color: white; }
-        /* Destaque para o campo NID */
         #nid { background-color: #fff9f9; border: 2px solid #ced4da; font-family: monospace; font-size: 1.1rem; }
-        #nid:focus { border-color: #C8102E; box-shadow: 0 0 0 0.25rem rgba(200, 16, 46, 0.1); }
+        #camposConfidente { display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px dashed #003366; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -49,7 +41,7 @@
             <div class="mb-3">
                 <label class="form-label">Província</label>
                 <select id="prov" class="form-select" required onchange="filtrarDistritos()">
-                    <option value="">Seleccione a Província...</option>
+                    <option value="">Seleccione...</option>
                     <option value="Manica">Manica</option>
                     <option value="Niassa">Niassa</option>
                     <option value="Sofala">Sofala</option>
@@ -69,27 +61,38 @@
                 </select>
             </div>
 
-            <div class="section-header">🆔 DADOS DO PACIENTE</div>
+            <div class="section-header">🆔 IDENTIFICAÇÃO DO PACIENTE</div>
             <div class="mb-3">
-                <label class="form-label">NID (Formato ECHO: 10/4/5 dígitos)</label>
-                <input type="text" id="nid" class="form-control" maxlength="21" 
-                       placeholder="0000000000/0000/00000" required 
-                       oninput="aplicarMascaraNID(this)">
-                <div class="form-text text-danger">⚠️ Verifique as barras e o número total de dígitos.</div>
+                <label class="form-label">NID (10/4/5 dígitos)</label>
+                <input type="text" id="nid" class="form-control" maxlength="21" placeholder="0000000000/0000/00000" required oninput="aplicarMascaraNID(this)">
             </div>
-            <div class="mb-3">
-                <label class="form-label">Nome Completo do Paciente</label>
-                <input type="text" id="nome" class="form-control" placeholder="Introduza o nome completo" required>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
+                <label class="form-check-label" for="temConfidente" style="font-weight: bold; color: #C8102E;">
+                    Tem Confidente / Contacto de Emergência?
+                </label>
+            </div>
+
+            <div id="camposConfidente">
+                <div class="mb-3">
+                    <label class="form-label">Nome do Confidente</label>
+                    <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome da pessoa de contacto">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Telefone do Confidente</label>
+                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84... / 82...">
+                </div>
             </div>
 
             <div class="section-header">📞 CONTACTO E RESIDÊNCIA</div>
             <div class="row">
                 <div class="col-6 mb-3">
-                    <label class="form-label">Telefone 1</label>
-                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84..." required>
+                    <label class="form-label">Telefone 1 (Opcional)</label>
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84...">
                 </div>
                 <div class="col-6 mb-3">
-                    <label class="form-label">Telefone 2</label>
+                    <label class="form-label">Telefone 2 (Opcional)</label>
                     <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
                 </div>
             </div>
@@ -98,10 +101,10 @@
                 <textarea id="endereco" class="form-control" rows="3" placeholder="Bairro, Quarteirão, Casa nº..." required></textarea>
             </div>
 
-            <div class="section-header">✍️ RESPONSÁVEL PELO REGISTO</div>
+            <div class="section-header">✍️ RESPONSÁVEL</div>
             <div class="mb-4">
-                <label class="form-label">Nome do Agente / Digitador</label>
-                <input type="text" id="responsavel" class="form-control" placeholder="Quem está a introduzir os dados?" required>
+                <label class="form-label">Nome do Digitador</label>
+                <input type="text" id="responsavel" class="form-control" placeholder="Quem está a introduzir?" required>
             </div>
 
             <button type="submit" id="btnSubmit" class="btn btn-submit w-100 shadow">SUBMETER</button>
@@ -110,20 +113,20 @@
 </div>
 
 <script>
-// --- FUNÇÃO PARA A MÁSCARA DO NID (10/4/5) ---
+function toggleConfidente() {
+    const box = document.getElementById("temConfidente");
+    const campos = document.getElementById("camposConfidente");
+    campos.style.display = box.checked ? "block" : "none";
+}
+
 function aplicarMascaraNID(input) {
-    let valor = input.value.replace(/\D/g, ""); // Remove tudo o que não é número
-    if (valor.length > 19) valor = valor.slice(0, 19); // Limite máximo de números
-    
+    let valor = input.value.replace(/\D/g, "");
+    if (valor.length > 19) valor = valor.slice(0, 19);
     let formatado = "";
     if (valor.length > 0) {
-        formatado = valor.slice(0, 10); // Primeiros 10
-        if (valor.length > 10) {
-            formatado += "/" + valor.slice(10, 14); // Próximos 4
-        }
-        if (valor.length > 14) {
-            formatado += "/" + valor.slice(14, 19); // Últimos 5
-        }
+        formatado = valor.slice(0, 10);
+        if (valor.length > 10) formatado += "/" + valor.slice(10, 14);
+        if (valor.length > 14) formatado += "/" + valor.slice(14, 19);
     }
     input.value = formatado;
 }
@@ -131,59 +134,18 @@ function aplicarMascaraNID(input) {
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwp6sCoZqkbw9_jpBiUc5keKASUoXdSCcj_3tY9Ta_WulVwOJmpiUG_-fKr7U_UdIAoMA/exec";
 
 const baseDados = {
-    "Manica": {
-        "Barue": ["Catandica HD", "Chuala CS", "Cruz de Macossa CS", "Honde CS", "Nhampassa CS", "Nhassacara CS", "Nhazonia CS"],
-        "Chimoio": ["1º Maio CS", "7 de Abril CS", "Chimoio HP", "Chimoio_PCdVC", "Chissui CS", "Eduardo Mondlane CS", "Nhamaonha CS", "Vila Nova CS"],
-        "Gondola": ["Amatongas CS", "Gondola Sede CS", "Inchope CS", "Muda Serração CS"],
-        "Guro": ["Guro - Sede CS", "Mandie CS"],
-        "Macate": ["Macate CS", "Marera CS", "Zembe Centro CS"],
-        "Machaze": ["Bassane CS", "Chipopopo CS", "Chipudji CS", "Chitobe CS", "Mavende CS", "Mazwissanga CS", "Save CS"],
-        "Manica": ["4º Congresso CS", "Machipanda CS", "Manica HD", "Messica CS"],
-        "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabera CS", "Garagua CS", "Gunhe CS", "Mude CS", "Mupengo CS"],
-        "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga CS", "Sembezea CS", "Sussundenga CS"],
-        "Vanduzi": ["Chigodole CS", "IAC CS", "Matsinho CS", "Pungue Sul CS", "Vanduzi CS"]
-    },
-    "Niassa": {
-        "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba HR", "Meripo CS", "Mitucué CS"],
-        "Lago": ["Metangula CS"],
-        "Lichinga": ["Chiuaula PS", "CS Lichinga", "Lichinga HP", "Lulimire CS", "Namacula CS"],
-        "Mandimba": ["Mandimba CS", "Mitande CS"],
-        "Mecanhelas": ["Chissaua CS", "Entre-Lagos CS", "Mecanhelas CS"],
-        "Metarica": ["Metarica CS"],
-        "Ngauma": ["Massangulo CS"]
-    },
-    "Sofala": {
-        "Beira": ["Cadeia Provincial", "Cerâmica CS", "Chamba PS", "Chota PS", "Hospital Central da Beira HC", "M. Mascarenha CS", "Macurungo PSA", "Manga Loforte", "Manga Nhaconjo PS", "Marrocanhe", "Matadouro PS", "Munhava CS", "Nhangau CS", "Ponta Gêa PS", "Inhamizua CS"],
-        "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede HR", "Guara-Guara PS"],
-        "Caia": ["Caia HD", "Murraça CS", "Nhambalo CS", "Sena CS"],
-        "Cheringoma": ["Inhaminga CS"],
-        "Chibabava": ["Chibabava-Sede CS", "Hoode PS", "Mutindire CS", "Muxungue CS III"],
-        "Dondo": ["Canhandula PS", "Dondo Sede CS I", "Igreja Baptista CS", "Mafambisse CS", "Maxarote PS", "Mutua PS", "Samora Machel PS", "Savane PS"],
-        "Gorongosa": ["Gorongoza-Sede CS"],
-        "Machanga": ["Machang CS"],
-        "Marromeu": ["Marromeu HR", "Nensa CS"],
-        "Nhamatanda": ["Chirassicua CS", "Lamego CS", "Metuchira Lomaco CS", "Nhamatanda HR", "Nharuchonga PS", "Siluvo PS", "Tica PS"]
-    },
-    "Tete": {
-        "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue HR"],
-        "Cahora Bassa": ["Chitima CS", "Songo HR"],
-        "Changara": ["Changara CS", "Dzunga CS", "M'Saua CS", "Mazoe Ponte CS"],
-        "Chiuta": ["Manje CS"],
-        "Macanga": ["Furancungo CS"],
-        "Magoe": ["Daque CS", "Magoe CS", "Mucumbura CS"],
-        "Marara": ["Boroma CS", "Cachembe CS"],
-        "Moatize": ["25 de Setembro CS", "Caphirizange PS", "Cateme CS", "CFM CS", "Mameme II CS", "Moatize CS", "Ncondezi CS", "Zobue CS"],
-        "Mutarara": ["Inhangoma CS", "Mutarara HR"],
-        "Tete": ["Mpadue CS", "Nº 1 - Bairro Magaia", "Nº 2 - Bairro Matundo", "Nº 3 - Bairro Manyanga", "Nº 4 - Bairro Muthemba", "Tete HP"]
-    }
+    "Manica": { "Barue": ["Catandica HD", "Chuala CS"], "Chimoio": ["1º Maio CS", "Chimoio HP"], "Gondola": ["Amatongas CS", "Gondola Sede CS"], "Guro": ["Guro - Sede CS"], "Macate": ["Macate CS"], "Machaze": ["Bassane CS", "Chitobe CS"], "Manica": ["Manica HD"], "Mossurize": ["Espungabera CS"], "Sussundenga": ["Sussundenga CS"], "Vanduzi": ["Vanduzi CS"] },
+    "Niassa": { "Cuamba": ["Cuamba HR"], "Lago": ["Metangula CS"], "Lichinga": ["Lichinga HP"], "Mandimba": ["Mandimba CS"], "Mecanhelas": ["Mecanhelas CS"], "Metarica": ["Metarica CS"], "Ngauma": ["Massangulo CS"] },
+    "Sofala": { "Beira": ["Munhava CS", "Ponta Gêa PS"], "Buzi": ["Buzi Sede HR"], "Caia": ["Caia HD"], "Cheringoma": ["Inhaminga CS"], "Chibabava": ["Muxungue CS III"], "Dondo": ["Dondo Sede CS I"], "Gorongosa": ["Gorongoza-Sede CS"], "Machanga": ["Machang CS"], "Marromeu": ["Marromeu HR"], "Nhamatanda": ["Nhamatanda HR"] },
+    "Tete": { "Angonia": ["Ulongue HR"], "Cahora Bassa": ["Songo HR"], "Changara": ["Changara CS"], "Chiuta": ["Manje CS"], "Macanga": ["Furancungo CS"], "Magoe": ["Magoe CS"], "Marara": ["Boroma CS"], "Moatize": ["Moatize CS"], "Mutarara": ["Mutarara HR"], "Tete": ["Tete HP"] }
 };
 
 function filtrarDistritos() {
     const prov = document.getElementById("prov").value;
     const distSelect = document.getElementById("dist");
     const usSelect = document.getElementById("us");
-    distSelect.innerHTML = '<option value="">Seleccione o Distrito</option>';
-    usSelect.innerHTML = '<option value="">Seleccione a US</option>';
+    distSelect.innerHTML = '<option value="">Seleccione...</option>';
+    usSelect.innerHTML = '<option value="">Seleccione...</option>';
     if (prov) {
         distSelect.disabled = false;
         Object.keys(baseDados[prov]).forEach(d => distSelect.options.add(new Option(d, d)));
@@ -194,7 +156,7 @@ function filtrarUS() {
     const prov = document.getElementById("prov").value;
     const dist = document.getElementById("dist").value;
     const usSelect = document.getElementById("us");
-    usSelect.innerHTML = '<option value="">Seleccione a US</option>';
+    usSelect.innerHTML = '<option value="">Seleccione...</option>';
     if (dist) {
         usSelect.disabled = false;
         baseDados[prov][dist].forEach(u => usSelect.options.add(new Option(u, u)));
@@ -206,38 +168,31 @@ document.getElementById('appForm').onsubmit = function(e) {
     const btn = document.getElementById('btnSubmit');
     const respNome = document.getElementById('responsavel').value;
     btn.disabled = true;
-    btn.innerText = "A enviar dados...";
+    btn.innerText = "A enviar...";
 
     const dados = {
         provincia: document.getElementById("prov").value,
         distrito: document.getElementById("dist").value,
         us: document.getElementById("us").value,
         nid: document.getElementById("nid").value,
-        nome: document.getElementById("nome").value,
+        tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+        nome_confidente: document.getElementById("nomeConfidente").value,
+        tel_confidente: document.getElementById("telConfidente").value,
         tel1: document.getElementById("tel1").value,
         tel2: document.getElementById("tel2").value,
         endereco: document.getElementById("endereco").value,
         responsavel: respNome
     };
 
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify(dados)
-    })
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) })
     .then(() => {
-        alert("✅ SUCESSO! Registo submetido por: " + respNome);
+        alert("Olá " + respNome + ", o seu registo foi lançado com sucesso!");
         document.getElementById('appForm').reset();
-        filtrarDistritos(); 
+        toggleConfidente();
+        filtrarDistritos();
     })
-    .catch((error) => {
-        alert("❌ ERRO de ligação. Verifique a internet.");
-        console.error(error);
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btn.innerText = "SUBMETER";
-    });
+    .catch(() => alert("❌ ERRO de ligação."))
+    .finally(() => { btn.disabled = false; btn.innerText = "SUBMETER"; });
 };
 </script>
 </body>
