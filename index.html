@@ -6,23 +6,50 @@
     <title>ECHO Project Moçambique</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Paleta ECHO: Azul #003366, Vermelho #C8102E, Branco #FFFFFF */
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { max-width: 600px; }
-        .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; border-top: 5px solid #0056b3; }
+        .form-card { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            margin-top: 20px; 
+            border-top: 8px solid #C8102E; 
+        }
         
-        /* Estilização para o Logotipo */
         .logo-container { text-align: center; margin-bottom: 15px; }
         .logo-container img { max-width: 250px; height: auto; }
         
         .header-main { text-align: center; margin-bottom: 30px; }
-        .header-main h2 { color: #0056b3; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-top: 10px; }
+        .header-main h2 { color: #003366; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-top: 10px; }
+        .header-main small { color: #C8102E; font-weight: 600; }
         
-        .section-header { background: #e9ecef; padding: 10px 15px; border-left: 5px solid #28a745; margin: 25px 0 15px 0; font-weight: bold; font-size: 0.9rem; color: #333; }
-        .form-label { font-weight: 600; color: #495057; }
+        .section-header { 
+            background: #003366; 
+            color: white; 
+            padding: 10px 15px; 
+            border-radius: 5px;
+            margin: 25px 0 15px 0; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+        }
+
+        .form-label { font-weight: 600; color: #003366; }
         .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
-        .btn-submit { background-color: #0056b3; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; }
-        .btn-submit:hover { background-color: #004494; transform: translateY(-2px); }
-        .btn-submit:disabled { background-color: #6c757d; }
+        .form-control:focus, .form-select:focus { border-color: #C8102E; box-shadow: 0 0 0 0.25rem rgba(200, 16, 46, 0.1); }
+        
+        .btn-submit { 
+            background-color: #003366; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            color: white;
+            transition: 0.3s; 
+        }
+        .btn-submit:hover { background-color: #C8102E; transform: translateY(-2px); color: white; }
     </style>
 </head>
 <body>
@@ -30,17 +57,16 @@
 <div class="container mb-5">
     <div class="form-card">
         <div class="logo-container">
-            <img src="Novo logo ECHO 2025.png" alt="ECHO Project Logo">
+            <img src="Novo logo ECHO 2025.png" alt="ECHO Project Logo" onerror="this.src='https://via.placeholder.com/250x100?text=ECHO+PROJECT'">
         </div>
 
         <div class="header-main">
             <h2>Projecto ECHO Moçambique</h2>
-            <small class="text-muted">App actualização de endereços</small>
+            <small>App Actualização de Endereços</small>
         </div>
 
         <form id="appForm">
             <div class="section-header">📍 LOCALIZAÇÃO</div>
-            
             <div class="mb-3">
                 <label class="form-label">Província</label>
                 <select id="prov" class="form-select" required onchange="filtrarDistritos()">
@@ -51,14 +77,12 @@
                     <option value="Tete">Tete</option>
                 </select>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Distrito</label>
                 <select id="dist" class="form-select" required disabled onchange="filtrarUS()">
                     <option value="">Seleccione o distrito...</option>
                 </select>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Unidade Sanitária (US)</label>
                 <select id="us" class="form-select" required disabled>
@@ -67,52 +91,45 @@
             </div>
 
             <div class="section-header">🆔 DADOS DO PACIENTE</div>
-            
             <div class="mb-3">
-                <label class="form-label">NID (Formato: 000000/00/0)</label>
-                <input type="text" id="nid" class="form-control" pattern="\d{6}/\d{2}/\d{1}" placeholder="Ex: 123456/24/1" required title="O NID deve ter o formato 000000/00/0">
+                <label class="form-label">NID (Apenas números)</label>
+                <input type="number" id="nid" class="form-control" placeholder="Introduza o NID" required>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Nome Completo do Paciente</label>
                 <input type="text" id="nome" class="form-control" placeholder="Introduza o nome completo" required>
             </div>
 
             <div class="section-header">📞 CONTACTO E RESIDÊNCIA</div>
-            
             <div class="row">
                 <div class="col-6 mb-3">
                     <label class="form-label">Telefone 1</label>
-                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84..." required title="Deve ser um número válido de Moçambique (9 dígitos)">
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84..." required>
                 </div>
                 <div class="col-6 mb-3">
                     <label class="form-label">Telefone 2</label>
                     <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label">Endereço Físico</label>
                 <textarea id="endereco" class="form-control" rows="3" placeholder="Bairro, Quarteirão, Casa nº..." required></textarea>
             </div>
 
             <div class="section-header">✍️ RESPONSÁVEL PELO REGISTO</div>
-            
             <div class="mb-4">
                 <label class="form-label">Nome do Agente / Digitador</label>
                 <input type="text" id="responsavel" class="form-control" placeholder="Quem está a introduzir os dados?" required>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn btn-primary btn-submit w-100 shadow">SUBMETER PARA O EXCEL</button>
+            <button type="submit" id="btnSubmit" class="btn btn-submit w-100 shadow">SUBMETER</button>
         </form>
     </div>
 </div>
 
 <script>
-// --- CONFIGURAÇÃO ---
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwp6sCoZqkbw9_jpBiUc5keKASUoXdSCcj_3tY9Ta_WulVwOJmpiUG_-fKr7U_UdIAoMA/exec";
 
-// --- BASE DE DADOS COMPLETA ---
 const baseDados = {
     "Manica": {
         "Barue": ["Catandica HD", "Chuala CS", "Cruz de Macossa CS", "Honde CS", "Nhampassa CS", "Nhassacara CS", "Nhazonia CS"],
@@ -187,6 +204,7 @@ function filtrarUS() {
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
+    const respNome = document.getElementById('responsavel').value; // Captura o nome para a mensagem
     btn.disabled = true;
     btn.innerText = "A enviar dados...";
 
@@ -199,7 +217,7 @@ document.getElementById('appForm').onsubmit = function(e) {
         tel1: document.getElementById("tel1").value,
         tel2: document.getElementById("tel2").value,
         endereco: document.getElementById("endereco").value,
-        responsavel: document.getElementById("responsavel").value
+        responsavel: respNome
     };
 
     fetch(SCRIPT_URL, {
@@ -208,7 +226,8 @@ document.getElementById('appForm').onsubmit = function(e) {
         body: JSON.stringify(dados)
     })
     .then(() => {
-        alert("✅ SUCESSO! O registo foi guardado na folha Excel.");
+        // MENSAGEM DE SUCESSO PERSONALIZADA
+        alert("✅ SUCESSO! Registo submetido por: " + respNome);
         document.getElementById('appForm').reset();
         filtrarDistritos(); 
     })
@@ -222,6 +241,5 @@ document.getElementById('appForm').onsubmit = function(e) {
     });
 };
 </script>
-
 </body>
 </html>
