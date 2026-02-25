@@ -152,10 +152,13 @@ function parseJwt(token) {
 
 function handleCredentialResponse(response) {
     const data = parseJwt(response.credential);
-    userEmail = data.email;
+    userEmail = data.email.toLowerCase().trim();
+    // Aqui você pode colocar uma lista temporária no HTML apenas para bloqueio visual rápido
+    // Mas a segurança real continuará sendo feita pelo seu script do Excel
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("appContent").style.display = "block";
-    alert("Bem-vindo, " + data.name + " (" + userEmail + ")");
+    // Alerta informativo
+    console.log("Sessão iniciada como: " + userEmail);
 }
 
 // --- BASE DE DADOS (151 US) ---
@@ -297,5 +300,6 @@ function enviarParaGoogle() {
 </script>
 </body>
 </html>
+
 
 
