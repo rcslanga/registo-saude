@@ -41,7 +41,7 @@
             <div class="mb-3">
                 <label class="form-label">Província</label>
                 <select id="prov" class="form-select" required onchange="filtrarDistritos()">
-                    <option value="">Seleccione...</option>
+                    <option value="">Seleccione a Província...</option>
                     <option value="Manica">Manica</option>
                     <option value="Niassa">Niassa</option>
                     <option value="Sofala">Sofala</option>
@@ -77,46 +77,131 @@
             <div id="camposConfidente">
                 <div class="mb-3">
                     <label class="form-label">Nome do Confidente</label>
-                    <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome da pessoa de contacto">
+                    <input type="text" id="nomeConfidente" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Telefone do Confidente</label>
-                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84... / 82...">
+                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}">
                 </div>
             </div>
 
             <div class="section-header">📞 CONTACTO E RESIDÊNCIA</div>
             <div class="row">
                 <div class="col-6 mb-3">
-                    <label class="form-label">Telefone 1 (Opcional)</label>
-                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84...">
+                    <label class="form-label">Telefone 1</label>
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}">
                 </div>
                 <div class="col-6 mb-3">
-                    <label class="form-label">Telefone 2 (Opcional)</label>
-                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
+                    <label class="form-label">Telefone 2</label>
+                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}">
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Endereço Físico</label>
-                <textarea id="endereco" class="form-control" rows="3" placeholder="Bairro, Quarteirão, Casa nº..." required></textarea>
+                <textarea id="endereco" class="form-control" rows="3" required></textarea>
             </div>
 
             <div class="section-header">✍️ RESPONSÁVEL</div>
             <div class="mb-4">
-                <label class="form-label">Nome do Digitador</label>
-                <input type="text" id="responsavel" class="form-control" placeholder="Quem está a introduzir?" required>
+                <label class="form-label">Nome</label>
+                <input type="text" id="responsavel" class="form-control" required>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn btn-submit w-100 shadow">SUBMETER</button>
+            <button type="submit" class="btn btn-submit w-100 shadow">SUBMETER</button>
         </form>
     </div>
 </div>
 
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #003366; color: white;">
+                <h5 class="modal-title">Confirmar Registo</h5>
+            </div>
+            <div class="modal-body" id="resumoDados"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Corrigir</button>
+                <button type="button" id="btnFinalConfirm" class="btn btn-success">Confirmar e Gravar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function toggleConfidente() {
-    const box = document.getElementById("temConfidente");
-    const campos = document.getElementById("camposConfidente");
-    campos.style.display = box.checked ? "block" : "none";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
+let dadosTemporarios = {};
+
+// Base de Dados Completa (151 Unidades)
+const baseDados = {
+    "Manica": {
+        "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
+        "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"],
+        "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"],
+        "Guro": ["Guro - Sed", "Mandie CS"],
+        "Macate": ["Macate CS", "Marera CS", "Zembe Cer"],
+        "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"],
+        "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"],
+        "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"],
+        "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"],
+        "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"]
+    },
+    "Niassa": {
+        "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"],
+        "Lago": ["Metangula"],
+        "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"],
+        "Mandimba": ["Mandimba", "Mitande C"],
+        "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"],
+        "Metarica": ["Metarica C"],
+        "Ngauma": ["Massangu"]
+    },
+    "Sofala": {
+        "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"],
+        "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"],
+        "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"],
+        "Cheringoma": ["Inhaminga"],
+        "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"],
+        "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"],
+        "Gorongosa": ["Gorongoza"],
+        "Machanga": ["Machang C"],
+        "Marromeu": ["Marromeu", "Nensa CS"],
+        "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"]
+    },
+    "Tete": {
+        "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"],
+        "Cahora Bassa": ["Chitima CS", "Songo HR"],
+        "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"],
+        "Chiuta": ["Manje CS"],
+        "Macanga": ["Furancung"],
+        "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"],
+        "Marara": ["Boroma CS", "Cachembe"],
+        "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"],
+        "Mutarara": ["Inhangoma", "Mutarara H"],
+        "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"]
+    }
+};
+
+function filtrarDistritos() {
+    const prov = document.getElementById("prov").value;
+    const distSelect = document.getElementById("dist");
+    const usSelect = document.getElementById("us");
+    distSelect.innerHTML = '<option value="">Seleccione...</option>';
+    usSelect.innerHTML = '<option value="">Seleccione...</option>';
+    if (prov) {
+        distSelect.disabled = false;
+        Object.keys(baseDados[prov]).sort().forEach(d => distSelect.options.add(new Option(d, d)));
+    } else { distSelect.disabled = true; usSelect.disabled = true; }
+}
+
+function filtrarUS() {
+    const prov = document.getElementById("prov").value;
+    const dist = document.getElementById("dist").value;
+    const usSelect = document.getElementById("us");
+    usSelect.innerHTML = '<option value="">Seleccione...</option>';
+    if (dist) {
+        usSelect.disabled = false;
+        baseDados[prov][dist].sort().forEach(u => usSelect.options.add(new Option(u, u)));
+    } else { usSelect.disabled = true; }
 }
 
 function aplicarMascaraNID(input) {
@@ -131,69 +216,46 @@ function aplicarMascaraNID(input) {
     input.value = formatado;
 }
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
-
-const baseDados = {
-    "Manica": { "Barue": ["Catandica HD", "Chuala CS"], "Chimoio": ["1º Maio CS", "Chimoio HP"], "Gondola": ["Amatongas CS", "Gondola Sede CS"], "Guro": ["Guro - Sede CS"], "Macate": ["Macate CS"], "Machaze": ["Bassane CS", "Chitobe CS"], "Manica": ["Manica HD"], "Mossurize": ["Espungabera CS"], "Sussundenga": ["Sussundenga CS"], "Vanduzi": ["Vanduzi CS"] },
-    "Niassa": { "Cuamba": ["Cuamba HR"], "Lago": ["Metangula CS"], "Lichinga": ["Lichinga HP"], "Mandimba": ["Mandimba CS"], "Mecanhelas": ["Mecanhelas CS"], "Metarica": ["Metarica CS"], "Ngauma": ["Massangulo CS"] },
-    "Sofala": { "Beira": ["Munhava CS", "Ponta Gêa PS"], "Buzi": ["Buzi Sede HR"], "Caia": ["Caia HD"], "Cheringoma": ["Inhaminga CS"], "Chibabava": ["Muxungue CS III"], "Dondo": ["Dondo Sede CS I"], "Gorongosa": ["Gorongoza-Sede CS"], "Machanga": ["Machang CS"], "Marromeu": ["Marromeu HR"], "Nhamatanda": ["Nhamatanda HR"] },
-    "Tete": { "Angonia": ["Ulongue HR"], "Cahora Bassa": ["Songo HR"], "Changara": ["Changara CS"], "Chiuta": ["Manje CS"], "Macanga": ["Furancungo CS"], "Magoe": ["Magoe CS"], "Marara": ["Boroma CS"], "Moatize": ["Moatize CS"], "Mutarara": ["Mutarara HR"], "Tete": ["Tete HP"] }
-};
-
-function filtrarDistritos() {
-    const prov = document.getElementById("prov").value;
-    const distSelect = document.getElementById("dist");
-    const usSelect = document.getElementById("us");
-    distSelect.innerHTML = '<option value="">Seleccione...</option>';
-    usSelect.innerHTML = '<option value="">Seleccione...</option>';
-    if (prov) {
-        distSelect.disabled = false;
-        Object.keys(baseDados[prov]).forEach(d => distSelect.options.add(new Option(d, d)));
-    } else { distSelect.disabled = true; usSelect.disabled = true; }
-}
-
-function filtrarUS() {
-    const prov = document.getElementById("prov").value;
-    const dist = document.getElementById("dist").value;
-    const usSelect = document.getElementById("us");
-    usSelect.innerHTML = '<option value="">Seleccione...</option>';
-    if (dist) {
-        usSelect.disabled = false;
-        baseDados[prov][dist].forEach(u => usSelect.options.add(new Option(u, u)));
-    } else { usSelect.disabled = true; }
+function toggleConfidente() {
+    const box = document.getElementById("temConfidente");
+    document.getElementById("camposConfidente").style.display = box.checked ? "block" : "none";
 }
 
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
-    const btn = document.getElementById('btnSubmit');
-    const respNome = document.getElementById('responsavel').value;
-    
-    // Captura os valores corretamente
-    const dados = {
+    dadosTemporarios = {
         provincia: document.getElementById("prov").value,
         distrito: document.getElementById("dist").value,
         us: document.getElementById("us").value,
         nid: document.getElementById("nid").value,
         tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-        nome_confidente: document.getElementById("nomeConfidente").value || "", // Garante que não vai vazio
-        tel_confidente: document.getElementById("telConfidente").value || "",
-        tel1: document.getElementById("tel1").value || "",
-        tel2: document.getElementById("tel2").value || "",
-        endereco: document.getElementById("endereco").value || "",
-        responsavel: respNome
+        nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+        tel_confidente: document.getElementById("telConfidente").value || "N/A",
+        tel1: document.getElementById("tel1").value || "N/A",
+        tel2: document.getElementById("tel2").value || "N/A",
+        endereco: document.getElementById("endereco").value,
+        responsavel: document.getElementById("responsavel").value
     };
 
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) })
+    document.getElementById("resumoDados").innerHTML = `
+        <p><b>US:</b> ${dadosTemporarios.us} (${dadosTemporarios.distrito})</p>
+        <p><b>NID:</b> ${dadosTemporarios.nid}</p>
+        <p><b>Confidente:</b> ${dadosTemporarios.tem_confidente} (${dadosTemporarios.nome_confidente})</p>
+        <p><b>Morada:</b> ${dadosTemporarios.endereco}</p>
+        <hr><p class="text-center">Confirmar gravação por ${dadosTemporarios.responsavel}?</p>
+    `;
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+};
+
+document.getElementById('btnFinalConfirm').onclick = function() {
+    this.disabled = true;
+    this.innerText = "A gravar...";
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
     .then(() => {
-        alert("Olá " + respNome + ", o seu registo foi lançado com sucesso!");
-        document.getElementById('appForm').reset();
-        toggleConfidente();
-        filtrarDistritos();
-    })
-    .catch(() => alert("❌ ERRO de ligação."))
-    .finally(() => { btn.disabled = false; btn.innerText = "SUBMETER"; });
+        alert("Olá " + dadosTemporarios.responsavel + ", o seu registo foi lançado com sucesso!");
+        location.reload();
+    });
 };
 </script>
 </body>
 </html>
-
