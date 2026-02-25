@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIS - Recolha de Dados Moçambique</title>
+    <title>ECHO Project Moçambique</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f7f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { max-width: 600px; }
         .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; border-top: 5px solid #0056b3; }
+        
+        /* Estilização para o Logotipo */
+        .logo-container { text-align: center; margin-bottom: 15px; }
+        .logo-container img { max-width: 250px; height: auto; }
+        
         .header-main { text-align: center; margin-bottom: 30px; }
-        .header-main h2 { color: #0056b3; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
+        .header-main h2 { color: #0056b3; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-top: 10px; }
+        
         .section-header { background: #e9ecef; padding: 10px 15px; border-left: 5px solid #28a745; margin: 25px 0 15px 0; font-weight: bold; font-size: 0.9rem; color: #333; }
         .form-label { font-weight: 600; color: #495057; }
         .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
@@ -23,9 +29,13 @@
 
 <div class="container mb-5">
     <div class="form-card">
+        <div class="logo-container">
+            <img src="Novo logo ECHO 2025.png" alt="ECHO Project Logo">
+        </div>
+
         <div class="header-main">
-            <h2>Recolha de Dados</h2>
-            <small class="text-muted">Sistema de Registo de Pacientes</small>
+            <h2>Projecto ECHO Moçambique</h2>
+            <small class="text-muted">App actualização de endereços</small>
         </div>
 
         <form id="appForm">
@@ -151,7 +161,6 @@ const baseDados = {
     }
 };
 
-// --- LÓGICA DE FILTROS ---
 function filtrarDistritos() {
     const prov = document.getElementById("prov").value;
     const distSelect = document.getElementById("dist");
@@ -175,7 +184,6 @@ function filtrarUS() {
     } else { usSelect.disabled = true; }
 }
 
-// --- SUBMISSÃO DOS DADOS ---
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
@@ -202,7 +210,7 @@ document.getElementById('appForm').onsubmit = function(e) {
     .then(() => {
         alert("✅ SUCESSO! O registo foi guardado na folha Excel.");
         document.getElementById('appForm').reset();
-        filtrarDistritos(); // Reset dos dropdowns
+        filtrarDistritos(); 
     })
     .catch((error) => {
         alert("❌ ERRO de ligação. Verifique a internet.");
@@ -210,7 +218,7 @@ document.getElementById('appForm').onsubmit = function(e) {
     })
     .finally(() => {
         btn.disabled = false;
-        btn.innerText = "SUBMETER PARA O EXCEL";
+        btn.innerText = "SUBMETER";
     });
 };
 </script>
