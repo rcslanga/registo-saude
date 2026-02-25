@@ -6,7 +6,6 @@
     <title>ECHO Project Moçambique</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Paleta ECHO: Azul #003366, Vermelho #C8102E, Branco #FFFFFF */
         body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { max-width: 600px; }
         .form-card { 
@@ -17,39 +16,19 @@
             margin-top: 20px; 
             border-top: 8px solid #C8102E; 
         }
-        
         .logo-container { text-align: center; margin-bottom: 15px; }
         .logo-container img { max-width: 250px; height: auto; }
-        
         .header-main { text-align: center; margin-bottom: 30px; }
         .header-main h2 { color: #003366; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; margin-top: 10px; }
         .header-main small { color: #C8102E; font-weight: 600; }
-        
-        .section-header { 
-            background: #003366; 
-            color: white; 
-            padding: 10px 15px; 
-            border-radius: 5px;
-            margin: 25px 0 15px 0; 
-            font-weight: bold; 
-            font-size: 0.9rem; 
-        }
-
+        .section-header { background: #003366; color: white; padding: 10px 15px; border-radius: 5px; margin: 25px 0 15px 0; font-weight: bold; font-size: 0.9rem; }
         .form-label { font-weight: 600; color: #003366; }
         .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #ced4da; }
-        .form-control:focus, .form-select:focus { border-color: #C8102E; box-shadow: 0 0 0 0.25rem rgba(200, 16, 46, 0.1); }
-        
-        .btn-submit { 
-            background-color: #003366; 
-            border: none; 
-            padding: 15px; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            font-size: 1.1rem; 
-            color: white;
-            transition: 0.3s; 
-        }
+        .btn-submit { background-color: #003366; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; color: white; transition: 0.3s; }
         .btn-submit:hover { background-color: #C8102E; transform: translateY(-2px); color: white; }
+        /* Destaque para o campo NID */
+        #nid { background-color: #fff9f9; border: 2px solid #ced4da; font-family: monospace; font-size: 1.1rem; }
+        #nid:focus { border-color: #C8102E; box-shadow: 0 0 0 0.25rem rgba(200, 16, 46, 0.1); }
     </style>
 </head>
 <body>
@@ -92,8 +71,11 @@
 
             <div class="section-header">🆔 DADOS DO PACIENTE</div>
             <div class="mb-3">
-                <label class="form-label">NID (Apenas números)</label>
-                <input type="number" id="nid" class="form-control" placeholder="Introduza o NID" required>
+                <label class="form-label">NID (Formato ECHO: 10/4/5 dígitos)</label>
+                <input type="text" id="nid" class="form-control" maxlength="21" 
+                       placeholder="0000000000/0000/00000" required 
+                       oninput="aplicarMascaraNID(this)">
+                <div class="form-text text-danger">⚠️ Verifique as barras e o número total de dígitos.</div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Nome Completo do Paciente</label>
@@ -128,6 +110,24 @@
 </div>
 
 <script>
+// --- FUNÇÃO PARA A MÁSCARA DO NID (10/4/5) ---
+function aplicarMascaraNID(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remove tudo o que não é número
+    if (valor.length > 19) valor = valor.slice(0, 19); // Limite máximo de números
+    
+    let formatado = "";
+    if (valor.length > 0) {
+        formatado = valor.slice(0, 10); // Primeiros 10
+        if (valor.length > 10) {
+            formatado += "/" + valor.slice(10, 14); // Próximos 4
+        }
+        if (valor.length > 14) {
+            formatado += "/" + valor.slice(14, 19); // Últimos 5
+        }
+    }
+    input.value = formatado;
+}
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwp6sCoZqkbw9_jpBiUc5keKASUoXdSCcj_3tY9Ta_WulVwOJmpiUG_-fKr7U_UdIAoMA/exec";
 
 const baseDados = {
@@ -204,7 +204,7 @@ function filtrarUS() {
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
-    const respNome = document.getElementById('responsavel').value; // Captura o nome para a mensagem
+    const respNome = document.getElementById('responsavel').value;
     btn.disabled = true;
     btn.innerText = "A enviar dados...";
 
@@ -226,7 +226,6 @@ document.getElementById('appForm').onsubmit = function(e) {
         body: JSON.stringify(dados)
     })
     .then(() => {
-        // MENSAGEM DE SUCESSO PERSONALIZADA
         alert("✅ SUCESSO! Registo submetido por: " + respNome);
         document.getElementById('appForm').reset();
         filtrarDistritos(); 
