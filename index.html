@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECHO Project Moçambique - Login</title>
+    <title>ECHO Project Moçambique - Final</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .container { max-width: 600px; margin-top: 30px; }
+        .container { max-width: 600px; margin-top: 20px; }
         .form-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 8px solid #C8102E; }
         .logo-container { text-align: center; margin-bottom: 15px; }
-        .logo-container img { max-width: 220px; }
+        .logo-container img { max-width: 200px; }
         .section-header { background: #003366; color: white; padding: 8px 15px; border-radius: 5px; margin: 20px 0 15px 0; font-weight: bold; font-size: 0.9rem; }
         #appContent { display: none; }
         #loginScreen { text-align: center; padding: 50px 20px; }
@@ -22,16 +22,13 @@
 
 <div class="loading-overlay" id="loader">
     <div class="spinner-border text-danger" role="status"></div>
-    <p class="mt-2 fw-bold" id="loaderText">A validar acesso...</p>
+    <p class="mt-2 fw-bold" id="loaderText">A processar...</p>
 </div>
 
 <div class="container mb-5">
     <div id="loginScreen" class="form-card">
-        <div class="logo-container">
-            <img src="Novo logo ECHO 2025.png" alt="Logo ECHO" onerror="this.src='https://via.placeholder.com/200x80?text=ECHO+PROJECT'">
-        </div>
-        <h4 class="mb-4" style="color:#003366">Acesso Restrito</h4>
-        <p class="text-muted mb-4">Inicie sessão para verificar se o seu e-mail está autorizado.</p>
+        <div class="logo-container"><img src="Novo logo ECHO 2025.png" alt="Logo ECHO"></div>
+        <h4 class="mb-4" style="color:#003366">ECHO Project - Login</h4>
         <div id="g_id_onload"
              data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com"
              data-callback="handleCredentialResponse">
@@ -41,11 +38,7 @@
 
     <div id="appContent" class="form-card">
         <div class="logo-container"><img src="Novo logo ECHO 2025.png" alt="Logo ECHO"></div>
-        <div class="text-center mb-4">
-            <h2 style="color: #003366; font-weight: 800; font-size: 1.4rem;">PROJECTO ECHO</h2>
-            <small class="fw-bold" style="color: #C8102E;">Actualização de Endereços e Contactos</small>
-        </div>
-
+        
         <form id="appForm">
             <div class="section-header">📍 LOCALIZAÇÃO DA US</div>
             <div class="mb-3">
@@ -67,14 +60,41 @@
                 <select id="us" class="form-select" required disabled><option value="">Seleccione...</option></select>
             </div>
 
-            <div class="section-header">🆔 IDENTIFICAÇÃO</div>
+            <div class="section-header">🆔 PACIENTE E CONFIDENTE</div>
             <div class="mb-3">
                 <label class="form-label">NID (10/4/5 dígitos)</label>
                 <input type="text" id="nid" class="form-control" maxlength="21" placeholder="0000000000/0000/00000" required oninput="aplicarMascaraNID(this)">
             </div>
 
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
+                <label class="form-check-label fw-bold" for="temConfidente">Tem Confidente?</label>
+            </div>
+
+            <div id="camposConfidente" style="display:none; background:#f8f9fa; padding:15px; border-radius:10px; border:1px dashed #003366">
+                <div class="mb-3">
+                    <label class="form-label">Nome do Confidente</label>
+                    <input type="text" id="nomeConfidente" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Telefone do Confidente</label>
+                    <input type="tel" id="telConfidente" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84/82...">
+                </div>
+            </div>
+
+            <div class="section-header">📞 CONTACTOS E MORADA</div>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label">Telefone 1</label>
+                    <input type="tel" id="tel1" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="84..." required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label">Telefone 2</label>
+                    <input type="tel" id="tel2" class="form-control" pattern="8[2-7][0-9]{7}" placeholder="82...">
+                </div>
+            </div>
             <div class="mb-3">
-                <label class="form-label">Endereço Físico</label>
+                <label class="form-label">Morada (Bairro, Q, Casa)</label>
                 <textarea id="endereco" class="form-control" rows="2" required></textarea>
             </div>
 
@@ -83,7 +103,7 @@
                 <input type="text" id="responsavel" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 p-3 fw-bold shadow" style="background-color:#003366; border:none">SUBMETER REGISTO</button>
+            <button type="submit" class="btn btn-primary w-100 p-3 fw-bold shadow" style="background-color:#003366; border:none">REVER E SUBMETER</button>
         </form>
     </div>
 </div>
@@ -91,7 +111,7 @@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Confirmar Dados</h5></div>
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Revisão de Dados</h5></div>
             <div class="modal-body" id="resumoDados"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Corrigir</button>
@@ -107,65 +127,111 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_
 let userEmail = "";
 let dadosTemporarios = {};
 
+// --- BASE DE DADOS 151 US ---
+const baseDados = {
+    "Manica": {
+        "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
+        "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"],
+        "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"],
+        "Guro": ["Guro - Sed", "Mandie CS"],
+        "Macate": ["Macate CS", "Marera CS", "Zembe Cer"],
+        "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"],
+        "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"],
+        "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"],
+        "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"],
+        "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"]
+    },
+    "Niassa": {
+        "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"],
+        "Lago": ["Metangula"],
+        "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"],
+        "Mandimba": ["Mandimba", "Mitande C"],
+        "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"],
+        "Metarica": ["Metarica C"],
+        "Ngauma": ["Massangu"]
+    },
+    "Sofala": {
+        "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"],
+        "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"],
+        "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"],
+        "Cheringoma": ["Inhaminga"],
+        "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"],
+        "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"],
+        "Gorongosa": ["Gorongoza"],
+        "Machanga": ["Machang C"],
+        "Marromeu": ["Marromeu", "Nensa CS"],
+        "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"]
+    },
+    "Tete": {
+        "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"],
+        "Cahora Bassa": ["Chitima CS", "Songo HR"],
+        "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"],
+        "Chiuta": ["Manje CS"],
+        "Macanga": ["Furancung"],
+        "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"],
+        "Marara": ["Boroma CS", "Cachembe"],
+        "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"],
+        "Mutarara": ["Inhangoma", "Mutarara H"],
+        "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"]
+    }
+};
+
+// --- LOGIN E VALIDAÇÃO ---
 function parseJwt(token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     return JSON.parse(window.atob(base64));
 }
 
-// --- FUNÇÃO DE LOGIN COM VALIDAÇÃO REAL ---
 async function handleCredentialResponse(response) {
     const payload = parseJwt(response.credential);
     const emailAValidar = payload.email.toLowerCase().trim();
-
     document.getElementById("loader").style.display = "flex";
-    document.getElementById("loaderText").innerText = "A validar e-mail no sistema...";
 
     try {
-        // Usamos um modo de 'cors' mas o Apps Script vai redirecionar, por isso tratamos o erro ou resposta
-        const checkURL = `${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`;
-        
-        // Chamada ao doGet do Script
-        const res = await fetch(checkURL);
+        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
         const texto = await res.text();
-
         if (texto.includes("AUTORIZADO")) {
             userEmail = emailAValidar;
             document.getElementById("loginScreen").style.display = "none";
             document.getElementById("appContent").style.display = "block";
         } else {
-            alert("ACESSO NEGADO: O e-mail " + emailAValidar + " não está autorizado.");
+            alert("ACESSO NEGADO: " + emailAValidar + " não autorizado.");
             location.reload();
         }
-    } catch (error) {
-        console.error(error);
-        alert("Erro ao validar acesso. Certifique-se de que o Script está implementado como 'Qualquer pessoa'.");
-        location.reload();
+    } catch (e) {
+        alert("Erro de ligação.");
     } finally {
         document.getElementById("loader").style.display = "none";
     }
 }
 
-// --- LÓGICA DO FORMULÁRIO (Simplificada para o exemplo) ---
+// --- LÓGICA FILTROS ---
 function filtrarDistritos() {
     const prov = document.getElementById("prov").value;
     const dist = document.getElementById("dist");
-    dist.innerHTML = '<option value="">Seleccione...</option>';
-    dist.disabled = false;
-    // Aqui viria a lógica da baseDados que já tem...
-    if(prov === "Manica") dist.options.add(new Option("Chimoio", "Chimoio"));
-    // ... restante baseDados ...
+    dist.innerHTML = '<option value="">Seleccione o distrito...</option>';
+    if (prov) {
+        dist.disabled = false;
+        Object.keys(baseDados[prov]).sort().forEach(d => dist.options.add(new Option(d, d)));
+    }
 }
 
 function filtrarUS() {
+    const prov = document.getElementById("prov").value;
+    const dist = document.getElementById("dist").value;
     const us = document.getElementById("us");
-    us.innerHTML = '<option value="">Seleccione...</option>';
-    us.disabled = false;
-    us.options.add(new Option("US Exemplo", "US Exemplo"));
+    us.innerHTML = '<option value="">Seleccione a US...</option>';
+    if (dist) {
+        us.disabled = false;
+        baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u)));
+    }
 }
 
 function aplicarMascaraNID(i) { i.value = i.value.replace(/\D/g, "").substring(0,19); }
+function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
+// --- SUBMISSÃO ---
 document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     dadosTemporarios = {
@@ -174,34 +240,39 @@ document.getElementById('appForm').onsubmit = function(e) {
         distrito: document.getElementById("dist").value,
         us: document.getElementById("us").value,
         nid: document.getElementById("nid").value,
+        tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+        nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+        tel_confidente: document.getElementById("telConfidente").value || "N/A",
+        tel1: document.getElementById("tel1").value,
+        tel2: document.getElementById("tel2").value || "N/A",
         endereco: document.getElementById("endereco").value,
-        responsavel: document.getElementById("responsavel").value,
-        tem_confidente: "Não", nome_confidente: "N/A", tel_confidente: "N/A", tel1: "N/A", tel2: "N/A"
+        responsavel: document.getElementById("responsavel").value
     };
-    document.getElementById("resumoDados").innerHTML = `<p><b>Utilizador:</b> ${userEmail}</p><p><b>NID:</b> ${dadosTemporarios.nid}</p>`;
+    document.getElementById("resumoDados").innerHTML = `
+        <p><b>📍 US:</b> ${dadosTemporarios.us}</p>
+        <p><b>🆔 NID:</b> ${dadosTemporarios.nid}</p>
+        <p><b>📞 Tel:</b> ${dadosTemporarios.tel1}</p>
+    `;
     new bootstrap.Modal(document.getElementById('confirmModal')).show();
 };
 
-document.getElementById('btnFinalConfirm').onclick = async function() {
+document.getElementById('btnFinalConfirm').onclick = function() {
     this.disabled = true;
     document.getElementById("loader").style.display = "flex";
-    document.getElementById("loaderText").innerText = "A obter GPS e a gravar...";
-
     navigator.geolocation.getCurrentPosition((pos) => {
         dadosTemporarios.latitude = pos.coords.latitude;
         dadosTemporarios.longitude = pos.coords.longitude;
         enviar();
     }, () => {
-        dadosTemporarios.latitude = "Sem GPS";
-        dadosTemporarios.longitude = "Sem GPS";
+        dadosTemporarios.latitude = "GPS Off";
+        dadosTemporarios.longitude = "GPS Off";
         enviar();
     });
 };
 
 function enviar() {
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
-    .then(() => { alert("Sucesso!"); location.reload(); })
-    .catch(() => alert("Erro ao gravar."));
+    .then(() => { alert("Submetido com sucesso!"); location.reload(); });
 }
 </script>
 </body>
