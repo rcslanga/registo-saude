@@ -131,7 +131,7 @@ function aplicarMascaraNID(input) {
     input.value = formatado;
 }
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwp6sCoZqkbw9_jpBiUc5keKASUoXdSCcj_3tY9Ta_WulVwOJmpiUG_-fKr7U_UdIAoMA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
 
 const baseDados = {
     "Manica": { "Barue": ["Catandica HD", "Chuala CS"], "Chimoio": ["1º Maio CS", "Chimoio HP"], "Gondola": ["Amatongas CS", "Gondola Sede CS"], "Guro": ["Guro - Sede CS"], "Macate": ["Macate CS"], "Machaze": ["Bassane CS", "Chitobe CS"], "Manica": ["Manica HD"], "Mossurize": ["Espungabera CS"], "Sussundenga": ["Sussundenga CS"], "Vanduzi": ["Vanduzi CS"] },
@@ -167,20 +167,19 @@ document.getElementById('appForm').onsubmit = function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
     const respNome = document.getElementById('responsavel').value;
-    btn.disabled = true;
-    btn.innerText = "A enviar...";
-
+    
+    // Captura os valores corretamente
     const dados = {
         provincia: document.getElementById("prov").value,
         distrito: document.getElementById("dist").value,
         us: document.getElementById("us").value,
         nid: document.getElementById("nid").value,
         tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-        nome_confidente: document.getElementById("nomeConfidente").value,
-        tel_confidente: document.getElementById("telConfidente").value,
-        tel1: document.getElementById("tel1").value,
-        tel2: document.getElementById("tel2").value,
-        endereco: document.getElementById("endereco").value,
+        nome_confidente: document.getElementById("nomeConfidente").value || "", // Garante que não vai vazio
+        tel_confidente: document.getElementById("telConfidente").value || "",
+        tel1: document.getElementById("tel1").value || "",
+        tel2: document.getElementById("tel2").value || "",
+        endereco: document.getElementById("endereco").value || "",
         responsavel: respNome
     };
 
@@ -197,3 +196,4 @@ document.getElementById('appForm').onsubmit = function(e) {
 </script>
 </body>
 </html>
+
