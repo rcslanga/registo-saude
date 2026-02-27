@@ -1,264 +1,437 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ECHO Project Moçambique</title>
-    
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
+
     <style>
-        :root { --primary: #003366; --accent: #C8102E; --bg: #f2f4f7; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        .app-shell { max-width: 500px; margin: 0 auto; min-height: 100vh; }
-        .form-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin: 10px; border: none; }
-        .app-header { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%); color: white; border-radius: 0 0 30px 30px; margin-bottom: 20px; }
-        .section-header { color: var(--primary); margin: 25px 0 15px 0; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; display: flex; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .section-header i { margin-right: 10px; color: var(--accent); }
-        .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1px solid #ddd; font-size: 16px; background-color: #fafafa; }
-        .btn-submit { background: var(--primary); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 700; width: 100%; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,51,102,0.2); transition: transform 0.1s; }
-        .btn-submit:active { transform: scale(0.96); }
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        #appContent { display: none; }
+        :root {
+            --primary: #003366;
+            --accent: #C8102E;
+            --bg: #f2f4f7;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-shell {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            margin: 15px;
+            border: none;
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 25px 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%);
+            color: white;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.15);
+        }
+
+        .app-header h5 {
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header {
+            color: var(--primary);
+            margin: 30px 0 15px 0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .section-header i {
+            margin-right: 12px;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1.5px solid #e0e0e0;
+            font-size: 16px;
+            background-color: #fcfcfc;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);
+            background-color: #fff;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 30px;
+            box-shadow: 0 6px 20px rgba(0, 51, 102, 0.25);
+            transition: transform 0.1s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 10px rgba(0, 51, 102, 0.2);
+        }
+
+        .form-check-label {
+            font-size: 0.95rem;
+            padding-top: 2px;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.25em;
+            margin-top: 0.1em;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        #appContent {
+            display: none;
+            margin-bottom: 40px;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @media (max-width: 360px) {
+            .form-card {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .col-6 {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            /* Stack phone inputs on very small screens */
+            .col-6.mb-3 {
+                margin-bottom: 0 !important;
+            }
+
+            .phone-row>div:first-child {
+                margin-bottom: 15px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<div class="loading-overlay" id="loader">
-    <div class="spinner-grow text-primary" role="status"></div>
-    <p class="mt-3 fw-bold text-primary">A verificar autorização...</p>
-</div>
+    <div class="loading-overlay" id="loader">
+        <div class="spinner-grow text-primary" role="status"></div>
+        <p class="mt-3 fw-bold text-primary">A verificar autorização...</p>
+    </div>
 
-<div class="app-shell">
-    <div id="loginScreen" class="p-3" style="display: flex; align-items: center; height: 90vh;">
-        <div class="form-card text-center w-100">
-            <img src="Novo logo ECHO 2025.png" alt="ECHO" class="mb-4" style="width: 160px;" onerror="this.src='https://via.placeholder.com/160x70?text=ECHO+PROJECT'">
-            <h4 class="fw-bold mb-3" style="color: var(--primary)">Acesso ao Sistema</h4>
-            <p class="text-muted mb-4 small">Identifique-se para validar se o seu e-mail está na lista de autorizados do projecto.</p>
-            <div id="g_id_onload"
-                 data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse">
+    <div class="app-shell">
+        <div id="loginScreen" class="p-3" style="display: flex; align-items: center; height: 90vh;">
+            <div class="form-card text-center w-100">
+                <img src="Novo logo ECHO 2025.png" alt="ECHO" class="mb-4" style="width: 160px;"
+                    onerror="this.src='https://via.placeholder.com/160x70?text=ECHO+PROJECT'">
+                <h4 class="fw-bold mb-3" style="color: var(--primary)">Acesso ao Sistema</h4>
+                <p class="text-muted mb-4 small">Identifique-se para validar se o seu e-mail está na lista de
+                    autorizados do projecto.</p>
+                <div id="g_id_onload"
+                    data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin d-flex justify-content-center" data-type="standard" data-shape="pill"></div>
             </div>
-            <div class="g_id_signin d-flex justify-content-center" data-type="standard" data-shape="pill"></div>
+        </div>
+
+        <div id="appContent">
+            <div class="app-header">
+                <h5 class="fw-bold mb-1">PROJECTO ECHO</h5>
+                <small class="opacity-75">Actualização de Endereços e Contactos</small>
+            </div>
+
+            <div class="form-card">
+                <form id="appForm">
+                    <div class="section-header"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
+                    <div class="mb-3">
+                        <select id="prov" class="form-select" required onchange="filtrarDistritos()">
+                            <option value="">Seleccione a Província...</option>
+                            <option value="Manica">Manica</option>
+                            <option value="Niassa">Niassa</option>
+                            <option value="Sofala">Sofala</option>
+                            <option value="Tete">Tete</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <select id="dist" class="form-select" required disabled onchange="filtrarUS()">
+                            <option value="">Distrito...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <select id="us" class="form-select" required disabled>
+                            <option value="">US...</option>
+                        </select>
+                    </div>
+
+                    <div class="section-header"><i class="fas fa-id-card-alt"></i> Paciente</div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
+                        <input type="text" id="nid" class="form-control" placeholder="0000000000/0000/00000" required
+                            oninput="aplicarMascaraNID(this)">
+                    </div>
+
+                    <div class="form-check form-switch mb-3 mt-3">
+                        <input class="form-check-input" type="checkbox" id="temConfidente"
+                            onchange="toggleConfidente()">
+                        <label class="form-check-label fw-bold small" for="temConfidente">Paciente tem
+                            Confidente?</label>
+                    </div>
+
+                    <div id="camposConfidente"
+                        style="display:none; background: #fdf2f2; padding: 15px; border-radius: 12px; border: 1px dashed var(--accent)">
+                        <div class="mb-3"><input type="text" id="nomeConfidente" class="form-control"
+                                placeholder="Nome do Confidente"></div>
+                        <div><input type="tel" id="telConfidente" class="form-control"
+                                placeholder="Telefone do Confidente (84/82...)"></div>
+                    </div>
+
+                    <div class="section-header"><i class="fas fa-phone"></i> Contactos Actuais do paciente</div>
+                    <div class="row phone-row">
+                        <div class="col-6"><input type="tel" id="tel1" class="form-control" placeholder="Telefone 1"
+                                required></div>
+                        <div class="col-6 mb-3"><input type="tel" id="tel2" class="form-control"
+                                placeholder="Telefone 2"></div>
+                    </div>
+                    <div class="mb-3"><textarea id="endereco" class="form-control" rows="2"
+                            placeholder="Endereço (Bairro, Q, Casa)" required></textarea></div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Responsável pela actualização</label>
+                        <input type="text" id="responsavel" class="form-control" placeholder="Quem está a preencher?"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">SUBMETER ACTUALIZAÇÃO</button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div id="appContent">
-        <div class="app-header">
-            <h5 class="fw-bold mb-1">PROJECTO ECHO</h5>
-            <small class="opacity-75">Actualização de Endereços e Contactos</small>
-        </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
+        let userEmail = "";
+        let dadosTemporarios = {};
 
-        <div class="form-card">
-            <form id="appForm">
-                <div class="section-header"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
-                <div class="mb-3">
-                    <select id="prov" class="form-select" required onchange="filtrarDistritos()">
-                        <option value="">Seleccione a Província...</option>
-                        <option value="Manica">Manica</option>
-                        <option value="Niassa">Niassa</option>
-                        <option value="Sofala">Sofala</option>
-                        <option value="Tete">Tete</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <select id="dist" class="form-select" required disabled onchange="filtrarUS()"><option value="">Distrito...</option></select>
-                </div>
-                <div class="mb-3">
-                    <select id="us" class="form-select" required disabled><option value="">US...</option></select>
-                </div>
+        // --- AUTENTICAÇÃO E WHITELIST (A CHAVE DO SUCESSO) ---
+        function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
 
-                <div class="section-header"><i class="fas fa-id-card-alt"></i> Paciente</div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
-                    <input type="text" id="nid" class="form-control" placeholder="0000000000/0000/00000" required oninput="aplicarMascaraNID(this)">
-                </div>
+        async function handleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            const emailAValidar = payload.email.toLowerCase().trim();
+            document.getElementById("loader").style.display = "flex";
 
-                <div class="form-check form-switch mb-3 mt-3">
-                    <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                    <label class="form-check-label fw-bold small" for="temConfidente">Paciente tem Confidente?</label>
-                </div>
+            try {
+                // PERGUNTA AO SCRIPT: "Este e-mail está na aba Autorizados?"
+                const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
+                const status = await res.text();
 
-                <div id="camposConfidente" style="display:none; background: #fdf2f2; padding: 15px; border-radius: 12px; border: 1px dashed var(--accent)">
-                    <div class="mb-3"><input type="text" id="nomeConfidente" class="form-control" placeholder="Nome do Confidente"></div>
-                    <div><input type="tel" id="telConfidente" class="form-control" placeholder="Telefone do Confidente (84/82...)"></div>
-                </div>
-
-                <div class="section-header"><i class="fas fa-phone"></i> Contactos Actuais do paciente</div>
-                <div class="row">
-                    <div class="col-6 mb-3"><input type="tel" id="tel1" class="form-control" placeholder="Telefone 1" required></div>
-                    <div class="col-6 mb-3"><input type="tel" id="tel2" class="form-control" placeholder="Telefone 2"></div>
-                </div>
-                <div class="mb-3"><textarea id="endereco" class="form-control" rows="2" placeholder="Endereço (Bairro, Q, Casa)" required></textarea></div>
-
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">Responsável pela actualização</label>
-                    <input type="text" id="responsavel" class="form-control" placeholder="Quem está a preencher?" required>
-                </div>
-
-                <button type="submit" class="btn-submit">SUBMETER ACTUALIZAÇÃO</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
-let userEmail = "";
-let dadosTemporarios = {};
-
-// --- AUTENTICAÇÃO E WHITELIST (A CHAVE DO SUCESSO) ---
-function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
-
-async function handleCredentialResponse(response) {
-    const payload = parseJwt(response.credential);
-    const emailAValidar = payload.email.toLowerCase().trim();
-    document.getElementById("loader").style.display = "flex";
-
-    try {
-        // PERGUNTA AO SCRIPT: "Este e-mail está na aba Autorizados?"
-        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
-        const status = await res.text();
-
-        if (status.includes("AUTORIZADO")) {
-            userEmail = emailAValidar;
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("appContent").style.display = "block";
-        } else {
-            Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'O e-mail ' + emailAValidar + ' não está autorizado na base de dados ECHO.' });
+                if (status.includes("AUTORIZADO")) {
+                    userEmail = emailAValidar;
+                    document.getElementById("loginScreen").style.display = "none";
+                    document.getElementById("appContent").style.display = "block";
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'O e-mail ' + emailAValidar + ' não está autorizado na base de dados ECHO.' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'warning', title: 'Erro de Ligação', text: 'Não foi possível validar o seu acesso.' });
+            } finally {
+                document.getElementById("loader").style.display = "none";
+            }
         }
-    } catch (e) {
-        Swal.fire({ icon: 'warning', title: 'Erro de Ligação', text: 'Não foi possível validar o seu acesso.' });
-    } finally {
-        document.getElementById("loader").style.display = "none";
-    }
-}
 
-// --- BASE DE DADOS (151 US) ---
-const baseDados = {
-    "Manica": {
-        "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
-        "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"],
-        "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"],
-        "Guro": ["Guro - Sed", "Mandie CS"],
-        "Macate": ["Macate CS", "Marera CS", "Zembe Cer"],
-        "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"],
-        "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"],
-        "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"],
-        "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"],
-        "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"]
-    },
-    "Niassa": {
-        "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"],
-        "Lago": ["Metangula"],
-        "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"],
-        "Mandimba": ["Mandimba", "Mitande C"],
-        "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"],
-        "Metarica": ["Metarica C"],
-        "Ngauma": ["Massangu"]
-    },
-    "Sofala": {
-        "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"],
-        "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"],
-        "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"],
-        "Cheringoma": ["Inhaminga"],
-        "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"],
-        "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"],
-        "Gorongosa": ["Gorongoza"],
-        "Machanga": ["Machang C"],
-        "Marromeu": ["Marromeu", "Nensa CS"],
-        "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"]
-    },
-    "Tete": {
-        "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"],
-        "Cahora Bassa": ["Chitima CS", "Songo HR"],
-        "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"],
-        "Chiuta": ["Manje CS"],
-        "Macanga": ["Furancung"],
-        "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"],
-        "Marara": ["Boroma CS", "Cachembe"],
-        "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"],
-        "Mutarara": ["Inhangoma", "Mutarara H"],
-        "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"]
-    }
-};
+        // --- BASE DE DADOS (151 US) ---
+        const baseDados = {
+            "Manica": {
+                "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
+                "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"],
+                "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"],
+                "Guro": ["Guro - Sed", "Mandie CS"],
+                "Macate": ["Macate CS", "Marera CS", "Zembe Cer"],
+                "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"],
+                "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"],
+                "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"],
+                "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"],
+                "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"]
+            },
+            "Niassa": {
+                "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"],
+                "Lago": ["Metangula"],
+                "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"],
+                "Mandimba": ["Mandimba", "Mitande C"],
+                "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"],
+                "Metarica": ["Metarica C"],
+                "Ngauma": ["Massangu"]
+            },
+            "Sofala": {
+                "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"],
+                "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"],
+                "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"],
+                "Cheringoma": ["Inhaminga"],
+                "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"],
+                "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"],
+                "Gorongosa": ["Gorongoza"],
+                "Machanga": ["Machang C"],
+                "Marromeu": ["Marromeu", "Nensa CS"],
+                "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"]
+            },
+            "Tete": {
+                "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"],
+                "Cahora Bassa": ["Chitima CS", "Songo HR"],
+                "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"],
+                "Chiuta": ["Manje CS"],
+                "Macanga": ["Furancung"],
+                "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"],
+                "Marara": ["Boroma CS", "Cachembe"],
+                "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"],
+                "Mutarara": ["Inhangoma", "Mutarara H"],
+                "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"]
+            }
+        };
 
-// --- LOGICA DOS FILTROS ---
-function filtrarDistritos() {
-    const prov = document.getElementById("prov").value;
-    const ds = document.getElementById("dist");
-    ds.innerHTML = '<option value="">Distrito...</option>';
-    if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
-}
+        // --- LOGICA DOS FILTROS ---
+        function filtrarDistritos() {
+            const prov = document.getElementById("prov").value;
+            const ds = document.getElementById("dist");
+            ds.innerHTML = '<option value="">Distrito...</option>';
+            if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
+        }
 
-function filtrarUS() {
-    const prov = document.getElementById("prov").value;
-    const dist = document.getElementById("dist").value;
-    const us = document.getElementById("us");
-    us.innerHTML = '<option value="">US...</option>';
-    if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
-}
+        function filtrarUS() {
+            const prov = document.getElementById("prov").value;
+            const dist = document.getElementById("dist").value;
+            const us = document.getElementById("us");
+            us.innerHTML = '<option value="">US...</option>';
+            if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
+        }
 
-function aplicarMascaraNID(i) { i.value = i.value.replace(/\D/g, "").substring(0,19); }
-function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
+        function aplicarMascaraNID(i) { i.value = i.value.replace(/\D/g, "").substring(0, 19); }
+        function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
-// --- SUBMISSÃO E GPS ---
-document.getElementById('appForm').onsubmit = function(e) {
-    e.preventDefault();
-    dadosTemporarios = {
-        email_usuario: userEmail,
-        provincia: document.getElementById("prov").value,
-        distrito: document.getElementById("dist").value,
-        us: document.getElementById("us").value,
-        nid: document.getElementById("nid").value,
-        tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-        nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
-        tel_confidente: document.getElementById("telConfidente").value || "N/A",
-        tel1: document.getElementById("tel1").value,
-        tel2: document.getElementById("tel2").value || "N/A",
-        endereco: document.getElementById("endereco").value,
-        responsavel: document.getElementById("responsavel").value
-    };
+        // --- SUBMISSÃO E GPS ---
+        document.getElementById('appForm').onsubmit = function (e) {
+            e.preventDefault();
+            dadosTemporarios = {
+                email_usuario: userEmail,
+                provincia: document.getElementById("prov").value,
+                distrito: document.getElementById("dist").value,
+                us: document.getElementById("us").value,
+                nid: document.getElementById("nid").value,
+                tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+                nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+                tel_confidente: document.getElementById("telConfidente").value || "N/A",
+                tel1: document.getElementById("tel1").value,
+                tel2: document.getElementById("tel2").value || "N/A",
+                endereco: document.getElementById("endereco").value,
+                responsavel: document.getElementById("responsavel").value
+            };
 
-    Swal.fire({
-        title: 'Verifique os Dados',
-        html: `<div class='text-start small'><b>US:</b> ${dadosTemporarios.us}<br><b>NID:</b> ${dadosTemporarios.nid}<br><b>Tel:</b> ${dadosTemporarios.tel1}</div>`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Confirmar e Enviar',
-        cancelButtonText: 'Corrigir',
-        confirmButtonColor: '#003366'
-    }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
-};
+            Swal.fire({
+                title: 'Verifique os Dados',
+                html: `<div class='text-start small'><b>US:</b> ${dadosTemporarios.us}<br><b>NID:</b> ${dadosTemporarios.nid}<br><b>Tel:</b> ${dadosTemporarios.tel1}</div>`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar e Enviar',
+                cancelButtonText: 'Corrigir',
+                confirmButtonColor: '#003366'
+            }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
+        };
 
-function obterGpsEEnviar() {
-    document.getElementById("loader").style.display = "flex";
-    navigator.geolocation.getCurrentPosition((pos) => {
-        dadosTemporarios.latitude = pos.coords.latitude;
-        dadosTemporarios.longitude = pos.coords.longitude;
-        finalizarEnvio();
-    }, () => {
-        dadosTemporarios.latitude = "Sem GPS";
-        dadosTemporarios.longitude = "Sem GPS";
-        finalizarEnvio();
-    }, { timeout: 8000 });
-}
+        function obterGpsEEnviar() {
+            document.getElementById("loader").style.display = "flex";
+            navigator.geolocation.getCurrentPosition((pos) => {
+                dadosTemporarios.latitude = pos.coords.latitude;
+                dadosTemporarios.longitude = pos.coords.longitude;
+                finalizarEnvio();
+            }, () => {
+                dadosTemporarios.latitude = "Sem GPS";
+                dadosTemporarios.longitude = "Sem GPS";
+                finalizarEnvio();
+            }, { timeout: 8000 });
+        }
 
-function finalizarEnvio() {
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
-    .then(() => {
-        Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Actualização registada no sistema.', confirmButtonColor: '#003366' })
-        .then(() => location.reload());
-    });
-}
-</script>
+        function finalizarEnvio() {
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
+                .then(() => {
+                    Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Actualização registada no sistema.', confirmButtonColor: '#003366' })
+                        .then(() => location.reload());
+                });
+        }
+    </script>
 </body>
+
 </html>
-
-
