@@ -1,0 +1,21 @@
+{
+  "name": "ECHO Project MZ",
+  "short_name": "ECHO App",
+  "description": "Actualização de dados de pacientes - Projecto ECHO",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#003366",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "Novo logo ECHO 2025.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Novo logo ECHO 2025.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
