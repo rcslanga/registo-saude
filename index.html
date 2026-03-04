@@ -299,20 +299,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
+let userEmail = "";
+let dadosTemporarios = {};
 
- function aplicarMascaraNID(i) {
-    let cursor = i.selectionStart;
-    let valorAntigo = i.value;
-    
-    // Extrai apenas os números digitados
-    let numeros = i.value.replace(/\D/g, "");
-    
-    // O "esqueleto" fixo: 10 espaços, barra, 4 espaços, barra, 5 espaços
+// --- MÁSCARA FIXA DO NID ---
+function aplicarMascaraNID(i) {
+    let numeros = i.value.replace(/\D/g, "").substring(0, 19);
     let mascara = "__________/____/_____";
     let resultado = "";
     let nIndex = 0;
 
-    // Reconstrói o campo mantendo as barras no lugar
     for (let m = 0; m < mascara.length; m++) {
         if (mascara[m] === "/") {
             resultado += "/";
@@ -325,200 +322,136 @@
             }
         }
     }
-
     i.value = resultado;
-
-    // Mantém o cursor na posição correta para não saltar para o fim
-    if (cursor <= 10 && valorAntigo.length <= i.value.length) i.setSelectionRange(cursor, cursor);
 }
 
-// Inicia o campo com a máscara vazia ao clicar
-document.getElementById('nid').addEventListener('focus', function() {
-    if (this.value === "") this.value = "__________/____/_____";
-});
-        
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
-        let userEmail = "";
-        let dadosTemporarios = {};
+// --- AUTENTICAÇÃO ---
+function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
 
-        // --- AUTENTICAÇÃO E WHITELIST (A CHAVE DO SUCESSO) ---
-        function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
+async function handleCredentialResponse(response) {
+    const payload = parseJwt(response.credential);
+    const emailAValidar = payload.email.toLowerCase().trim();
+    document.getElementById("loader").style.display = "flex";
 
-        async function handleCredentialResponse(response) {
-            const payload = parseJwt(response.credential);
-            const emailAValidar = payload.email.toLowerCase().trim();
-            document.getElementById("loader").style.display = "flex";
+    try {
+        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
+        const status = await res.text();
 
-            try {
-                // PERGUNTA AO SCRIPT: "Este e-mail está na aba Autorizados?"
-                const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
-                const status = await res.text();
-
-                if (status.includes("AUTORIZADO")) {
-                    userEmail = emailAValidar;
-                    document.getElementById("loginScreen").style.display = "none";
-                    document.getElementById("appContent").style.display = "block";
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'O e-mail ' + emailAValidar + ' não está autorizado na base de dados ECHO.' });
-                }
-            } catch (e) {
-                Swal.fire({ icon: 'warning', title: 'Erro de Ligação', text: 'Não foi possível validar o seu acesso.' });
-            } finally {
-                document.getElementById("loader").style.display = "none";
-            }
+        if (status.includes("AUTORIZADO")) {
+            userEmail = emailAValidar;
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("appContent").style.display = "block";
+            // Inicia o campo NID com a máscara assim que a app abre
+            document.getElementById("nid").value = "__________/____/_____";
+        } else {
+            Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'E-mail não autorizado.' });
         }
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Erro de Rede', text: 'Falha ao validar acesso.' });
+    } finally {
+        document.getElementById("loader").style.display = "none";
+    }
+}
 
-        // --- BASE DE DADOS (151 US) ---
-        const baseDados = {
-            "Manica": {
-                "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"],
-                "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"],
-                "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"],
-                "Guro": ["Guro - Sed", "Mandie CS"],
-                "Macate": ["Macate CS", "Marera CS", "Zembe Cer"],
-                "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"],
-                "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"],
-                "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"],
-                "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"],
-                "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"]
-            },
-            "Niassa": {
-                "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"],
-                "Lago": ["Metangula"],
-                "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"],
-                "Mandimba": ["Mandimba", "Mitande C"],
-                "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"],
-                "Metarica": ["Metarica C"],
-                "Ngauma": ["Massangu"]
-            },
-            "Sofala": {
-                "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"],
-                "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"],
-                "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"],
-                "Cheringoma": ["Inhaminga"],
-                "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"],
-                "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"],
-                "Gorongosa": ["Gorongoza"],
-                "Machanga": ["Machang C"],
-                "Marromeu": ["Marromeu", "Nensa CS"],
-                "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"]
-            },
-            "Tete": {
-                "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"],
-                "Cahora Bassa": ["Chitima CS", "Songo HR"],
-                "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"],
-                "Chiuta": ["Manje CS"],
-                "Macanga": ["Furancung"],
-                "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"],
-                "Marara": ["Boroma CS", "Cachembe"],
-                "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"],
-                "Mutarara": ["Inhangoma", "Mutarara H"],
-                "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"]
-            }
-        };
+// --- LOGICA DE FILTROS (Base de Dados do seu código original) ---
+const baseDados = {
+    "Manica": { "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"], "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"], "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"], "Guro": ["Guro - Sed", "Mandie CS"], "Macate": ["Macate CS", "Marera CS", "Zembe Cer"], "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"], "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"], "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"], "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"], "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"] },
+    "Niassa": { "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"], "Lago": ["Metangula"], "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"], "Mandimba": ["Mandimba", "Mitande C"], "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"], "Metarica": ["Metarica C"], "Ngauma": ["Massangu"] },
+    "Sofala": { "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"], "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"], "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"], "Cheringoma": ["Inhaminga"], "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"], "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"], "Gorongosa": ["Gorongoza"], "Machanga": ["Machang C"], "Marromeu": ["Marromeu", "Nensa CS"], "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"] },
+    "Tete": { "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"], "Cahora Bassa": ["Chitima CS", "Songo HR"], "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"], "Chiuta": ["Manje CS"], "Macanga": ["Furancung"], "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"], "Marara": ["Boroma CS", "Cachembe"], "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"], "Mutarara": ["Inhangoma", "Mutarara H"], "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"] }
+};
 
-        // --- LOGICA DOS FILTROS ---
-        function filtrarDistritos() {
-            const prov = document.getElementById("prov").value;
-            const ds = document.getElementById("dist");
-            ds.innerHTML = '<option value="">Distrito...</option>';
-            if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
-        }
+function filtrarDistritos() {
+    const prov = document.getElementById("prov").value;
+    const ds = document.getElementById("dist");
+    ds.innerHTML = '<option value="">Distrito...</option>';
+    if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
+}
 
-        function filtrarUS() {
-            const prov = document.getElementById("prov").value;
-            const dist = document.getElementById("dist").value;
-            const us = document.getElementById("us");
-            us.innerHTML = '<option value="">US...</option>';
-            if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
-        }
+function filtrarUS() {
+    const prov = document.getElementById("prov").value;
+    const dist = document.getElementById("dist").value;
+    const us = document.getElementById("us");
+    us.innerHTML = '<option value="">US...</option>';
+    if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
+}
 
-        function aplicarMascaraNID(i) { i.value = i.value.replace(/\D/g, "").substring(0, 19); }
-        function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
+function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
-        // --- SUBMISSÃO E GPS ---
-        document.getElementById('appForm').onsubmit = function (e) {
-            e.preventDefault();
-            dadosTemporarios = {
-                email_usuario: userEmail,
-                provincia: document.getElementById("prov").value,
-                distrito: document.getElementById("dist").value,
-                us: document.getElementById("us").value,
-                nid: document.getElementById("nid").value,
-                tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-                nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
-                tel_confidente: document.getElementById("telConfidente").value || "N/A",
-                tel1: document.getElementById("tel1").value,
-                tel2: document.getElementById("tel2").value || "N/A",
-                endereco: document.getElementById("endereco").value,
-                responsavel: document.getElementById("responsavel").value
-            };
+// --- SUBMISSÃO ---
+document.getElementById('appForm').onsubmit = function (e) {
+    e.preventDefault();
+    
+    // IMPORTANTE: Limpa os "_" antes de enviar
+    const nidFormatado = document.getElementById("nid").value.replace(/_/g, "");
 
-            Swal.fire({
-                title: 'Verifique os Dados',
-                html: `<div class='text-start small'><b>US:</b> ${dadosTemporarios.us}<br><b>NID:</b> ${dadosTemporarios.nid}<br><b>Tel:</b> ${dadosTemporarios.tel1}</div>`,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar e Enviar',
-                cancelButtonText: 'Corrigir',
-                confirmButtonColor: '#003366'
-            }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
-        };
+    dadosTemporarios = {
+        email_usuario: userEmail,
+        provincia: document.getElementById("prov").value,
+        distrito: document.getElementById("dist").value,
+        us: document.getElementById("us").value,
+        nid: nidFormatado,
+        tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+        nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+        tel_confidente: document.getElementById("telConfidente").value || "N/A",
+        tel1: document.getElementById("tel1").value,
+        tel2: document.getElementById("tel2").value || "N/A",
+        endereco: document.getElementById("endereco").value,
+        responsavel: document.getElementById("responsavel").value
+    };
 
-        function obterGpsEEnviar() {
-            document.getElementById("loader").style.display = "flex";
-            navigator.geolocation.getCurrentPosition((pos) => {
-                dadosTemporarios.latitude = pos.coords.latitude;
-                dadosTemporarios.longitude = pos.coords.longitude;
-                finalizarEnvio();
-            }, () => {
-                dadosTemporarios.latitude = "Sem GPS";
-                dadosTemporarios.longitude = "Sem GPS";
-                finalizarEnvio();
-            }, { timeout: 8000 });
-        }
+    Swal.fire({
+        title: 'Confirmar Dados?',
+        html: `<b>NID:</b> ${nidFormatado}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, Enviar',
+        confirmButtonColor: '#003366'
+    }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
+};
 
-        function finalizarEnvio() {
+function obterGpsEEnviar() {
+    document.getElementById("loader").style.display = "flex";
+    navigator.geolocation.getCurrentPosition((pos) => {
+        dadosTemporarios.latitude = pos.coords.latitude;
+        dadosTemporarios.longitude = pos.coords.longitude;
+        finalizarEnvio();
+    }, () => {
+        dadosTemporarios.latitude = "Sem GPS";
+        dadosTemporarios.longitude = "Sem GPS";
+        finalizarEnvio();
+    }, { timeout: 5000 });
+}
+
+function finalizarEnvio() {
     fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
         .then(() => {
             document.getElementById("loader").style.display = "none";
-            
             Swal.fire({
                 icon: 'success',
-                title: 'Actualização Registada!',
-                text: 'Os dados foram enviados com sucesso para a base central.',
+                title: 'Sucesso!',
+                text: 'Dados registados.',
                 showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-plus"></i> Inserir Outro',
-                cancelButtonText: '<i class="fas fa-sign-out-alt"></i> Sair',
-                confirmButtonColor: '#003366',
-                cancelButtonColor: '#C8102E',
-                allowOutsideClick: false
+                confirmButtonText: 'Inserir Outro',
+                cancelButtonText: 'Sair',
+                confirmButtonColor: '#003366'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Limpa o formulário para um novo paciente
                     document.getElementById("appForm").reset();
-                    // Reinicia o campo NID com a máscara
                     document.getElementById("nid").value = "__________/____/_____";
-                    // Esconde campos de confidente se estiverem abertos
                     document.getElementById("camposConfidente").style.display = "none";
-                    // Rola a página para o topo
                     window.scrollTo(0, 0);
                 } else {
-                    // Sai da aplicação (faz logout ou limpa ecrã)
-                    location.reload(); 
+                    location.reload();
                 }
             });
-        })
-        .catch(err => {
-            document.getElementById("loader").style.display = "none";
-            Swal.fire({ icon: 'error', title: 'Erro no envio', text: 'Verifique a sua internet.' });
         });
 }
-        }
     </script>
 </body>
 
 </html>
+
 
 
 
