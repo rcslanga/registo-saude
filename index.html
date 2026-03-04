@@ -185,6 +185,8 @@
     </style>
 </head>
 
+    
+
 <body>
 
     <div class="loading-overlay" id="loader">
@@ -195,8 +197,8 @@
     <div class="app-shell">
         <div id="loginScreen" class="p-3" style="display: flex; align-items: center; height: 90vh;">
             <div class="form-card text-center w-100">
-                <img src="Novo logo ECHO 2025.png" alt="ECHO Project" class="mb-4" style="width: 200px;"
-                    onerror="this.src='https://via.placeholder.com/200x100?text=ECHO+PROJECT'">
+                <img src="Novo logo ECHO 2025.png" alt="ECHO" class="mb-4" style="width: 160px;"
+                    onerror="this.src='https://via.placeholder.com/160x70?text=ECHO+PROJECT'">
                 <h4 class="fw-bold mb-3" style="color: var(--primary)">Acesso ao Sistema</h4>
                 <p class="text-muted mb-4 small">Identifique-se para validar se o seu e-mail está na lista de
                     autorizados do projecto.</p>
@@ -210,7 +212,6 @@
 
         <div id="appContent">
             <div class="app-header">
-                <img src="Novo logo ECHO 2025.png" alt="ECHO Project" class="mb-3" style="width: 160px;">
                 <h5 class="fw-bold mb-1">PROJECTO ECHO</h5>
                 <small class="opacity-75">Actualização de Endereços e Contactos</small>
             </div>
@@ -240,41 +241,71 @@
 
                     <div class="section-header"><i class="fas fa-id-card-alt"></i> Paciente</div>
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">NID (Paciente)</label>
-                        <input type="tel" id="nid" class="form-control" value="__________/____/_____" required
-                            oninput="aplicarMascaraNID(this)"
-                            style="font-family: 'Courier New', monospace; letter-spacing: 3px; font-weight: bold; color: var(--primary);">
+                        <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
+                        
+                        <div class="mb-3">
+    
+<div class="mb-3">
+    <label class="form-label small fw-bold">NID (Paciente) (10/4/5 dígitos)</label>
+    <input type="tel" 
+           id="nid" 
+           class="form-control" 
+           value="__________/____/_____"
+           required
+           oninput="aplicarMascaraNID(this)"
+           style="font-family: 'Courier New', monospace; letter-spacing: 3px; font-weight: bold; color: var(--primary);">
+</div>
+
+                        
                     </div>
 
                     <div class="form-check form-switch mb-3 mt-3">
-                        <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
+                        <input class="form-check-input" type="checkbox" id="temConfidente"
+                            onchange="toggleConfidente()">
                         <label class="form-check-label fw-bold small" for="temConfidente">Paciente tem
                             Confidente?</label>
                     </div>
 
-                    <div id="camposConfidente"
-                        style="display:none; background: #fdf2f2; padding: 15px; border-radius: 12px; border: 1px dashed var(--accent)">
-                        <div class="mb-3"><input type="text" id="nomeConfidente" class="form-control"
-                                placeholder="Nome do Confidente"></div>
-                        <div><input type="tel" id="telConfidente" class="form-control"
-                                placeholder="Telefone do Confidente (84/82...)"></div>
-                    </div>
+                        
+                        <div id="camposConfidente" style="display:none; background: #fdf2f2; padding: 15px; border-radius: 12px; border: 1px dashed var(--accent)">
+    <div class="mb-3">
+        <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome do Confidente">
+    </div>
+    <div>
+        <label class="form-label small fw-bold">Telefone do Confidente</label>
+        <input type="tel" id="telConfidente" class="form-control" 
+               placeholder="841234567" 
+               pattern="^(82|83|84|85|86|87)[0-9]{7}$" 
+               maxlength="9">
+    </div>
+</div>
 
                     <div class="section-header"><i class="fas fa-phone"></i> Contactos Actuais do paciente</div>
-                    <div class="row phone-row">
-                        <div class="col-6">
-                            <label class="form-label small fw-bold">Telefone 1</label>
-                            <input type="tel" id="tel1" class="form-control" placeholder="841234567"
-                                pattern="^(82|83|84|85|86|87)[0-9]{7}$" maxlength="9" required>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label small fw-bold">Telefone 2</label>
-                            <input type="tel" id="tel2" class="form-control" placeholder="821234567"
-                                pattern="^(82|83|84|85|86|87)[0-9]{7}$" maxlength="9">
-                        </div>
-                    </div>
+                
+
+<div class="row phone-row">
+    <div class="col-6">
+        <label class="form-label small fw-bold">Telefone 1</label>
+        <input type="tel" id="tel1" class="form-control" 
+               placeholder="841234567" 
+               pattern="^(82|83|84|85|86|87)[0-9]{7}$" 
+               maxlength="9" required>
+    </div>
+    <div class="col-6 mb-3">
+        <label class="form-label small fw-bold">Telefone 2</label>
+        <input type="tel" id="tel2" class="form-control" 
+               placeholder="821234567"
+               pattern="^(82|83|84|85|86|87)[0-9]{7}$" 
+               maxlength="9">
+    </div>
+</div>
+
+                        
                     <div class="mb-3"><textarea id="endereco" class="form-control" rows="2"
                             placeholder="Endereço (Bairro, Q, Casa)" required></textarea></div>
+
+
+                        
 
                     <div class="mb-4">
                         <label class="form-label small fw-bold">Responsável pela actualização</label>
@@ -290,179 +321,190 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
-        let userEmail = "";
-        let dadosTemporarios = {};
 
-        // --- MÁSCARA FIXA DO NID ---
-        function aplicarMascaraNID(i) {
-            let numeros = i.value.replace(/\D/g, "").substring(0, 19);
-            let mascara = "__________/____/_____";
-            let resultado = "";
-            let nIndex = 0;
 
-            for (let m = 0; m < mascara.length; m++) {
-                if (mascara[m] === "/") {
-                    resultado += "/";
-                } else {
-                    if (nIndex < numeros.length) {
-                        resultado += numeros[nIndex];
-                        nIndex++;
-                    } else {
-                        resultado += "_";
-                    }
-                }
-            }
-            i.value = resultado;
-        }
+        
 
-        // --- AUTENTICAÇÃO ---
-        function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
+let userEmail = "";
+let dadosTemporarios = {};
 
-        async function handleCredentialResponse(response) {
-            const payload = parseJwt(response.credential);
-            const emailAValidar = payload.email.toLowerCase().trim();
-            document.getElementById("loader").style.display = "flex";
-
-            try {
-                const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
-                const status = await res.text();
-
-                if (status.includes("AUTORIZADO")) {
-                    userEmail = emailAValidar;
-                    document.getElementById("loginScreen").style.display = "none";
-                    document.getElementById("appContent").style.display = "block";
-                    // Inicia o campo NID com a máscara assim que a app abre
-                    document.getElementById("nid").value = "__________/____/_____";
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'E-mail não autorizado na base de dados ECHO.' });
-                }
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Erro de Rede', text: 'Falha ao validar acesso.' });
-            } finally {
-                document.getElementById("loader").style.display = "none";
-            }
-        }
-
-        // --- LOGICA DE FILTROS ---
-        const baseDados = {
-            "Manica": { "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"], "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"], "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"], "Guro": ["Guro - Sed", "Mandie CS"], "Macate": ["Macate CS", "Marera CS", "Zembe Cer"], "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"], "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"], "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"], "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"], "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"] },
-            "Niassa": { "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"], "Lago": ["Metangula"], "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"], "Mandimba": ["Mandimba", "Mitande C"], "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"], "Metarica": ["Metarica C"], "Ngauma": ["Massangu"] },
-            "Sofala": { "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"], "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"], "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"], "Cheringoma": ["Inhaminga"], "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"], "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"], "Gorongosa": ["Gorongoza"], "Machanga": ["Machang C"], "Marromeu": ["Marromeu", "Nensa CS"], "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"] },
-            "Tete": { "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"], "Cahora Bassa": ["Chitima CS", "Songo HR"], "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"], "Chiuta": ["Manje CS"], "Macanga": ["Furancung"], "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"], "Marara": ["Boroma CS", "Cachembe"], "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"], "Mutarara": ["Inhangoma", "Mutarara H"], "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"] }
-        };
-
-        function filtrarDistritos() {
-            const prov = document.getElementById("prov").value;
-            const ds = document.getElementById("dist");
-            ds.innerHTML = '<option value="">Distrito...</option>';
-            if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
-        }
-
-        function filtrarUS() {
-            const prov = document.getElementById("prov").value;
-            const dist = document.getElementById("dist").value;
-            const us = document.getElementById("us");
-            us.innerHTML = '<option value="">US...</option>';
-            if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
-        }
-
-        function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
-
-        // Impede a digitação de letras nos campos de telefone
-        [ 'tel1', 'tel2', 'telConfidente' ].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('input', function() {
-                    this.value = this.value.replace(/\D/g, '').substring(0, 9);
-                });
-            }
+// Impede a digitação de letras nos campos de telefone
+[ 'tel1', 'tel2', 'telConfidente' ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 9);
         });
+    }
+});
 
-        // Função para validar se o número é de Moçambique
-        function validarTelefone(numero) {
-            if (numero === "" || numero === "N/A") return true; // Ignora se estiver vazio
-            const regex = /^(82|83|84|85|86|87)[0-9]{7}$/;
-            return regex.test(numero);
-        }
+// Função para validar se o número é de Moçambique
+function validarTelefone(numero) {
+    if (numero === "" || numero === "N/A") return true; // Ignora se estiver vazio
+    const regex = /^(82|83|84|85|86|87)[0-9]{7}$/;
+    return regex.test(numero);
+}
 
-        // --- SUBMISSÃO ---
-        document.getElementById('appForm').onsubmit = function (e) {
-            e.preventDefault();
 
-            // Validação Rigorosa de Telefone
-            const t1 = document.getElementById("tel1").value;
-            if (!validarTelefone(t1)) {
-                Swal.fire({ icon: 'error', title: 'Telefone Inválido', text: 'O Telefone 1 deve começar com 82, 83, 84, 85, 86 ou 87 e ter 9 dígitos.' });
-                return;
+
+        
+// --- MÁSCARA FIXA DO NID ---
+function aplicarMascaraNID(i) {
+    let numeros = i.value.replace(/\D/g, "").substring(0, 19);
+    let mascara = "__________/____/_____";
+    let resultado = "";
+    let nIndex = 0;
+
+    for (let m = 0; m < mascara.length; m++) {
+        if (mascara[m] === "/") {
+            resultado += "/";
+        } else {
+            if (nIndex < numeros.length) {
+                resultado += numeros[nIndex];
+                nIndex++;
+            } else {
+                resultado += "_";
             }
+        }
+    }
+    i.value = resultado;
+}
 
-            // Limpa os "_" antes de enviar
-            const nidFormatado = document.getElementById("nid").value.replace(/_/g, "");
+// --- AUTENTICAÇÃO ---
+function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
 
-            dadosTemporarios = {
-                email_usuario: userEmail,
-                provincia: document.getElementById("prov").value,
-                distrito: document.getElementById("dist").value,
-                us: document.getElementById("us").value,
-                nid: nidFormatado,
-                tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-                nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
-                tel_confidente: document.getElementById("telConfidente").value || "N/A",
-                tel1: t1,
-                tel2: document.getElementById("tel2").value || "N/A",
-                endereco: document.getElementById("endereco").value,
-                responsavel: document.getElementById("responsavel").value
-            };
+async function handleCredentialResponse(response) {
+    const payload = parseJwt(response.credential);
+    const emailAValidar = payload.email.toLowerCase().trim();
+    document.getElementById("loader").style.display = "flex";
 
+    try {
+        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(emailAValidar)}`);
+        const status = await res.text();
+
+        if (status.includes("AUTORIZADO")) {
+            userEmail = emailAValidar;
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("appContent").style.display = "block";
+            // Inicia o campo NID com a máscara assim que a app abre
+            document.getElementById("nid").value = "__________/____/_____";
+        } else {
+            Swal.fire({ icon: 'error', title: 'Acesso Negado', text: 'E-mail não autorizado.' });
+        }
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Erro de Rede', text: 'Falha ao validar acesso.' });
+    } finally {
+        document.getElementById("loader").style.display = "none";
+    }
+}
+
+// --- LOGICA DE FILTROS (Base de Dados do seu código original) ---
+const baseDados = {
+    "Manica": { "Barue": ["Catandica HD", "Chuala CS", "Cruz de M", "Honde CS", "Nhampass", "Nhassacar", "Nhazonia C"], "Chimoio": ["1º Maio CS", "7 de Abril (Chimoio)", "Chimoio HP", "Chimoio_F", "Chissui CS", "Eduardo M", "Nhamaonh", "Vila Nova"], "Gondola": ["Amatonga", "Gondola S", "Inchope CS", "Muda Serr"], "Guro": ["Guro - Sed", "Mandie CS"], "Macate": ["Macate CS", "Marera CS", "Zembe Cer"], "Machaze": ["Bassane CS", "Chipopopo", "Chipudji C", "Chitobe CS", "Mavende C", "Mazwissan", "Save CS"], "Manica": ["4º Congres", "Machipanc", "Manica HD", "Messica C"], "Mossurize": ["Chaiva CS", "Dacata CS", "Espungabe", "Garagua C", "Gunhe CS", "Mude CS", "Mupengo C"], "Sussundenga": ["Darue CS", "Dombe CS", "Munhinga", "Sembezea", "Sussunder"], "Vanduzi": ["Chigodole", "IAC CS", "Matsinho", "Pungue Su", "Vanduzi C"] },
+    "Niassa": { "Cuamba": ["Adine 3 CS", "Cuamba CS", "Cuamba H", "Meripo CS", "Mitucué C"], "Lago": ["Metangula"], "Lichinga": ["Chiuaula F", "CS Liching", "Lichinga H", "Lulimire C", "Namacula"], "Mandimba": ["Mandimba", "Mitande C"], "Mecanhelas": ["Chissaua C", "Entre-Lago", "Mecanhela"], "Metarica": ["Metarica C"], "Ngauma": ["Massangu"] },
+    "Sofala": { "Beira": ["Cadeia Pro", "Cerâmica C", "Chamba P", "Chota PS", "Hospital C", "M. Mascar", "Macurung", "Manga Lof", "Manga Nh", "Marrocanh", "Matadouro", "Munhava C", "Nhangau C", "Ponta Gêa", "Inhamizua"], "Buzi": ["Ampara PS", "Bandua CS", "Bura CS", "Buzi Sede", "Guara-Gua"], "Caia": ["Caia HD", "Murraça C", "Nhambalo", "Sena CS"], "Cheringoma": ["Inhaminga"], "Chibabava": ["Chibabava", "Hoode PS", "Mutindire", "Muxungue"], "Dondo": ["Canhandul", "Dondo Sed", "Igreja Bapt", "Mafambiss", "Maxarote F", "Mutua PS", "Samora M", "Savane PS"], "Gorongosa": ["Gorongoza"], "Machanga": ["Machang C"], "Marromeu": ["Marromeu", "Nensa CS"], "Nhamatanda": ["Chirassicu", "Lamego CS", "Metuchira", "Nhamatan", "Nharuchon", "Siluvo PS", "Tica PS"] },
+    "Tete": { "Angonia": ["Dómue CS", "Lifidzi CS", "Ulongue CS", "Ulongue H"], "Cahora Bassa": ["Chitima CS", "Songo HR"], "Changara": ["Changara C", "Dzunga CS", "M'Saua Po", "Mazoe Por"], "Chiuta": ["Manje CS"], "Macanga": ["Furancung"], "Magoe": ["Daque CS", "Magoe CS", "Mucumbur"], "Marara": ["Boroma CS", "Cachembe"], "Moatize": ["25 de Sete", "Caphirizan", "Cateme CS", "CFM CS", "Mameme I", "Moatize C", "Ncondezi", "Zobue CS"], "Mutarara": ["Inhangoma", "Mutarara H"], "Tete": ["Mpadue CS", "Nº 1 - Bair", "Nº 2 - Bair", "Nº 3 - Bair", "Nº 4 - Bair", "Tete HP"] }
+};
+
+function filtrarDistritos() {
+    const prov = document.getElementById("prov").value;
+    const ds = document.getElementById("dist");
+    ds.innerHTML = '<option value="">Distrito...</option>';
+    if (prov) { ds.disabled = false; Object.keys(baseDados[prov]).sort().forEach(d => ds.options.add(new Option(d, d))); }
+}
+
+function filtrarUS() {
+    const prov = document.getElementById("prov").value;
+    const dist = document.getElementById("dist").value;
+    const us = document.getElementById("us");
+    us.innerHTML = '<option value="">US...</option>';
+    if (dist) { us.disabled = false; baseDados[prov][dist].sort().forEach(u => us.options.add(new Option(u, u))); }
+}
+
+function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
+
+// --- SUBMISSÃO ---
+document.getElementById('appForm').onsubmit = function (e) {
+    e.preventDefault();
+    document.getElementById('appForm').onsubmit = function (e) {
+    e.preventDefault();
+
+    const t1 = document.getElementById("tel1").value;
+    const t2 = document.getElementById("tel2").value;
+
+    if (!validarTelefone(t1)) {
+        Swal.fire({ icon: 'error', title: 'Telefone Inválido', text: 'O Telefone 1 deve começar com 82, 83, 84, 85, 86 ou 87 e ter 9 dígitos.' });
+        return;
+    }
+    
+    // ... resto do seu código de submissão ...
+}
+    // IMPORTANTE: Limpa os "_" antes de enviar
+    const nidFormatado = document.getElementById("nid").value.replace(/_/g, "");
+
+    dadosTemporarios = {
+        email_usuario: userEmail,
+        provincia: document.getElementById("prov").value,
+        distrito: document.getElementById("dist").value,
+        us: document.getElementById("us").value,
+        nid: nidFormatado,
+        tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+        nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+        tel_confidente: document.getElementById("telConfidente").value || "N/A",
+        tel1: document.getElementById("tel1").value,
+        tel2: document.getElementById("tel2").value || "N/A",
+        endereco: document.getElementById("endereco").value,
+        responsavel: document.getElementById("responsavel").value
+    };
+
+    Swal.fire({
+        title: 'Confirmar Dados?',
+        html: `<b>NID:</b> ${nidFormatado}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, Enviar',
+        confirmButtonColor: '#003366'
+    }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
+};
+
+function obterGpsEEnviar() {
+    document.getElementById("loader").style.display = "flex";
+    navigator.geolocation.getCurrentPosition((pos) => {
+        dadosTemporarios.latitude = pos.coords.latitude;
+        dadosTemporarios.longitude = pos.coords.longitude;
+        finalizarEnvio();
+    }, () => {
+        dadosTemporarios.latitude = "Sem GPS";
+        dadosTemporarios.longitude = "Sem GPS";
+        finalizarEnvio();
+    }, { timeout: 5000 });
+}
+
+function finalizarEnvio() {
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
+        .then(() => {
+            document.getElementById("loader").style.display = "none";
             Swal.fire({
-                title: 'Confirmar Dados?',
-                html: `<b>NID:</b> ${nidFormatado}`,
-                icon: 'question',
+                icon: 'success',
+                title: 'Sucesso!',
+                text: 'Dados registados.',
                 showCancelButton: true,
-                confirmButtonText: 'Sim, Enviar',
+                confirmButtonText: 'Inserir Outro',
+                cancelButtonText: 'Sair',
                 confirmButtonColor: '#003366'
-            }).then((result) => { if (result.isConfirmed) obterGpsEEnviar(); });
-        };
-
-        function obterGpsEEnviar() {
-            document.getElementById("loader").style.display = "flex";
-            navigator.geolocation.getCurrentPosition((pos) => {
-                dadosTemporarios.latitude = pos.coords.latitude;
-                dadosTemporarios.longitude = pos.coords.longitude;
-                finalizarEnvio();
-            }, () => {
-                dadosTemporarios.latitude = "Sem GPS";
-                dadosTemporarios.longitude = "Sem GPS";
-                finalizarEnvio();
-            }, { timeout: 5000 });
-        }
-
-        function finalizarEnvio() {
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
-                .then(() => {
-                    document.getElementById("loader").style.display = "none";
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Sucesso!',
-                        text: 'Dados registados.',
-                        showCancelButton: true,
-                        confirmButtonText: 'Inserir Outro',
-                        cancelButtonText: 'Sair',
-                        confirmButtonColor: '#003366',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            document.getElementById("appForm").reset();
-                            document.getElementById("nid").value = "__________/____/_____";
-                            document.getElementById("camposConfidente").style.display = "none";
-                            window.scrollTo(0, 0);
-                        } else {
-                            location.reload();
-                        }
-                    });
-                });
-        }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("appForm").reset();
+                    document.getElementById("nid").value = "__________/____/_____";
+                    document.getElementById("camposConfidente").style.display = "none";
+                    window.scrollTo(0, 0);
+                } else {
+                    location.reload();
+                }
+            });
+        });
+}
     </script>
 </body>
 
