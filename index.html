@@ -243,8 +243,16 @@
                     <div class="mb-3">
                         <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
                         
-                        <input type="tel"  id="nid"  class="form-control" placeholder="0000000000/0000/00000" required
-       oninput="aplicarMascaraNID(this)" maxlength="21">
+                        <div class="mb-3">
+    <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
+    <input type="tel" 
+           id="nid" 
+           class="form-control" 
+           placeholder="__________/____/_____" 
+           required
+           oninput="aplicarMascaraNID(this)"
+           style="font-family: monospace; letter-spacing: 2px;">
+</div>
                     </div>
 
                     <div class="form-check form-switch mb-3 mt-3">
@@ -288,17 +296,23 @@
     <script>
 
 
-        function aplicarMascaraNID(i) {
-    let v = i.value.replace(/\D/g, ""); // Remove tudo o que não é número
-
-    // Aplica a formatação 0000000000/0000/00000
-    if (v.length > 10 && v.length <= 14) {
-        v = v.replace(/^(\d{10})(\d{0,4})/, "$1/$2");
-    } else if (v.length > 14) {
-        v = v.replace(/^(\d{10})(\d{4})(\d{0,5})/, "$1/$2/$3");
+   function aplicarMascaraNID(i) {
+    // Remove tudo o que não é dígito
+    let v = i.value.replace(/\D/g, "");
+    
+    // Corta para o máximo de 19 dígitos
+    v = v.substring(0, 19);
+    
+    // Monta a string com as barras nas posições fixas
+    let r = "";
+    for (let n = 0; n < v.length; n++) {
+        if (n === 10 || n === 14) {
+            r += "/";
+        }
+        r += v[n];
     }
-
-    i.value = v.substring(0, 21); // Garante que não ultrapassa o limite
+    
+    i.value = r;
 }
         
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
@@ -453,4 +467,5 @@
 </body>
 
 </html>
+
 
