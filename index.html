@@ -185,6 +185,8 @@
     </style>
 </head>
 
+    
+
 <body>
 
     <div class="loading-overlay" id="loader">
@@ -240,8 +242,9 @@
                     <div class="section-header"><i class="fas fa-id-card-alt"></i> Paciente</div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
-                        <input type="text" id="nid" class="form-control" placeholder="0000000000/0000/00000" required
-                            oninput="aplicarMascaraNID(this)">
+                        
+                        <input type="tel"  id="nid"  class="form-control" placeholder="0000000000/0000/00000" required
+       oninput="aplicarMascaraNID(this)" maxlength="21">
                     </div>
 
                     <div class="form-check form-switch mb-3 mt-3">
@@ -283,6 +286,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+
+
+        function aplicarMascaraNID(i) {
+    let v = i.value.replace(/\D/g, ""); // Remove tudo o que não é número
+
+    // Aplica a formatação 0000000000/0000/00000
+    if (v.length > 10 && v.length <= 14) {
+        v = v.replace(/^(\d{10})(\d{0,4})/, "$1/$2");
+    } else if (v.length > 14) {
+        v = v.replace(/^(\d{10})(\d{4})(\d{0,5})/, "$1/$2/$3");
+    }
+
+    i.value = v.substring(0, 21); // Garante que não ultrapassa o limite
+}
+        
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
         let userEmail = "";
         let dadosTemporarios = {};
@@ -435,3 +453,4 @@
 </body>
 
 </html>
+
