@@ -275,14 +275,31 @@
                     </div>
 
                     <div class="section-header"><i class="fas fa-phone"></i> Contactos Actuais do paciente</div>
-                    <div class="row phone-row">
-                        <div class="col-6"><input type="tel" id="tel1" class="form-control" placeholder="Telefone 1"
-                                required></div>
-                        <div class="col-6 mb-3"><input type="tel" id="tel2" class="form-control"
-                                placeholder="Telefone 2"></div>
-                    </div>
+                
+
+<div class="row phone-row">
+    <div class="col-6">
+        <label class="form-label small fw-bold">Telefone 1</label>
+        <input type="tel" id="tel1" class="form-control" 
+               placeholder="841234567" 
+               pattern="^(82|83|84|85|86|87)[0-9]{7}$" 
+               maxlength="9" required>
+    </div>
+    <div class="col-6 mb-3">
+        <label class="form-label small fw-bold">Telefone 2</label>
+        <input type="tel" id="tel2" class="form-control" 
+               placeholder="821234567"
+               pattern="^(82|83|84|85|86|87)[0-9]{7}$" 
+               maxlength="9">
+    </div>
+</div>
+
+                        
                     <div class="mb-3"><textarea id="endereco" class="form-control" rows="2"
                             placeholder="Endereço (Bairro, Q, Casa)" required></textarea></div>
+
+
+                        
 
                     <div class="mb-4">
                         <label class="form-label small fw-bold">Responsável pela actualização</label>
@@ -299,10 +316,33 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
+
+        
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
 let userEmail = "";
 let dadosTemporarios = {};
 
+// Impede a digitação de letras nos campos de telefone
+[ 'tel1', 'tel2', 'telConfidente' ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 9);
+        });
+    }
+});
+
+// Função para validar se o número é de Moçambique
+function validarTelefone(numero) {
+    if (numero === "" || numero === "N/A") return true; // Ignora se estiver vazio
+    const regex = /^(82|83|84|85|86|87)[0-9]{7}$/;
+    return regex.test(numero);
+}
+
+
+
+        
 // --- MÁSCARA FIXA DO NID ---
 function aplicarMascaraNID(i) {
     let numeros = i.value.replace(/\D/g, "").substring(0, 19);
@@ -381,7 +421,19 @@ function toggleConfidente() { document.getElementById("camposConfidente").style.
 // --- SUBMISSÃO ---
 document.getElementById('appForm').onsubmit = function (e) {
     e.preventDefault();
+    document.getElementById('appForm').onsubmit = function (e) {
+    e.preventDefault();
+
+    const t1 = document.getElementById("tel1").value;
+    const t2 = document.getElementById("tel2").value;
+
+    if (!validarTelefone(t1)) {
+        Swal.fire({ icon: 'error', title: 'Telefone Inválido', text: 'O Telefone 1 deve começar com 82, 83, 84, 85, 86 ou 87 e ter 9 dígitos.' });
+        return;
+    }
     
+    // ... resto do seu código de submissão ...
+}
     // IMPORTANTE: Limpa os "_" antes de enviar
     const nidFormatado = document.getElementById("nid").value.replace(/_/g, "");
 
@@ -451,6 +503,7 @@ function finalizarEnvio() {
 </body>
 
 </html>
+
 
 
 
