@@ -244,15 +244,19 @@
                         <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
                         
                         <div class="mb-3">
-    <label class="form-label small fw-bold">NID (10/4/5 dígitos)</label>
+    
+<div class="mb-3">
+    <label class="form-label small fw-bold">NID (Paciente) (10/4/5 dígitos)</label>
     <input type="tel" 
            id="nid" 
            class="form-control" 
-           placeholder="__________/____/_____" 
+           value="__________/____/_____"
            required
            oninput="aplicarMascaraNID(this)"
-           style="font-family: monospace; letter-spacing: 2px;">
+           style="font-family: 'Courier New', monospace; letter-spacing: 3px; font-weight: bold; color: var(--primary);">
 </div>
+
+                        
                     </div>
 
                     <div class="form-check form-switch mb-3 mt-3">
@@ -296,24 +300,42 @@
     <script>
 
 
-   function aplicarMascaraNID(i) {
-    // Remove tudo o que não é dígito
-    let v = i.value.replace(/\D/g, "");
+ function aplicarMascaraNID(i) {
+    let cursor = i.selectionStart;
+    let valorAntigo = i.value;
     
-    // Corta para o máximo de 19 dígitos
-    v = v.substring(0, 19);
+    // Extrai apenas os números digitados
+    let numeros = i.value.replace(/\D/g, "");
     
-    // Monta a string com as barras nas posições fixas
-    let r = "";
-    for (let n = 0; n < v.length; n++) {
-        if (n === 10 || n === 14) {
-            r += "/";
+    // O "esqueleto" fixo: 10 espaços, barra, 4 espaços, barra, 5 espaços
+    let mascara = "__________/____/_____";
+    let resultado = "";
+    let nIndex = 0;
+
+    // Reconstrói o campo mantendo as barras no lugar
+    for (let m = 0; m < mascara.length; m++) {
+        if (mascara[m] === "/") {
+            resultado += "/";
+        } else {
+            if (nIndex < numeros.length) {
+                resultado += numeros[nIndex];
+                nIndex++;
+            } else {
+                resultado += "_";
+            }
         }
-        r += v[n];
     }
-    
-    i.value = r;
+
+    i.value = resultado;
+
+    // Mantém o cursor na posição correta para não saltar para o fim
+    if (cursor <= 10 && valorAntigo.length <= i.value.length) i.setSelectionRange(cursor, cursor);
 }
+
+// Inicia o campo com a máscara vazia ao clicar
+document.getElementById('nid').addEventListener('focus', function() {
+    if (this.value === "") this.value = "__________/____/_____";
+});
         
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
         let userEmail = "";
@@ -467,5 +489,6 @@
 </body>
 
 </html>
+
 
 
