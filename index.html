@@ -479,16 +479,47 @@ document.getElementById('nid').addEventListener('focus', function() {
         }
 
         function finalizarEnvio() {
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
-                .then(() => {
-                    Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Actualização registada no sistema.', confirmButtonColor: '#003366' })
-                        .then(() => location.reload());
-                });
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
+        .then(() => {
+            document.getElementById("loader").style.display = "none";
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Actualização Registada!',
+                text: 'Os dados foram enviados com sucesso para a base central.',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-plus"></i> Inserir Outro',
+                cancelButtonText: '<i class="fas fa-sign-out-alt"></i> Sair',
+                confirmButtonColor: '#003366',
+                cancelButtonColor: '#C8102E',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Limpa o formulário para um novo paciente
+                    document.getElementById("appForm").reset();
+                    // Reinicia o campo NID com a máscara
+                    document.getElementById("nid").value = "__________/____/_____";
+                    // Esconde campos de confidente se estiverem abertos
+                    document.getElementById("camposConfidente").style.display = "none";
+                    // Rola a página para o topo
+                    window.scrollTo(0, 0);
+                } else {
+                    // Sai da aplicação (faz logout ou limpa ecrã)
+                    location.reload(); 
+                }
+            });
+        })
+        .catch(err => {
+            document.getElementById("loader").style.display = "none";
+            Swal.fire({ icon: 'error', title: 'Erro no envio', text: 'Verifique a sua internet.' });
+        });
+}
         }
     </script>
 </body>
 
 </html>
+
 
 
 
