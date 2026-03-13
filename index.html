@@ -3,7 +3,7 @@
 
 <head>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#003366">
+    <meta name="theme-color" content="#001F5B">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,46 +14,180 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        :root { --primary: #003366; --accent: #C8102E; --bg: #f2f4f7; }
-        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .app-shell { max-width: 500px; margin: 0 auto; min-height: 100vh; padding-bottom: 20px; }
-        .form-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); margin: 15px; border: none; }
-        .app-header { text-align: center; padding: 25px 15px; background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%); color: white; border-radius: 0 0 30px 30px; margin-bottom: 15px; }
-        
-        /* NOVO: Estilo da Saudação de Boas-vindas */
-        .welcome-box { background: white; border-radius: 15px; padding: 15px; margin: 0 15px 15px 15px; border-left: 5px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* DEFINIÇÃO DA PALETA DE CORES ECHO NAVY/EUA RED */
+        :root {
+            --primary-navy: #001F5B; /* Azul Naval */
+            --accent-red: #BF0A30;   /* Vermelho da Bandeira dos EUA */
+            --bg-light: #F6F6F6;     /* Cinza muito claro para o fundo (Estilo Uber) */
+            --card-white: #FFFFFF;   /* Branco puro para os cartões */
+            --text-dark: #1F1F1F;    /* Quase preto para texto */
+            --text-muted: #6C757D;
+        }
 
-        .section-header { color: var(--primary); margin: 25px 0 15px 0; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; display: flex; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
-        .section-header i { margin-right: 10px; color: var(--accent); }
-        .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1.5px solid #e0e0e0; font-size: 16px; }
-        .btn-submit { background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 700; width: 100%; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 51, 102, 0.2); }
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        
-        /* MOBILE SEARCH STYLES */
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-shell {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 30px;
+        }
+
+        /* ESTILO DO CARTÃO (UX UBER) */
+        .form-card {
+            background: var(--card-white);
+            border-radius: 16px; /* Cantos arredondados suaves */
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); /* Sombra suave para profundidade */
+            margin: 15px;
+            border: none;
+        }
+
+        /* CABEÇALHO DA APP */
+        .app-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #003399 100%);
+            color: white;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 31, 91, 0.2);
+        }
+
+        /* CAIXA DE BOAS-VINDAS (Olá Rodrigues Langa!) */
+        .welcome-box {
+            background: var(--card-white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: -30px 20px 20px 20px; /* Sobrepõe ligeiramente o cabeçalho */
+            border-start: 5px solid var(--accent-red); /* Destaque em Vermelho EUA */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* CABEÇALHOS DE SECÇÃO NO FORMULÁRIO */
+        .section-header {
+            color: var(--primary-navy);
+            margin: 25px 0 15px 0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #EEEEEE;
+            padding-bottom: 10px;
+        }
+
+        .section-header i {
+            margin-right: 12px;
+            color: var(--accent-red); /* Ícones em Vermelho */
+            font-size: 1.1rem;
+        }
+
+        /* ESTILO DOS CAMPOS DE ENTRADA (inputs e selects) */
+        .form-control, .form-select {
+            border-radius: 12px; /* Cantos arredondados nos inputs */
+            padding: 14px;
+            border: 1.5px solid #E0E0E0;
+            font-size: 16px;
+            color: var(--text-dark);
+            background-color: #FFFFFF;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-navy);
+            box-shadow: 0 0 0 3px rgba(0, 31, 91, 0.1);
+        }
+
+        .form-label-sm {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* BOTÃO SUBMETER (UX UBER LARGO E ARREDONDADO) */
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #003399 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 17px;
+            width: 100%;
+            margin-top: 25px;
+            box-shadow: 0 6px 20px rgba(0, 31, 91, 0.25);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .btn-submit:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 10px rgba(0, 31, 91, 0.2);
+        }
+
+        /* SOBREPOSIÇÃO DE CARREGAMENTO */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* ESTILOS DE PESQUISA MÓVEL (mantidos) */
         .search-container { position: relative; }
-        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 0 0 12px 12px; max-height: 250px; overflow-y: auto; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; }
-        .search-item { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .search-item:active { background-color: #f8f9fa; }
-        .search-item strong { color: var(--primary); font-size: 15px; display: block; }
-        .search-item span { font-size: 12px; color: #666; }
-        
+        .search-results {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid #ddd; border-radius: 0 0 16px 16px;
+            max-height: 250px; overflow-y: auto; z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none;
+        }
+        .search-item { padding: 14px 18px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-item:active { background-color: #F8F9FA; }
+        .search-item strong { color: var(--primary-navy); font-size: 16px; display: block; }
+        .search-item span { font-size: 13px; color: var(--text-muted); }
+
         #appContent { display: none; }
+
+        /* Estilo para o NID formatado */
+        #nid {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: var(--primary-navy);
+            font-size: 18px;
+        }
     </style>
 </head>
 
 <body>
     <div class="loading-overlay" id="loader">
-        <div class="spinner-grow text-primary"></div>
-        <p class="mt-3 fw-bold text-primary">A processar...</p>
+        <div class="spinner-grow text-primary" style="color: var(--primary-navy) !important;"></div>
+        <p class="mt-3 fw-bold" style="color: var(--primary-navy);">A processar...</p>
     </div>
 
     <div class="app-shell">
         <div id="loginScreen" class="p-3" style="display: flex; align-items: center; min-height: 90vh;">
             <div class="form-card text-center w-100">
-                <img src="Novo logo ECHO 2025.png" alt="ECHO Project" class="mb-3" style="width: 220px;" onerror="this.src='https://via.placeholder.com/200x100?text=ECHO+PROJECT'">
-                <div class="mb-4 p-2 rounded" style="background-color: #f8f9fa; border-left: 4px solid var(--primary);">
-                    <h6 class="fw-bold text-uppercase small mb-1" style="color: var(--primary);">Plataforma de Actualização</h6>
-                    <p class="text-muted small mb-0">ECHO Moçambique - Controlo de Dados</p>
+                <img src="Novo logo ECHO 2025.png" alt="ECHO Project" class="mb-4" style="width: 220px;" onerror="this.src='https://via.placeholder.com/200x100?text=ECHO+PROJECT'">
+                <div class="mb-4 p-3 rounded-4" style="background-color: #F8F9FA; border-start: 4px solid var(--primary-navy);">
+                    <h6 class="fw-bold text-uppercase small mb-1" style="color: var(--primary-navy);">Plataforma de Actualização</h6>
+                    <p class="text-muted small mb-0">Por favor, faça login com o seu e-mail institucional.</p>
                 </div>
                 <div id="g_id_onload" data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
                 <div class="g_id_signin d-flex justify-content-center" data-type="standard"></div>
@@ -62,13 +196,13 @@
 
         <div id="appContent">
             <div class="app-header">
-                <img src="Novo logo ECHO 2025.png" alt="ECHO Logo" style="width: 140px; margin-bottom: 10px;">
+                <img src="Novo logo ECHO 2025.png" alt="ECHO Logo" style="width: 140px; margin-bottom: 10px; filter: brightness(0) invert(1);">
                 <h5 class="fw-bold mb-1">PROJECTO ECHO</h5>
                 <small class="opacity-75">Actualização de Endereços e Contactos</small>
             </div>
 
-            <div class="welcome-box" id="welcomeBox">
-                <h6 class="mb-1 fw-bold text-primary" id="txtBoasVindas">Olá!</h6>
+            <div class="welcome-box">
+                <h6 class="mb-1 fw-bold" style="color: var(--primary-navy); font-size: 1.1rem;" id="txtBoasVindas">Olá!</h6>
                 <p class="text-muted small mb-0">Que actualização pretende fazer hoje?</p>
             </div>
 
@@ -76,15 +210,16 @@
                 <form id="appForm">
                     <div class="section-header"><i class="fas fa-search"></i> Pesquisa de Unidade</div>
                     <div class="search-container mb-3">
-                        <input type="text" id="searchUS" class="form-control" placeholder="Escreva o nome da US (ex: Macurungo)" autocomplete="off" oninput="handleSearch(this.value)">
+                        <label class="form-label-sm">Nome da Unidade Sanitária (US)</label>
+                        <input type="text" id="searchUS" class="form-control" placeholder="Escreva para pesquisar (ex: Macurungo)" autocomplete="off" oninput="handleSearch(this.value)">
                         <div id="searchResults" class="search-results"></div>
                     </div>
 
                     <div class="row">
                         <div class="col-6">
-                            <label class="small fw-bold">Província</label>
+                            <label class="form-label-sm">Província</label>
                             <select id="prov" class="form-select mb-3" required onchange="filtrarDistritos()">
-                                <option value="">Província...</option>
+                                <option value="">Seleccione...</option>
                                 <option value="Manica">Manica</option>
                                 <option value="Niassa">Niassa</option>
                                 <option value="Sofala">Sofala</option>
@@ -92,42 +227,51 @@
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="small fw-bold">Distrito</label>
+                            <label class="form-label-sm">Distrito</label>
                             <select id="dist" class="form-select mb-3" required disabled onchange="filtrarUS()">
-                                <option value="">Distrito...</option>
+                                <option value="">Seleccione...</option>
                             </select>
                         </div>
                     </div>
 
-                    <label class="small fw-bold">Unidade Sanitária (US)</label>
+                    <label class="form-label-sm">Confirmar Unidade Sanitária</label>
                     <select id="us" class="form-select mb-3" required disabled>
-                        <option value="">US...</option>
+                        <option value="">Seleccione...</option>
                     </select>
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
-                    <label class="form-label small fw-bold">NID (Paciente)</label>
-                    <input type="tel" id="nid" class="form-control mb-3" value="__________/____/_____" required oninput="aplicarMascaraNID(this)" style="font-family: monospace; letter-spacing: 2px; font-weight: bold; color: var(--primary);">
+                    <label class="form-label-sm">NID (Paciente)</label>
+                    <input type="tel" id="nid" class="form-control mb-3" value="__________/____/_____" required oninput="aplicarMascaraNID(this)">
 
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                        <label class="form-check-label fw-bold small" for="temConfidente">Tem Confidente?</label>
+                        <label class="form-check-label fw-bold small" for="temConfidente" style="color: var(--text-dark);">Tem Confidente?</label>
                     </div>
 
-                    <div id="camposConfidente" style="display:none; background: #fdf2f2; padding: 15px; border-radius: 12px; border: 1px dashed var(--accent)" class="mb-3">
-                        <input type="text" id="nomeConfidente" class="form-control mb-2" placeholder="Nome do Confidente">
-                        <input type="tel" id="telConfidente" class="form-control" placeholder="Telefone" maxlength="9">
+                    <div id="camposConfidente" style="display:none; background: #FFF5F6; padding: 18px; border-radius: 12px; border: 1.5px dashed var(--accent-red)" class="mb-3">
+                        <label class="form-label-sm">Nome do Confidente</label>
+                        <input type="text" id="nomeConfidente" class="form-control mb-2" placeholder="Nome completo">
+                        <label class="form-label-sm">Telefone do Confidente</label>
+                        <input type="tel" id="telConfidente" class="form-control" placeholder="84/82/86/87..." maxlength="9">
                     </div>
 
-                    <div class="section-header"><i class="fas fa-phone"></i> Contactos</div>
+                    <div class="section-header"><i class="fas fa-phone"></i> Contactos Atualizados</div>
                     <div class="row">
-                        <div class="col-6"><label class="form-label small fw-bold">Telefone 1</label><input type="tel" id="tel1" class="form-control" placeholder="84..." maxlength="9" required></div>
-                        <div class="col-6"><label class="form-label small fw-bold">Telefone 2</label><input type="tel" id="tel2" class="form-control" placeholder="82..." maxlength="9"></div>
+                        <div class="col-6">
+                            <label class="form-label-sm">Telefone 1 (Principal)</label>
+                            <input type="tel" id="tel1" class="form-control" placeholder="84..." maxlength="9" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-sm">Telefone 2 (Opcional)</label>
+                            <input type="tel" id="tel2" class="form-control" placeholder="82..." maxlength="9">
+                        </div>
                     </div>
-                    <textarea id="endereco" class="form-control mt-3" rows="2" placeholder="Endereço Completo" required></textarea>
+                    <label class="form-label-sm mt-3">Endereço Completo / Ponto de Referência</label>
+                    <textarea id="endereco" class="form-control" rows="3" placeholder="Bairro, Quarteirão, Casa, Referência..." required></textarea>
 
-                    <div class="mt-3">
-                        <label class="form-label small fw-bold">Responsável pela Actualização</label>
-                        <select id="responsavel" class="form-select" required disabled>
+                    <div class="mt-4 pt-3 border-top">
+                        <label class="form-label-sm">Responsável pela Actualização</label>
+                        <select id="responsavel" class="form-select" required disabled style="border: 1.5px solid var(--primary-navy); font-weight: 500;">
                             <option value="">A carregar responsáveis...</option>
                         </select>
                     </div>
@@ -141,35 +285,92 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // --- COLOQUE O SEU URL DO GOOGLE SCRIPT AQUI ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxJKQs_3ohx5Uzma3HYlfqRgC4z64qQyTFJTGJvvugE0-MEQXwZrfUI-QYdUDcgCiMQA/exec";
+        // LEMBRE-SE: Implementar > Gerir Implementações > Editar > Nova Versão > Implementar
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiH7DLonvttzbczDGe_3hjaaV0Ql9sREqsBzcscZr0nyBj6HtFVlIYiK60MZq1T5Bq7A/exec";
         
         let userEmail = "";
         let dadosTemporarios = {};
 
         // --- BASE DE DADOS US ---
-        const baseDados = { "Manica": { "Barue": ["HD Catandica", "CS Nhampassa", "CS Nhazonia", "CS Honde", "CS Cruzamento de Macossa", "CS Chiuala", "CS Nhassacara"], "Cidade de Chimoio": ["CS Eduardo Mondlane", "CS Nhamaonha", "CS 1 de Maio", "CS 7 de Abril", "CS Vila Nova", "CS Chissui", "HP Chimoio", "CS Penitenciario Cabeca de Velho"], "Gondola": ["CS Gondola Sede", "CS Inchope", "CS Amatongas", "CS Muda Serracao"], "Guro": ["CS Guro-Sede", "CS Mandie"], "Macate": ["CS Macate", "CS Marera", "CS Zembe Centro"], "Machaze": ["CS Chitobe", "CS Save", "CS Bassane", "CS Mavende", "CS Chipopopo", "CS Chipodji", "CS Mazwissanga"], "Manica": ["HD Manica", "CS Messica", "CS Machipanda", "CS 4º Congresso"], "Mossurize": ["HD Espungabera", "CS Dacata", "CS Chaiva", "CS Gunhe", "CS Mupengo", "CS Garagua", "CS Mude"], "Sussundenga": ["CS Sussundenga-Sede", "CS Dombe", "CS Munhinga", "CS Darue", "CS Sembezea"], "Vanduzi": ["CS Vanduzi", "CS Matsinho", "CS IAC", "CS Chigodore", "CS Pungue Sul"] }, "Niassa": { "Cidade de Lichinga": ["CS Lichinga", "CS Chiuaula", "CS Namacula", "HP Lichinga", "CS Lulimire"], "Cuamba": ["CS Cuamba", "HR Cuamba", "CS Adine 3", "CS Mitucue", "CS Meripo"], "Lago": ["CS Metangula"], "Mandimba": ["CS Mandimba", "CS Mitande"], "Mecanhelas": ["CS Mecanhelas", "CS Entre-Lagos", "CS Chisaua"], "Metarica": ["CS Metarica"], "Ngauma": ["CS Massangulo"] }, "Sofala": { "Cidade da Beira": ["CS Ponta Gea", "CS Munhava", "CS Manga Nhaconjo", "CS Macurungo", "CS Manga Mascarenha", "CS Manga Loforte", "CS Inhamizua", "CS Chamba", "CS Chota", "CS Matadoro", "CS Ceramica", "CS Nhangau", "CS Marrocanhe", "HC Beira", "CS Cadeia Central da Beira"], "Buzi": ["CS Bandua", "HR Buzi Sede", "CS Guara-Guara", "CS Bura", "CS Ampara"], "Caia": ["HD Caia", "CS Sena", "CS Murraça", "CS Nhambalo"], "Cheringoma": ["HR Inhaminga"], "Chibabava": ["HR Muxungue", "CS Mutindire", "CS Chibabava -Sede", "CS Hoode"], "Dondo": ["CS Dondo Sede", "CS Mafambisse", "CS Mutua", "CS Igreja Baptista", "CS Canhandula", "CS Samora Machel", "CS Savane", "CS Maxorote"], "Gorongosa": ["CS Gorongosa - Sede"], "Machanga": ["CS Machanga - Sede"], "Marromeu": ["HR Marromeu", "CS Nensa"], "Nhamatanda": ["HR Nhamatanda Sede", "CS Tica CSRII", "CS Lamego", "CS Metuchira Lomaco", "CS Siluvo CSRII", "CS Nharuchonga", "CS Chirassicua"] }, "Tete": { "Angonia": ["HR Ulongue", "CS Ulongue", "CS Domue", "CS Lifidzi"], "Cahora Bassa": ["CS Chitima", "HR Songo"], "Changara": ["CS Changara Sede", "CS Mazoe- Ponte", "CS Missaua", "CS Dzunga"], "Chiuta": ["CS Manje"], "Macanga": ["CS Furancungo"], "Magoe": ["CS Magoe", "CS Mucumbura", "CS Daque"], "Marara": ["CS Cachembe", "CS Boroma"], "Moatize": ["CS Moatize", "CS Zóbue", "CS CFM", "CS 25 de Setembro", "CS Caphirizange", "CS Ncondedzi", "CS Mameme II", "CS Cateme"], "Mutarara": ["HR Mutarara", "CS Inhangoma"], "Cidade de Tete": ["CS Nº 2 - Bairro Matundo", "CS Nº 3 - Bairro Manyanga", "CS Nº 4 - Bairro Muthemba", "CS Nº 1 - Bairro Magaia", "CS Mpadue", "HP Tete"] } };
-
-        // --- PESQUISA DE US ---
+     const baseDados = {
+            "Manica": {
+                "Barue": { "HD Catandica": "1234567890", "CS Nhampassa": "1234567890", "CS Nhazonia": "1234567890", "CS Honde": "1234567890", "CS Cruzamento de Macossa": "1234567890", "CS Chiuala": "1234567890", "CS Nhassacara": "1234567890" },
+                "Cidade de Chimoio": { "CS Eduardo Mondlane": "1234567890", "CS Nhamaonha": "1234567890", "CS 1 de Maio": "1234567890", "CS 7 de Abril": "1234567890", "CS Vila Nova": "1234567890", "CS Chissui": "1234567890", "HP Chimoio": "1234567890", "CS Penitenciario Cabeca de Velho": "1234567890" },
+                "Gondola": { "CS Gondola Sede": "1234567890", "CS Inchope": "1234567890", "CS Amatongas": "1234567890", "CS Muda Serracao": "1234567890" },
+                "Guro": { "CS Guro-Sede": "1234567890", "CS Mandie": "1234567890" },
+                "Macate": { "CS Macate": "1234567890", "CS Marera": "1234567890", "CS Zembe Centro": "1234567890" },
+                "Machaze": { "CS Chitobe": "1234567890", "CS Save": "1234567890", "CS Bassane": "1234567890", "CS Mavende": "1234567890", "CS Chipopopo": "1234567890", "CS Chipodji": "1234567890", "CS Mazwissanga": "1234567890" },
+                "Manica": { "HD Manica": "1234567890", "CS Messica": "1234567890", "CS Machipanda": "1234567890", "CS 4º Congresso": "1234567890" },
+                "Mossurize": { "HD Espungabera": "1234567890", "CS Dacata": "1234567890", "CS Chaiva": "1234567890", "CS Gunhe": "1234567890", "CS Mupengo": "1234567890", "CS Garagua": "1234567890", "CS Mude": "1234567890" },
+                "Sussundenga": { "CS Sussundenga-Sede": "1234567890", "CS Dombe": "1234567890", "CS Munhinga": "1234567890", "CS Darue": "1234567890", "CS Sembezea": "1234567890" },
+                "Vanduzi": { "CS Vanduzi": "1234567890", "CS Matsinho": "1234567890", "CS IAC": "1234567890", "CS Chigodore": "1234567890", "CS Pungue Sul": "1234567890" }
+            },
+            "Niassa": {
+                "Cidade de Lichinga": { "CS Lichinga": "1234567890", "CS Chiuaula": "1234567890", "CS Namacula": "1234567890", "HP Lichinga": "1234567890", "CS Lulimire": "1234567890" },
+                "Cuamba": { "CS Cuamba": "1234567890", "HR Cuamba": "1234567890", "CS Adine 3": "1234567890", "CS Mitucue": "1234567890", "CS Meripo": "1234567890" },
+                "Lago": { "CS Metangula": "1234567890" },
+                "Mandimba": { "CS Mandimba": "1234567890", "CS Mitande": "1234567890" },
+                "Mecanhelas": { "CS Mecanhelas": "1234567890", "CS Entre-Lagos": "1234567890", "CS Chisaua": "1234567890" },
+                "Metarica": { "CS Metarica": "1234567890" },
+                "Ngauma": { "CS Massangulo": "1234567890" }
+            },
+            "Sofala": {
+                "Cidade da Beira": { "CS Ponta Gea": "1234567890", "CS Munhava": "1234567890", "CS Manga Nhaconjo": "1234567890", "CS Macurungo": "1234567890", "CS Manga Mascarenha": "1234567890", "CS Manga Loforte": "1234567890", "CS Inhamizua": "1234567890", "CS Chamba": "1234567890", "CS Chota": "1234567890", "CS Matadoro": "1234567890", "CS Ceramica": "1234567890", "CS Nhangau": "1234567890", "CS Marrocanhe": "1234567890", "HC Beira": "1234567890", "CS Cadeia Central da Beira": "1234567890" },
+                "Buzi": { "CS Bandua": "1234567890", "HR Buzi Sede": "1234567890", "CS Guara-Guara": "1234567890", "CS Bura": "1234567890", "CS Ampara": "1234567890" },
+                "Caia": { "HD Caia": "1234567890", "CS Sena": "1234567890", "CS Murraça": "1234567890", "CS Nhambalo": "1234567890" },
+                "Cheringoma": { "HR Inhaminga": "1234567890" },
+                "Chibabava": { "HR Muxungue": "1234567890", "CS Mutindire": "1234567890", "CS Chibabava -Sede": "1234567890", "CS Hoode": "1234567890" },
+                "Dondo": { "CS Dondo Sede": "1234567890", "CS Mafambisse": "1234567890", "CS Mutua": "1234567890", "CS Igreja Baptista": "1234567890", "CS Canhandula": "1234567890", "CS Samora Machel": "1234567890", "CS Savane": "1234567890", "CS Maxorote": "1234567890" },
+                "Gorongosa": { "CS Gorongosa - Sede": "1234567890" },
+                "Machanga": { "CS Machanga - Sede": "1234567890" },
+                "Marromeu": { "HR Marromeu": "1234567890", "CS Nensa": "1234567890" },
+                "Nhamatanda": { "HR Nhamatanda Sede": "1234567890", "CS Tica CSRII": "1234567890", "CS Lamego": "1234567890", "CS Metuchira Lomaco": "1234567890", "CS Siluvo CSRII": "1234567890", "CS Nharuchonga": "1234567890", "CS Chirassicua": "1234567890" }
+            },
+            "Tete": {
+                "Angonia": { "HR Ulongue": "1234567890", "CS Ulongue": "1234567890", "CS Domue": "1234567890", "CS Lifidzi": "1234567890" },
+                "Cahora Bassa": { "CS Chitima": "1234567890", "HR Songo": "1234567890" },
+                "Changara": { "CS Changara Sede": "1234567890", "CS Mazoe- Ponte": "1234567890", "CS Missaua": "1234567890", "CS Dzunga": "1234567890" },
+                "Chiuta": { "CS Manje": "1234567890" },
+                "Macanga": { "CS Furancungo": "1234567890" },
+                "Magoe": { "CS Magoe": "1234567890", "CS Mucumbura": "1234567890", "CS Daque": "1234567890" },
+                "Marara": { "CS Cachembe": "1234567890", "CS Boroma": "1234567890" },
+                "Moatize": { "CS Moatize": "1234567890", "CS Zóbue": "1234567890", "CS CFM": "1234567890", "CS 25 de Setembro": "1234567890", "CS Caphirizange": "1234567890", "CS Ncondedzi": "1234567890", "CS Mameme II": "1234567890", "CS Cateme": "1234567890" },
+                "Mutarara": { "HR Mutarara": "1234567890", "CS Inhangoma": "1234567890" },
+                "Cidade de Tete": { "CS Nº 2 - Bairro Matundo": "1234567890", "CS Nº 3 - Bairro Manyanga": "1234567890", "CS Nº 4 - Bairro Muthemba": "1234567890", "CS Nº 1 - Bairro Magaia": "1234567890", "CS Mpadue": "1234567890", "HP Tete": "1234567890" }
+            }
+        };
+        // --- LÓGICA DE PESQUISA DE US ---
         function handleSearch(query) {
-            const res = document.getElementById('searchResults');
-            if (query.length < 2) { res.style.display = 'none'; return; }
+            const resultsBox = document.getElementById('searchResults');
+            if (query.length < 2) { resultsBox.style.display = 'none'; return; }
             let matches = [];
             for (const p in baseDados) {
                 for (const d in baseDados[p]) {
                     baseDados[p][d].forEach(us => {
-                        if (us.toLowerCase().includes(query.toLowerCase())) matches.push({ us, d, p });
+                        if (us.toLowerCase().includes(query.toLowerCase())) {
+                            matches.push({ us, d, p });
+                        }
                     });
                 }
             }
             if (matches.length > 0) {
-                res.innerHTML = matches.map(m => `<div class="search-item" onclick="selectUS('${m.us}', '${m.d}', '${m.p}')"><strong>${m.us}</strong><span>${m.p} > ${m.d}</span></div>`).join('');
-                res.style.display = 'block';
-            } else res.style.display = 'none';
+                resultsBox.innerHTML = matches.map(m => `
+                    <div class="search-item" onclick="selectFromSearch('${m.us}', '${m.d}', '${m.p}')">
+                        <strong>${m.us}</strong>
+                        <span>${m.p} > ${m.d}</span>
+                    </div>
+                `).join('');
+                resultsBox.style.display = 'block';
+            } else {
+                resultsBox.style.display = 'none';
+            }
         }
 
-        function selectUS(us, dist, prov) {
+        function selectFromSearch(us, dist, prov) {
             document.getElementById('searchUS').value = us;
             document.getElementById('searchResults').style.display = 'none';
+            
+            // Preenche os selects em cascata
             document.getElementById('prov').value = prov;
             filtrarDistritos();
             document.getElementById('dist').value = dist;
@@ -177,83 +378,148 @@
             document.getElementById('us').value = us;
         }
 
-        document.addEventListener('click', (e) => { if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none'; });
+        // Fecha a pesquisa ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('searchResults').style.display = 'none';
+            }
+        });
 
+        // --- FILTROS EM CASCATA ---
         function filtrarDistritos() {
-            const p = document.getElementById("prov").value, d = document.getElementById("dist");
-            d.innerHTML = '<option value="">Distrito...</option>'; d.disabled = !p;
+            const p = document.getElementById("prov").value;
+            const d = document.getElementById("dist");
+            d.innerHTML = '<option value="">Seleccione...</option>';
+            d.disabled = !p;
             if (p) Object.keys(baseDados[p]).sort().forEach(x => d.options.add(new Option(x, x)));
-            document.getElementById("us").innerHTML = '<option value="">US...</option>'; document.getElementById("us").disabled = true;
+            document.getElementById("us").innerHTML = '<option value="">Seleccione...</option>';
+            document.getElementById("us").disabled = true;
         }
 
         function filtrarUS() {
-            const p = document.getElementById("prov").value, dist = document.getElementById("dist").value, u = document.getElementById("us");
-            u.innerHTML = '<option value="">US...</option>'; u.disabled = !dist;
+            const p = document.getElementById("prov").value, dist = document.getElementById("dist").value;
+            const u = document.getElementById("us");
+            u.innerHTML = '<option value="">Seleccione...</option>';
+            u.disabled = !dist;
             if (dist) baseDados[p][dist].sort().forEach(x => u.options.add(new Option(x, x)));
         }
 
+        // --- MÁSCARAS E VALIDAÇÕES ---
+        // Impede letras nos telefones
+        ['tel1', 'tel2', 'telConfidente'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').substring(0, 9);
+            });
+        });
+
         function aplicarMascaraNID(i) {
-            let v = i.value.replace(/\D/g, "").substring(0, 19), m = "__________/____/_____", r = "", nI = 0;
-            for (let x = 0; x < m.length; x++) { if (m[x] === "/") r += "/"; else r += (nI < v.length) ? v[nI++] : "_"; }
+            let v = i.value.replace(/\D/g, "").substring(0, 19);
+            let m = "__________/____/_____", r = "", nI = 0;
+            for (let x = 0; x < m.length; x++) {
+                if (m[x] === "/") r += "/";
+                else r += (nI < v.length) ? v[nI++] : "_";
+            }
             i.value = r;
         }
 
+        // --- AUTENTICAÇÃO E LOGIN (LOOK BOAS-VINDAS) ---
         function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
 
-        // --- LOGIN E BOAS-VINDAS ---
         async function handleCredentialResponse(response) {
             const payload = parseJwt(response.credential);
             userEmail = payload.email.toLowerCase().trim();
             document.getElementById("loader").style.display = "flex";
+            
             try {
+                // Chama o script para verificar acesso e obter nomes
                 const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
-                const text = await res.text();
-                if (text.startsWith("AUTORIZADO")) {
-                    const partes = text.split("|");
-                    const meuNome = partes[1];
-                    const lista = partes[2].split(",");
+                const resultText = await res.text();
+                
+                if (resultText.startsWith("AUTORIZADO")) {
+                    const partes = resultText.split("|");
+                    const meuNome = partes[1];           // Nome Completo vindo da Coluna E e F
+                    const listaNomes = partes[2].split(","); // Lista de todos
                     
-                    // Atualiza Saudação
+                    // AÇÃO: Atualiza a Saudação (Olá Rodrigues Langa!)
                     document.getElementById("txtBoasVindas").innerText = "Olá, " + meuNome + "!";
                     
-                    // Preenche Select Responsável
-                    const sel = document.getElementById("responsavel");
-                    sel.innerHTML = '<option value="">Seleccione o nome...</option>';
-                    lista.forEach(n => {
-                        let opt = new Option(n, n);
-                        if(n === meuNome) opt.selected = true;
-                        sel.add(opt);
+                    // AÇÃO: Preenche o Select de Responsáveis e seleciona o logado
+                    const selectResp = document.getElementById("responsavel");
+                    selectResp.innerHTML = '<option value="">Seleccione o nome...</option>';
+                    
+                    listaNomes.forEach(nome => {
+                        let opt = document.createElement("option");
+                        opt.value = nome;
+                        opt.innerText = nome;
+                        // Seleciona automaticamente se for o usuário logado
+                        if (nome === meuNome) opt.selected = true;
+                        selectResp.appendChild(opt);
                     });
-                    sel.disabled = false;
+                    
+                    selectResp.disabled = false;
 
+                    // Troca de tela
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("appContent").style.display = "block";
-                } else Swal.fire('Erro', 'Acesso Negado.', 'error');
-            } catch (e) { Swal.fire('Erro', 'Falha ao conectar.', 'error'); }
+                    
+                } else {
+                    Swal.fire('Acesso Negado', 'Este e-mail não está autorizado na base de dados do ECHO.', 'error');
+                }
+            } catch (e) { 
+                Swal.fire('Erro', 'Falha crítica ao conectar com o servidor. Verifique a sua internet.', 'error'); 
+            }
             document.getElementById("loader").style.display = "none";
         }
 
         function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
+        // --- SUBMISSÃO FINAL ---
         document.getElementById('appForm').onsubmit = function (e) {
             e.preventDefault();
-            const nid = document.getElementById("nid").value.replace(/_/g, "");
+            
+            // Validação básica de telefone (82, 83, 84, 85, 86, 87)
+            const t1 = document.getElementById("tel1").value;
+            if (!/^(82|83|84|85|86|87)[0-9]{7}$/.test(t1)) {
+                return Swal.fire('Erro', 'Telefone 1 inválido. Deve começar com 8x e ter 9 dígitos.', 'error');
+            }
+            
+            const nidLimpo = document.getElementById("nid").value.replace(/_/g, "");
             dadosTemporarios = {
-                email_usuario: userEmail, provincia: document.getElementById("prov").value, distrito: document.getElementById("dist").value,
-                us: document.getElementById("us").value, nid: nid, tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-                nome_confidente: document.getElementById("nomeConfidente").value || "N/A", tel_confidente: document.getElementById("telConfidente").value || "N/A",
-                tel1: document.getElementById("tel1").value, tel2: document.getElementById("tel2").value || "N/A",
-                endereco: document.getElementById("endereco").value, responsavel: document.getElementById("responsavel").value
+                email_usuario: userEmail,
+                provincia: document.getElementById("prov").value,
+                distrito: document.getElementById("dist").value,
+                us: document.getElementById("us").value,
+                nid: nidLimpo,
+                tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+                nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+                tel_confidente: document.getElementById("telConfidente").value || "N/A",
+                tel1: t1,
+                tel2: document.getElementById("tel2").value || "N/A",
+                endereco: document.getElementById("endereco").value,
+                responsavel: document.getElementById("responsavel").value
             };
-            Swal.fire({ title: 'Confirmar?', text: "NID: " + nid, icon: 'question', showCancelButton: true, confirmButtonText: 'Enviar' }).then((r) => { if (r.isConfirmed) enviarGPS(); });
+
+            Swal.fire({
+                title: 'Confirmar Dados?',
+                text: "NID: " + nidLimpo + " por " + dadosTemporarios.responsavel,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: var(--primary-navy),
+                cancelButtonColor: var(--text-muted),
+                confirmButtonText: 'Sim, Enviar!'
+            }).then((r) => { if (r.isConfirmed) enviarComGps(); });
         };
 
-        function enviarGPS() {
+        function enviarComGps() {
             document.getElementById("loader").style.display = "flex";
             navigator.geolocation.getCurrentPosition((p) => {
-                dadosTemporarios.latitude = p.coords.latitude; dadosTemporarios.longitude = p.coords.longitude; finalizar();
+                dadosTemporarios.latitude = p.coords.latitude;
+                dadosTemporarios.longitude = p.coords.longitude;
+                finalizar();
             }, () => {
-                dadosTemporarios.latitude = "Sem GPS"; dadosTemporarios.longitude = "Sem GPS"; finalizar();
+                dadosTemporarios.latitude = "Sem GPS";
+                dadosTemporarios.longitude = "Sem GPS";
+                finalizar();
             }, { timeout: 5000 });
         }
 
@@ -261,13 +527,22 @@
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
                 .then(() => {
                     document.getElementById("loader").style.display = "none";
-                    Swal.fire({ title: 'Sucesso!', icon: 'success' }).then(() => {
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: 'Dados gravados com sucesso.',
+                        icon: 'success',
+                        confirmButtonText: 'Inserir Outro'
+                    }).then(() => {
+                        // Limpa o formulário mantendo o e-mail e responsável
                         document.getElementById("appForm").reset();
                         document.getElementById("nid").value = "__________/____/_____";
                         document.getElementById("searchUS").value = "";
                         document.getElementById("camposConfidente").style.display = "none";
                         window.scrollTo(0, 0);
                     });
+                }).catch(err => {
+                    document.getElementById("loader").style.display = "none";
+                    Swal.fire('Erro', 'Falha ao gravar dados: ' + err.message, 'error');
                 });
         }
     </script>
