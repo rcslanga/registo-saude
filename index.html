@@ -92,9 +92,17 @@
                     <input type="hidden" id="us_final">
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
-            
-<input type="tel" id="nid" class="form-control mb-3" value="__________/____/_____" required oninput="aplicarMascaraNID(this)" style="font-family: monospace; letter-spacing: 2px; font-weight: bold; color: var(--primary);">
+<label class="form-label-sm">NID (Ex: 1010101010/2026/00001)</label>
+<input type="tel" 
+       id="nid" 
+       class="form-control mb-3" 
+       placeholder="0000000000/0000/00000" 
+       required 
+       oninput="mascaraNID(this)" 
+       maxlength="21"
+       style="font-family: 'Courier New', monospace; letter-spacing: 1px; font-weight: bold; color: var(--navy); font-size: 1.15rem;">
 
+                    
                     
                     <div class="form-check form-switch mb-3 mt-2">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
@@ -121,7 +129,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqjC0x-JKnEk6Ohz8bCnOofkEhKl9AkVm_-EdyGdSHgLUtklUpxRIYgRU8kcPCZ1WiDg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMPjukA6IvdDTrA5ZF264SMAHhEzU543SODh1gMP7OYBKyKOniGtffeotFDlkj7E0S6A/exec";
         let todasUS = [];
         let userEmail = "";
 
@@ -198,6 +206,7 @@
     </script>
 </body>
 </html>
+
 
 
 
