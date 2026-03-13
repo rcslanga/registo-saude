@@ -185,12 +185,53 @@
             document.getElementById("loader").style.display = "none";
         }
 
-        const baseDados = {
-            "Manica": { "Barue": ["Catandica HD", "Chuala CS"], "Chimoio": ["1º Maio CS", "Chimoio HP"], "Gondola": ["Amatonga", "Gondola S"], "Guro": ["Guro - Sed"], "Macate": ["Macate CS"], "Machaze": ["Bassane CS"], "Manica": ["Manica HD"], "Mossurize": ["Espungabe"], "Sussundenga": ["Sussunder"], "Vanduzi": ["Vanduzi C"] },
-            "Niassa": { "Cuamba": ["Cuamba H"], "Lago": ["Metangula"], "Lichinga": ["Lichinga H"], "Mandimba": ["Mandimba"], "Mecanhelas": ["Mecanhela"], "Metarica": ["Metarica C"], "Ngauma": ["Massangu"] },
-            "Sofala": { "Beira": ["Hospital C", "Munhava C"], "Buzi": ["Buzi Sede"], "Caia": ["Caia HD"], "Cheringoma": ["Inhaminga"], "Chibabava": ["Muxungue"], "Dondo": ["Dondo Sed"], "Gorongosa": ["Gorongoza"], "Machanga": ["Machang C"], "Marromeu": ["Marromeu"], "Nhamatanda": ["Nhamatan"] },
-            "Tete": { "Angonia": ["Ulongue H"], "Cahora Bassa": ["Songo HR"], "Changara": ["Changara C"], "Chiuta": ["Manje CS"], "Macanga": ["Furancung"], "Magoe": ["Magoe CS"], "Marara": ["Boroma CS"], "Moatize": ["Moatize C"], "Mutarara": ["Mutarara H"], "Tete": ["Tete HP"] }
-        };
+  const baseDados = {
+        "Manica": {
+            "Barue": ["HD Catandica", "CS Nhampassa", "CS Nhazonia", "CS Honde", "CS Cruzamento de Macossa", "CS Chiuala", "CS Nhassacara"],
+            "Cidade de Chimoio": ["CS Eduardo Mondlane", "CS Nhamaonha", "CS 1 de Maio", "CS 7 de Abril", "CS Vila Nova", "CS Chissui", "HP Chimoio", "CS Penitenciario Cabeca de Velho"],
+            "Gondola": ["CS Gondola Sede", "CS Inchope", "CS Amatongas", "CS Muda Serracao"],
+            "Guro": ["CS Guro-Sede", "CS Mandie"],
+            "Macate": ["CS Macate", "CS Marera", "CS Zembe Centro"],
+            "Machaze": ["CS Chitobe", "CS Save", "CS Bassane", "CS Mavende", "CS Chipopopo", "CS Chipodji", "CS Mazwissanga"],
+            "Manica": ["HD Manica", "CS Messica", "CS Machipanda", "CS 4º Congresso"],
+            "Mossurize": ["HD Espungabera", "CS Dacata", "CS Chaiva", "CS Gunhe", "CS Mupengo", "CS Garagua", "CS Mude"],
+            "Sussundenga": ["CS Sussundenga-Sede", "CS Dombe", "CS Munhinga", "CS Darue", "CS Sembezea"],
+            "Vanduzi": ["CS Vanduzi", "CS Matsinho", "CS IAC", "CS Chigodore", "CS Pungue Sul"]
+        },
+        "Niassa": {
+            "Cidade de Lichinga": ["CS Lichinga", "CS Chiuaula", "CS Namacula", "HP Lichinga", "CS Lulimire"],
+            "Cuamba": ["CS Cuamba", "HR Cuamba", "CS Adine 3", "CS Mitucue", "CS Meripo"],
+            "Lago": ["CS Metangula"],
+            "Mandimba": ["CS Mandimba", "CS Mitande"],
+            "Mecanhelas": ["CS Mecanhelas", "CS Entre-Lagos", "CS Chisaua"],
+            "Metarica": ["CS Metarica"],
+            "Ngauma": ["CS Massangulo"]
+        },
+        "Sofala": {
+            "Cidade da Beira": ["CS Ponta Gea", "CS Munhava", "CS Manga Nhaconjo", "CS Macurungo", "CS Manga Mascarenha", "CS Manga Loforte", "CS Inhamizua", "CS Chamba", "CS Chota", "CS Matadoro", "CS Ceramica", "CS Nhangau", "CS Marrocanhe", "HC Beira", "CS Cadeia Central da Beira"],
+            "Buzi": ["CS Bandua", "HR Buzi Sede", "CS Guara-Guara", "CS Bura", "CS Ampara"],
+            "Caia": ["HD Caia", "CS Sena", "CS Murraça", "CS Nhambalo"],
+            "Cheringoma": ["HR Inhaminga"],
+            "Chibabava": ["HR Muxungue", "CS Mutindire", "CS Chibabava -Sede", "CS Hoode"],
+            "Dondo": ["CS Dondo Sede", "CS Mafambisse", "CS Mutua", "CS Igreja Baptista", "CS Canhandula", "CS Samora Machel", "CS Savane", "CS Maxorote"],
+            "Gorongosa": ["CS Gorongosa - Sede"],
+            "Machanga": ["CS Machanga - Sede"],
+            "Marromeu": ["HR Marromeu", "CS Nensa"],
+            "Nhamatanda": ["HR Nhamatanda Sede", "CS Tica CSRII", "CS Lamego", "CS Metuchira Lomaco", "CS Siluvo CSRII", "CS Nharuchonga", "CS Chirassicua"]
+        },
+        "Tete": {
+            "Angonia": ["HR Ulongue", "CS Ulongue", "CS Domue", "CS Lifidzi"],
+            "Cahora Bassa": ["CS Chitima", "HR Songo"],
+            "Changara": ["CS Changara Sede", "CS Mazoe- Ponte", "CS Missaua", "CS Dzunga"],
+            "Chiuta": ["CS Manje"],
+            "Macanga": ["CS Furancungo"],
+            "Magoe": ["CS Magoe", "CS Mucumbura", "CS Daque"],
+            "Marara": ["CS Cachembe", "CS Boroma"],
+            "Moatize": ["CS Moatize", "CS Zóbue", "CS CFM", "CS 25 de Setembro", "CS Caphirizange", "CS Ncondedzi", "CS Mameme II", "CS Cateme"],
+            "Mutarara": ["HR Mutarara", "CS Inhangoma"],
+            "Cidade de Tete": ["CS Nº 2 - Bairro Matundo", "CS Nº 3 - Bairro Manyanga", "CS Nº 4 - Bairro Muthemba", "CS Nº 1 - Bairro Magaia", "CS Mpadue", "HP Tete"]
+        }
+    };
 
         function filtrarDistritos() {
             const p = document.getElementById("prov").value;
@@ -329,6 +370,7 @@ function autoPreencherCampos(valor) {
     </script>
 </body>
 </html>
+
 
 
 
