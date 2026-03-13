@@ -2,26 +2,12 @@
 <html lang="pt">
 
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#003366">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#003366">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ECHO Project Moçambique</title>
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="description" content="Aplicação oficial do Projecto ECHO para a actualização de dados de contacto e endereço de pacientes em Moçambique.">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://registo-saude.vercel.app/"> 
-    <meta property="og:title" content="ECHO Project - Actualização de Dados">
-    <meta property="og:description" content="Plataforma segura para actualização de contactos de pacientes. Uso exclusivo para equipas ECHO.">
-    <meta property="og:image" content="https://registo-saude.vercel.app/Novo%20logo%20ECHO%202025.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -38,6 +24,20 @@
         .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1.5px solid #e0e0e0; font-size: 16px; }
         .btn-submit { background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 700; width: 100%; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 51, 102, 0.2); }
         .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        
+        /* MOBILE SEARCH STYLES */
+        .search-container { position: relative; }
+        .search-results {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid #ddd; border-radius: 0 0 12px 12px;
+            max-height: 250px; overflow-y: auto; z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none;
+        }
+        .search-item { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-item:active { background-color: #f8f9fa; }
+        .search-item strong { color: var(--primary); font-size: 15px; display: block; }
+        .search-item span { font-size: 12px; color: #666; }
+        
         #appContent { display: none; }
     </style>
 </head>
@@ -54,9 +54,8 @@
                 <img src="Novo logo ECHO 2025.png" alt="ECHO Project" class="mb-3" style="width: 220px;" onerror="this.src='https://via.placeholder.com/200x100?text=ECHO+PROJECT'">
                 <div class="mb-4 p-2 rounded" style="background-color: #f8f9fa; border-left: 4px solid var(--primary);">
                     <h6 class="fw-bold text-uppercase small mb-1" style="color: var(--primary);">Plataforma de Actualização</h6>
-                    <p class="text-muted small mb-0">Actualização rápida e segura de dados de contacto de pacientes.</p>
+                    <p class="text-muted small mb-0">Actualização rápida de dados de contacto.</p>
                 </div>
-                <h4 class="fw-bold mb-3" style="color: var(--primary)">Acesso</h4>
                 <div id="g_id_onload" data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
                 <div class="g_id_signin d-flex justify-content-center" data-type="standard"></div>
             </div>
@@ -69,40 +68,37 @@
                 <small class="opacity-75">Actualização de Endereços e Contactos</small>
             </div>
 
-
-
-
-
-
-            
             <div class="form-card">
                 <form id="appForm">
-                   <div class="section-header"><i class="fas fa-search"></i> Pesquisar Unidade Sanitária</div>
-<input type="text" id="searchUS" class="form-control mb-3" placeholder="Digite o nome da US (ex: Macurungo)" list="listaUS" oninput="autoPreencherCampos(this.value)">
-<datalist id="listaUS"></datalist>
+                    <div class="section-header"><i class="fas fa-search"></i> Pesquisa de Unidade</div>
+                    <div class="search-container mb-3">
+                        <input type="text" id="searchUS" class="form-control" placeholder="Escreva o nome da US (ex: Macurungo)" autocomplete="off" oninput="handleSearch(this.value)">
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
 
-<div class="row">
-    <div class="col-6">
-        <label class="small fw-bold">Província</label>
-        <select id="prov" class="form-select mb-3" required onchange="filtrarDistritos()">
-            <option value="">Província...</option>
-            <option value="Manica">Manica</option>
-            <option value="Niassa">Niassa</option>
-            <option value="Sofala">Sofala</option>
-            <option value="Tete">Tete</option>
-        </select>
-    </div>
-    <div class="col-6">
-        <label class="small fw-bold">Distrito</label>
-        <select id="dist" class="form-select mb-3" required disabled onchange="filtrarUS()">
-            <option value="">Distrito...</option>
-        </select>
-    </div>
-</div>
-<label class="small fw-bold">Unidade Sanitária (US)</label>
-<select id="us" class="form-select mb-3" required disabled>
-    <option value="">US...</option>
-</select>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="small fw-bold">Província</label>
+                            <select id="prov" class="form-select mb-3" required onchange="filtrarDistritos()">
+                                <option value="">Província...</option>
+                                <option value="Manica">Manica</option>
+                                <option value="Niassa">Niassa</option>
+                                <option value="Sofala">Sofala</option>
+                                <option value="Tete">Tete</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold">Distrito</label>
+                            <select id="dist" class="form-select mb-3" required disabled onchange="filtrarUS()">
+                                <option value="">Distrito...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label class="small fw-bold">Unidade Sanitária (US)</label>
+                    <select id="us" class="form-select mb-3" required disabled>
+                        <option value="">US...</option>
+                    </select>
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
                     <label class="form-label small fw-bold">NID (Paciente)</label>
@@ -127,7 +123,7 @@
 
                     <div class="mt-3">
                         <label class="form-label small fw-bold">Responsável pela Actualização</label>
-                        <input type="text" id="responsavel" class="form-control" placeholder="Responsável pelo Registo" required>
+                        <input type="text" id="responsavel" class="form-control" placeholder="Nome do digitador" required>
                     </div>
 
                     <button type="submit" class="btn-submit">SUBMETER DADOS</button>
@@ -142,7 +138,125 @@
         let userEmail = "";
         let dadosTemporarios = {};
 
-        // Máscara de Telefone e bloqueio de letras
+        const baseDados = {
+            "Manica": {
+                "Barue": ["HD Catandica", "CS Nhampassa", "CS Nhazonia", "CS Honde", "CS Cruzamento de Macossa", "CS Chiuala", "CS Nhassacara"],
+                "Cidade de Chimoio": ["CS Eduardo Mondlane", "CS Nhamaonha", "CS 1 de Maio", "CS 7 de Abril", "CS Vila Nova", "CS Chissui", "HP Chimoio", "CS Penitenciario Cabeca de Velho"],
+                "Gondola": ["CS Gondola Sede", "CS Inchope", "CS Amatongas", "CS Muda Serracao"],
+                "Guro": ["CS Guro-Sede", "CS Mandie"],
+                "Macate": ["CS Macate", "CS Marera", "CS Zembe Centro"],
+                "Machaze": ["CS Chitobe", "CS Save", "CS Bassane", "CS Mavende", "CS Chipopopo", "CS Chipodji", "CS Mazwissanga"],
+                "Manica": ["HD Manica", "CS Messica", "CS Machipanda", "CS 4º Congresso"],
+                "Mossurize": ["HD Espungabera", "CS Dacata", "CS Chaiva", "CS Gunhe", "CS Mupengo", "CS Garagua", "CS Mude"],
+                "Sussundenga": ["CS Sussundenga-Sede", "CS Dombe", "CS Munhinga", "CS Darue", "CS Sembezea"],
+                "Vanduzi": ["CS Vanduzi", "CS Matsinho", "CS IAC", "CS Chigodore", "CS Pungue Sul"]
+            },
+            "Niassa": {
+                "Cidade de Lichinga": ["CS Lichinga", "CS Chiuaula", "CS Namacula", "HP Lichinga", "CS Lulimire"],
+                "Cuamba": ["CS Cuamba", "HR Cuamba", "CS Adine 3", "CS Mitucue", "CS Meripo"],
+                "Lago": ["CS Metangula"],
+                "Mandimba": ["CS Mandimba", "CS Mitande"],
+                "Mecanhelas": ["CS Mecanhelas", "CS Entre-Lagos", "CS Chisaua"],
+                "Metarica": ["CS Metarica"],
+                "Ngauma": ["CS Massangulo"]
+            },
+            "Sofala": {
+                "Cidade da Beira": ["CS Ponta Gea", "CS Munhava", "CS Manga Nhaconjo", "CS Macurungo", "CS Manga Mascarenha", "CS Manga Loforte", "CS Inhamizua", "CS Chamba", "CS Chota", "CS Matadoro", "CS Ceramica", "CS Nhangau", "CS Marrocanhe", "HC Beira", "CS Cadeia Central da Beira"],
+                "Buzi": ["CS Bandua", "HR Buzi Sede", "CS Guara-Guara", "CS Bura", "CS Ampara"],
+                "Caia": ["HD Caia", "CS Sena", "CS Murraça", "CS Nhambalo"],
+                "Cheringoma": ["HR Inhaminga"],
+                "Chibabava": ["HR Muxungue", "CS Mutindire", "CS Chibabava -Sede", "CS Hoode"],
+                "Dondo": ["CS Dondo Sede", "CS Mafambisse", "CS Mutua", "CS Igreja Baptista", "CS Canhandula", "CS Samora Machel", "CS Savane", "CS Maxorote"],
+                "Gorongosa": ["CS Gorongosa - Sede"],
+                "Machanga": ["CS Machanga - Sede"],
+                "Marromeu": ["HR Marromeu", "CS Nensa"],
+                "Nhamatanda": ["HR Nhamatanda Sede", "CS Tica CSRII", "CS Lamego", "CS Metuchira Lomaco", "CS Siluvo CSRII", "CS Nharuchonga", "CS Chirassicua"]
+            },
+            "Tete": {
+                "Angonia": ["HR Ulongue", "CS Ulongue", "CS Domue", "CS Lifidzi"],
+                "Cahora Bassa": ["CS Chitima", "HR Songo"],
+                "Changara": ["CS Changara Sede", "CS Mazoe- Ponte", "CS Missaua", "CS Dzunga"],
+                "Chiuta": ["CS Manje"],
+                "Macanga": ["CS Furancungo"],
+                "Magoe": ["CS Magoe", "CS Mucumbura", "CS Daque"],
+                "Marara": ["CS Cachembe", "CS Boroma"],
+                "Moatize": ["CS Moatize", "CS Zóbue", "CS CFM", "CS 25 de Setembro", "CS Caphirizange", "CS Ncondedzi", "CS Mameme II", "CS Cateme"],
+                "Mutarara": ["HR Mutarara", "CS Inhangoma"],
+                "Cidade de Tete": ["CS Nº 2 - Bairro Matundo", "CS Nº 3 - Bairro Manyanga", "CS Nº 4 - Bairro Muthemba", "CS Nº 1 - Bairro Magaia", "CS Mpadue", "HP Tete"]
+            }
+        };
+
+        // --- SEARCH LOGIC FOR MOBILE ---
+        function handleSearch(query) {
+            const resultsBox = document.getElementById('searchResults');
+            if (query.length < 2) { resultsBox.style.display = 'none'; return; }
+            
+            let matches = [];
+            for (const p in baseDados) {
+                for (const d in baseDados[p]) {
+                    baseDados[p][d].forEach(us => {
+                        if (us.toLowerCase().includes(query.toLowerCase())) {
+                            matches.push({ us, d, p });
+                        }
+                    });
+                }
+            }
+
+            if (matches.length > 0) {
+                resultsBox.innerHTML = matches.map(m => `
+                    <div class="search-item" onclick="selectFromSearch('${m.us}', '${m.d}', '${m.p}')">
+                        <strong>${m.us}</strong>
+                        <span>${m.p} > ${m.d}</span>
+                    </div>
+                `).join('');
+                resultsBox.style.display = 'block';
+            } else {
+                resultsBox.style.display = 'none';
+            }
+        }
+
+        function selectFromSearch(us, dist, prov) {
+            document.getElementById('searchUS').value = us;
+            document.getElementById('searchResults').style.display = 'none';
+            
+            const provSelect = document.getElementById('prov');
+            provSelect.value = prov;
+            filtrarDistritos();
+            
+            const distSelect = document.getElementById('dist');
+            distSelect.value = dist;
+            filtrarUS();
+            
+            const usSelect = document.getElementById('us');
+            usSelect.value = us;
+        }
+
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('searchResults').style.display = 'none';
+            }
+        });
+
+        // --- EXISTING LOGIC ---
+        function filtrarDistritos() {
+            const p = document.getElementById("prov").value;
+            const d = document.getElementById("dist");
+            d.innerHTML = '<option value="">Distrito...</option>';
+            d.disabled = !p;
+            if (p) Object.keys(baseDados[p]).sort().forEach(x => d.options.add(new Option(x, x)));
+            document.getElementById("us").innerHTML = '<option value="">US...</option>';
+            document.getElementById("us").disabled = true;
+        }
+
+        function filtrarUS() {
+            const p = document.getElementById("prov").value, dist = document.getElementById("dist").value;
+            const u = document.getElementById("us");
+            u.innerHTML = '<option value="">US...</option>';
+            u.disabled = !dist;
+            if (dist) baseDados[p][dist].sort().forEach(x => u.options.add(new Option(x, x)));
+        }
+
         ['tel1', 'tel2', 'telConfidente'].forEach(id => {
             document.getElementById(id).addEventListener('input', function() {
                 this.value = this.value.replace(/\D/g, '').substring(0, 9);
@@ -183,70 +297,6 @@
             document.getElementById("loader").style.display = "none";
         }
 
-  const baseDados = {
-        "Manica": {
-            "Barue": ["HD Catandica", "CS Nhampassa", "CS Nhazonia", "CS Honde", "CS Cruzamento de Macossa", "CS Chiuala", "CS Nhassacara"],
-            "Cidade de Chimoio": ["CS Eduardo Mondlane", "CS Nhamaonha", "CS 1 de Maio", "CS 7 de Abril", "CS Vila Nova", "CS Chissui", "HP Chimoio", "CS Penitenciario Cabeca de Velho"],
-            "Gondola": ["CS Gondola Sede", "CS Inchope", "CS Amatongas", "CS Muda Serracao"],
-            "Guro": ["CS Guro-Sede", "CS Mandie"],
-            "Macate": ["CS Macate", "CS Marera", "CS Zembe Centro"],
-            "Machaze": ["CS Chitobe", "CS Save", "CS Bassane", "CS Mavende", "CS Chipopopo", "CS Chipodji", "CS Mazwissanga"],
-            "Manica": ["HD Manica", "CS Messica", "CS Machipanda", "CS 4º Congresso"],
-            "Mossurize": ["HD Espungabera", "CS Dacata", "CS Chaiva", "CS Gunhe", "CS Mupengo", "CS Garagua", "CS Mude"],
-            "Sussundenga": ["CS Sussundenga-Sede", "CS Dombe", "CS Munhinga", "CS Darue", "CS Sembezea"],
-            "Vanduzi": ["CS Vanduzi", "CS Matsinho", "CS IAC", "CS Chigodore", "CS Pungue Sul"]
-        },
-        "Niassa": {
-            "Cidade de Lichinga": ["CS Lichinga", "CS Chiuaula", "CS Namacula", "HP Lichinga", "CS Lulimire"],
-            "Cuamba": ["CS Cuamba", "HR Cuamba", "CS Adine 3", "CS Mitucue", "CS Meripo"],
-            "Lago": ["CS Metangula"],
-            "Mandimba": ["CS Mandimba", "CS Mitande"],
-            "Mecanhelas": ["CS Mecanhelas", "CS Entre-Lagos", "CS Chisaua"],
-            "Metarica": ["CS Metarica"],
-            "Ngauma": ["CS Massangulo"]
-        },
-        "Sofala": {
-            "Cidade da Beira": ["CS Ponta Gea", "CS Munhava", "CS Manga Nhaconjo", "CS Macurungo", "CS Manga Mascarenha", "CS Manga Loforte", "CS Inhamizua", "CS Chamba", "CS Chota", "CS Matadoro", "CS Ceramica", "CS Nhangau", "CS Marrocanhe", "HC Beira", "CS Cadeia Central da Beira"],
-            "Buzi": ["CS Bandua", "HR Buzi Sede", "CS Guara-Guara", "CS Bura", "CS Ampara"],
-            "Caia": ["HD Caia", "CS Sena", "CS Murraça", "CS Nhambalo"],
-            "Cheringoma": ["HR Inhaminga"],
-            "Chibabava": ["HR Muxungue", "CS Mutindire", "CS Chibabava -Sede", "CS Hoode"],
-            "Dondo": ["CS Dondo Sede", "CS Mafambisse", "CS Mutua", "CS Igreja Baptista", "CS Canhandula", "CS Samora Machel", "CS Savane", "CS Maxorote"],
-            "Gorongosa": ["CS Gorongosa - Sede"],
-            "Machanga": ["CS Machanga - Sede"],
-            "Marromeu": ["HR Marromeu", "CS Nensa"],
-            "Nhamatanda": ["HR Nhamatanda Sede", "CS Tica CSRII", "CS Lamego", "CS Metuchira Lomaco", "CS Siluvo CSRII", "CS Nharuchonga", "CS Chirassicua"]
-        },
-        "Tete": {
-            "Angonia": ["HR Ulongue", "CS Ulongue", "CS Domue", "CS Lifidzi"],
-            "Cahora Bassa": ["CS Chitima", "HR Songo"],
-            "Changara": ["CS Changara Sede", "CS Mazoe- Ponte", "CS Missaua", "CS Dzunga"],
-            "Chiuta": ["CS Manje"],
-            "Macanga": ["CS Furancungo"],
-            "Magoe": ["CS Magoe", "CS Mucumbura", "CS Daque"],
-            "Marara": ["CS Cachembe", "CS Boroma"],
-            "Moatize": ["CS Moatize", "CS Zóbue", "CS CFM", "CS 25 de Setembro", "CS Caphirizange", "CS Ncondedzi", "CS Mameme II", "CS Cateme"],
-            "Mutarara": ["HR Mutarara", "CS Inhangoma"],
-            "Cidade de Tete": ["CS Nº 2 - Bairro Matundo", "CS Nº 3 - Bairro Manyanga", "CS Nº 4 - Bairro Muthemba", "CS Nº 1 - Bairro Magaia", "CS Mpadue", "HP Tete"]
-        }
-    };
-
-        function filtrarDistritos() {
-            const p = document.getElementById("prov").value;
-            const d = document.getElementById("dist");
-            d.innerHTML = '<option value="">Distrito...</option>';
-            d.disabled = !p;
-            if (p) Object.keys(baseDados[p]).sort().forEach(x => d.options.add(new Option(x, x)));
-        }
-
-        function filtrarUS() {
-            const p = document.getElementById("prov").value, dist = document.getElementById("dist").value;
-            const u = document.getElementById("us");
-            u.innerHTML = '<option value="">US...</option>';
-            u.disabled = !dist;
-            if (dist) baseDados[p][dist].sort().forEach(x => u.options.add(new Option(x, x)));
-        }
-
         function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
         document.getElementById('appForm').onsubmit = function (e) {
@@ -254,9 +304,8 @@
             const t1 = document.getElementById("tel1").value;
             const tc = document.getElementById("telConfidente").value;
 
-            if (!validarTelefone(t1)) return Swal.fire('Erro', 'Telefone 1 inválido (Use 82-87).', 'error');
-            if (tc && !validarTelefone(tc)) return Swal.fire('Erro', 'Telefone do Confidente inválido.', 'error');
-
+            if (!validarTelefone(t1)) return Swal.fire('Erro', 'Telefone 1 inválido.', 'error');
+            
             const nidLimpo = document.getElementById("nid").value.replace(/_/g, "");
             dadosTemporarios = {
                 email_usuario: userEmail,
@@ -303,75 +352,16 @@
                         title: 'Sucesso!',
                         text: 'Dados guardados.',
                         icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonText: 'Inserir Outro',
-                        cancelButtonText: 'Sair'
-                    }).then((res) => {
-                        if (res.isConfirmed) {
-                            document.getElementById("appForm").reset();
-                            document.getElementById("nid").value = "__________/____/_____";
-                            document.getElementById("camposConfidente").style.display = "none";
-                            window.scrollTo(0, 0);
-                        } else { location.reload(); }
+                        confirmButtonText: 'Inserir Outro'
+                    }).then(() => {
+                        document.getElementById("appForm").reset();
+                        document.getElementById("nid").value = "__________/____/_____";
+                        document.getElementById("searchUS").value = "";
+                        document.getElementById("camposConfidente").style.display = "none";
+                        window.scrollTo(0, 0);
                     });
                 });
         }
-
-// 1. Inicializar a lista de busca ao carregar a página
-window.onload = function() {
-    const datalist = document.getElementById('listaUS');
-    for (const provincia in baseDados) {
-        for (const distrito in baseDados[provincia]) {
-            baseDados[provincia][distrito].forEach(unidade => {
-                const option = document.createElement('option');
-                option.value = unidade;
-                // Guardamos a info extra no texto para referência visual se necessário
-                option.innerText = `${distrito}, ${provincia}`; 
-                datalist.appendChild(option);
-            });
-        }
-    }
-};
-
-// 2. Função de Auto-preenchimento
-function autoPreencherCampos(valor) {
-    if (!valor) return;
-
-    for (const provincia in baseDados) {
-        for (const distrito in baseDados[provincia]) {
-            if (baseDados[provincia][distrito].includes(valor)) {
-                // Preenche Província
-                const selectProv = document.getElementById("prov");
-                selectProv.value = provincia;
-                
-                // Dispara o filtro de distritos manualmente
-                filtrarDistritos();
-                
-                // Preenche Distrito
-                const selectDist = document.getElementById("dist");
-                selectDist.value = distrito;
-                
-                // Dispara o filtro de US manualmente
-                filtrarUS();
-                
-                // Preenche a US
-                const selectUS = document.getElementById("us");
-                selectUS.value = valor;
-                
-                return; // Para assim que encontrar
-            }
-        }
-    }
-}
-
-        
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
