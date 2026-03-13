@@ -92,7 +92,9 @@
                     <input type="hidden" id="us_final">
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
-                    <input type="tel" id="nid" class="form-control" placeholder="____/____/_____" required oninput="mascaraNID(this)">
+            
+<input type="tel" id="nid" class="form-control mb-3" value="__________/____/_____" required oninput="aplicarMascaraNID(this)" style="font-family: monospace; letter-spacing: 2px; font-weight: bold; color: var(--primary);">
+
                     
                     <div class="form-check form-switch mb-3 mt-2">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
@@ -196,5 +198,6 @@
     </script>
 </body>
 </html>
+
 
 
