@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>ECHO Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --navy: #001F5B; --red: #BF0A30; --bg: #F4F7F9; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; padding: 20px; }
+        .stat-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: none; transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .v-value { font-size: 2rem; font-weight: 800; color: var(--navy); }
+        .v-label { color: #6c757d; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
+        .chart-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 20px; }
+        .table-custom { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header-dash { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn-refresh { background: var(--navy); color: white; border-radius: 12px; padding: 10px 20px; border: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-dash">
+        <div>
+            <h2 class="fw-bold" style="color: var(--navy)">Painel de Controle ECHO</h2>
+            <p class="text-muted">Monitoramento de registros em tempo real</p>
+        </div>
+        <button class="btn-refresh" onclick="location.reload()">Atualizar Dados</button>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="v-label">Total de Registros</div>
+                <div class="v-value" id="totalRegistros">...</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="v-label">US Atendidas</div>
+                <div class="v-value" id="totalUS">...</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card text-center">
+                <div class="v-label">Hoje</div>
+                <div class="v-value" id="totalHoje">...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h6 class="fw-bold mb-4" style="color: var(--navy)">Registros por Província</h6>
+                <canvas id="chartProvincia"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h6 class="fw-bold mb-4" style="color: var(--navy)">Produtividade (Top 5 Usuários)</h6>
+                <canvas id="chartUsuarios"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="table-custom">
+            <table class="table table-hover mb-0">
+                <thead style="background: var(--navy); color: white;">
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>NID</th>
+                        <th>Unidade Sanitária</th>
+                        <th>Responsável</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaUltimos">
+                    <tr><td colspan="4" class="text-center">Carregando registros...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // URL do seu script (a mesma que você já usa)
+    const API_URL = "SUA_SCRIPT_URL_AQUI"; 
+
+    window.onload = function() {
+        // Aqui você fará um fetch enviando um parâmetro para pegar os dados da planilha
+        fetch(API_URL + "?getStats=1")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('totalRegistros').innerText = data.total;
+                document.getElementById('totalUS').innerText = data.totalUS;
+                document.getElementById('totalHoje').innerText = data.hoje;
+
+                // Gráfico Província
+                new Chart(document.getElementById('chartProvincia'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(data.provincias),
+                        datasets: [{
+                            data: Object.values(data.provincias),
+                            backgroundColor: ['#001F5B', '#BF0A30', '#FFC107', '#28A745', '#17A2B8']
+                        }]
+                    },
+                    options: { plugins: { legend: { position: 'bottom' } } }
+                });
+
+                // Gráfico Usuários
+                new Chart(document.getElementById('chartUsuarios'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.usuarios),
+                        datasets: [{
+                            label: 'Registros',
+                            data: Object.values(data.usuarios),
+                            backgroundColor: '#001F5B'
+                        }]
+                    }
+                });
+
+                // Tabela
+                let html = "";
+                data.ultimos.forEach(r => {
+                    html += `<tr><td>${r.data}</td><td>${r.nid}</td><td>${r.us}</td><td>${r.resp}</td></tr>`;
+                });
+                document.getElementById('tabelaUltimos').innerHTML = html;
+            });
+    };
+</script>
+
+</body>
+</html>
