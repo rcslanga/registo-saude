@@ -204,27 +204,43 @@
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(dadosTemporarios) })
             .then(() => {
                 document.getElementById("loader").style.display = "none";
-                Swal.fire({
-                    icon: 'success', title: 'Dados Gravados!',
-                    text: 'Deseja iniciar um novo registro para esta mesma US?',
-                    showCancelButton: true,
-                    confirmButtonColor: '#001F5B',
-                    confirmButtonText: 'Novo Registro (Mesma US)',
-                    cancelButtonText: 'Fechar Sessão'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Limpa os dados do paciente mas MANTÉM a US e Responsável
-                        document.getElementById("nid").value = "__________/____/_____";
-                        document.getElementById("tel1").value = "";
-                        document.getElementById("tel2").value = "";
-                        document.getElementById("endereco").value = "";
-                        document.getElementById("temConfidente").checked = false;
-                        document.getElementById("nomeConfidente").value = "";
-                        document.getElementById("telConfidente").value = "";
-                        toggleConfidente();
-                        window.scrollTo(0,0);
-                    } else { location.reload(); }
-                });
+            Swal.fire({
+                icon: 'success', 
+                title: 'Dados Gravados!',
+                text: 'O registro foi enviado com sucesso.',
+                showCancelButton: true,
+                showDenyButton: true, // Habilita o terceiro botão
+                confirmButtonColor: '#001F5B',
+                denyButtonColor: '#6c757d',
+                cancelButtonColor: '#BF0A30',
+                confirmButtonText: 'Novo Registro (Mesma US)',
+             denyButtonText: 'Ver Dashboard',
+    cancelButtonText: 'Fechar Sessão'
+}).then((result) => {
+    if (result.isConfirmed) {
+        // --- MANTÉM TODA A SUA LÓGICA DE LIMPEZA ORIGINAL ---
+        document.getElementById("nid").value = "__________/____/_____";
+        document.getElementById("tel1").value = "";
+        document.getElementById("tel2").value = "";
+        document.getElementById("endereco").value = "";
+        document.getElementById("temConfidente").checked = false;
+        document.getElementById("nomeConfidente").value = "";
+        document.getElementById("telConfidente").value = "";
+        toggleConfidente();
+        window.scrollTo(0,0);
+        // ---------------------------------------------------
+    } else if (result.isDenied) {
+        // Redireciona para o Dashboard (ajuste o nome do arquivo se necessário)
+        window.location.href = "dashboard.html"; 
+    } else {
+        // Botão de Fechar/Cancelar
+        location.reload(); 
+    }
+});
+
+
+
+                
             });
         }
         window.onload = () => { document.getElementById("loginScreen").style.display = "flex"; };
