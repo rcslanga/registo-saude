@@ -121,10 +121,14 @@
                     </div>
                     <textarea id="endereco" class="form-control mt-3" rows="2" placeholder="Endereço Completo" required></textarea>
 
-                    <div class="mt-3">
-                        <label class="form-label small fw-bold">Responsável pela Actualização</label>
-                        <input type="text" id="responsavel" class="form-control" placeholder="Nome do digitador" required>
-                    </div>
+<div class="mt-3">
+    <label class="form-label small fw-bold">Responsável pela Actualização</label>
+    <select id="responsavel" class="form-select" required disabled>
+        <option value="">A carregar responsáveis...</option>
+    </select>
+</div>
+                    
+                
 
                     <button type="submit" class="btn-submit">SUBMETER DADOS</button>
                 </form>
@@ -279,23 +283,44 @@
         }
 
         function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
-
-        async function handleCredentialResponse(response) {
-            const payload = parseJwt(response.credential);
-            userEmail = payload.email.toLowerCase().trim();
-            document.getElementById("loader").style.display = "flex";
-            try {
-                const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
-                const status = await res.text();
-                if (status.includes("AUTORIZADO")) {
-                    document.getElementById("loginScreen").style.display = "none";
-                    document.getElementById("appContent").style.display = "block";
-                } else {
-                    Swal.fire('Acesso Negado', 'E-mail não autorizado.', 'error');
-                }
-            } catch (e) { Swal.fire('Erro', 'Falha na rede.', 'error'); }
-            document.getElementById("loader").style.display = "none";
+async function handleCredentialResponse(response) {
+    const payload = parseJwt(response.credential);
+    userEmail = payload.email.toLowerCase().trim();
+    document.getElementById("loader").style.display = "flex";
+    
+    try {
+        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
+        const statusRaw = await res.text();
+        
+        if (statusRaw.startsWith("AUTORIZADO")) {
+            const partes = statusRaw.split("|");
+            const meuNome = partes[1];           // Nome de quem fez login
+            const listaNomes = partes[2].split(","); // Lista de todos os colegas
+            
+            const selectResp = document.getElementById("responsavel");
+            selectResp.innerHTML = '<option value="">Seleccione o Responsável...</option>';
+            
+            listaNomes.forEach(nome => {
+                let opt = document.createElement("option");
+                opt.value = nome;
+                opt.innerText = nome;
+                // Seleciona automaticamente o nome de quem logou
+                if (nome === meuNome) opt.selected = true;
+                selectResp.appendChild(opt);
+            });
+            
+            selectResp.disabled = false;
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("appContent").style.display = "block";
+            
+        } else {
+            Swal.fire('Acesso Negado', 'E-mail não autorizado para o ECHO.', 'error');
         }
+    } catch (e) { 
+        Swal.fire('Erro', 'Falha ao conectar com o servidor do ECHO.', 'error'); 
+    }
+    document.getElementById("loader").style.display = "none";
+}
 
         function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
@@ -365,3 +390,4 @@
     </script>
 </body>
 </html>
+
