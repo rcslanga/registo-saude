@@ -25,7 +25,6 @@
         .btn-submit { background: linear-gradient(135deg, var(--primary) 0%, #004d99 100%); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 700; width: 100%; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 51, 102, 0.2); }
         .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         
-        /* MOBILE SEARCH STYLES */
         .search-container { position: relative; }
         .search-results {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -121,14 +120,12 @@
                     </div>
                     <textarea id="endereco" class="form-control mt-3" rows="2" placeholder="Endereço Completo" required></textarea>
 
-<div class="mt-3">
-    <label class="form-label small fw-bold">Responsável pela Actualização</label>
-    <select id="responsavel" class="form-select" required disabled>
-        <option value="">A carregar responsáveis...</option>
-    </select>
-</div>
-                    
-                
+                    <div class="mt-4">
+                        <label class="form-label small fw-bold">Responsável pela Actualização</label>
+                        <select id="responsavel" class="form-select" required disabled style="border: 1.5px solid var(--primary);">
+                            <option value="">A carregar responsáveis...</option>
+                        </select>
+                    </div>
 
                     <button type="submit" class="btn-submit">SUBMETER DADOS</button>
                 </form>
@@ -190,11 +187,9 @@
             }
         };
 
-        // --- SEARCH LOGIC FOR MOBILE ---
         function handleSearch(query) {
             const resultsBox = document.getElementById('searchResults');
             if (query.length < 2) { resultsBox.style.display = 'none'; return; }
-            
             let matches = [];
             for (const p in baseDados) {
                 for (const d in baseDados[p]) {
@@ -205,44 +200,26 @@
                     });
                 }
             }
-
             if (matches.length > 0) {
-                resultsBox.innerHTML = matches.map(m => `
-                    <div class="search-item" onclick="selectFromSearch('${m.us}', '${m.d}', '${m.p}')">
-                        <strong>${m.us}</strong>
-                        <span>${m.p} > ${m.d}</span>
-                    </div>
-                `).join('');
+                resultsBox.innerHTML = matches.map(m => `<div class="search-item" onclick="selectFromSearch('${m.us}', '${m.d}', '${m.p}')"><strong>${m.us}</strong><span>${m.p} > ${m.d}</span></div>`).join('');
                 resultsBox.style.display = 'block';
-            } else {
-                resultsBox.style.display = 'none';
-            }
+            } else { resultsBox.style.display = 'none'; }
         }
 
         function selectFromSearch(us, dist, prov) {
             document.getElementById('searchUS').value = us;
             document.getElementById('searchResults').style.display = 'none';
-            
-            const provSelect = document.getElementById('prov');
-            provSelect.value = prov;
+            document.getElementById('prov').value = prov;
             filtrarDistritos();
-            
-            const distSelect = document.getElementById('dist');
-            distSelect.value = dist;
+            document.getElementById('dist').value = dist;
             filtrarUS();
-            
-            const usSelect = document.getElementById('us');
-            usSelect.value = us;
+            document.getElementById('us').value = us;
         }
 
-        // Close search results when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('searchResults').style.display = 'none';
-            }
+            if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none';
         });
 
-        // --- EXISTING LOGIC ---
         function filtrarDistritos() {
             const p = document.getElementById("prov").value;
             const d = document.getElementById("dist");
@@ -261,17 +238,6 @@
             if (dist) baseDados[p][dist].sort().forEach(x => u.options.add(new Option(x, x)));
         }
 
-        ['tel1', 'tel2', 'telConfidente'].forEach(id => {
-            document.getElementById(id).addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '').substring(0, 9);
-            });
-        });
-
-        function validarTelefone(num) {
-            if (!num || num === "N/A") return true;
-            return /^(82|83|84|85|86|87)[0-9]{7}$/.test(num);
-        }
-
         function aplicarMascaraNID(i) {
             let v = i.value.replace(/\D/g, "").substring(0, 19);
             let m = "__________/____/_____", r = "", nI = 0;
@@ -283,54 +249,48 @@
         }
 
         function parseJwt(t) { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); }
-async function handleCredentialResponse(response) {
-    const payload = parseJwt(response.credential);
-    userEmail = payload.email.toLowerCase().trim();
-    document.getElementById("loader").style.display = "flex";
-    
-    try {
-        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
-        const statusRaw = await res.text();
-        
-        if (statusRaw.startsWith("AUTORIZADO")) {
-            const partes = statusRaw.split("|");
-            const meuNome = partes[1];           // Nome de quem fez login
-            const listaNomes = partes[2].split(","); // Lista de todos os colegas
-            
-            const selectResp = document.getElementById("responsavel");
-            selectResp.innerHTML = '<option value="">Seleccione o Responsável...</option>';
-            
-            listaNomes.forEach(nome => {
-                let opt = document.createElement("option");
-                opt.value = nome;
-                opt.innerText = nome;
-                // Seleciona automaticamente o nome de quem logou
-                if (nome === meuNome) opt.selected = true;
-                selectResp.appendChild(opt);
-            });
-            
-            selectResp.disabled = false;
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("appContent").style.display = "block";
-            
-        } else {
-            Swal.fire('Acesso Negado', 'E-mail não autorizado para o ECHO.', 'error');
+
+        // --- LÓGICA DE LOGIN ATUALIZADA ---
+        async function handleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            userEmail = payload.email.toLowerCase().trim();
+            document.getElementById("loader").style.display = "flex";
+            try {
+                const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
+                const statusRaw = await res.text();
+                
+                if (statusRaw.startsWith("AUTORIZADO")) {
+                    const partes = statusRaw.split("|");
+                    const meuNome = partes[1];           
+                    const listaNomes = partes[2].split(","); 
+                    
+                    const selectResp = document.getElementById("responsavel");
+                    selectResp.innerHTML = '<option value="">Seleccione o Responsável...</option>';
+                    
+                    listaNomes.forEach(nome => {
+                        let opt = document.createElement("option");
+                        opt.value = nome;
+                        opt.innerText = nome;
+                        if (nome === meuNome) opt.selected = true;
+                        selectResp.appendChild(opt);
+                    });
+                    
+                    selectResp.disabled = false;
+                    document.getElementById("loginScreen").style.display = "none";
+                    document.getElementById("appContent").style.display = "block";
+                } else {
+                    Swal.fire('Acesso Negado', 'E-mail não autorizado para o ECHO.', 'error');
+                }
+            } catch (e) { 
+                Swal.fire('Erro', 'Falha ao conectar com o servidor do ECHO.', 'error'); 
+            }
+            document.getElementById("loader").style.display = "none";
         }
-    } catch (e) { 
-        Swal.fire('Erro', 'Falha ao conectar com o servidor do ECHO.', 'error'); 
-    }
-    document.getElementById("loader").style.display = "none";
-}
 
         function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
 
         document.getElementById('appForm').onsubmit = function (e) {
             e.preventDefault();
-            const t1 = document.getElementById("tel1").value;
-            const tc = document.getElementById("telConfidente").value;
-
-            if (!validarTelefone(t1)) return Swal.fire('Erro', 'Telefone 1 inválido.', 'error');
-            
             const nidLimpo = document.getElementById("nid").value.replace(/_/g, "");
             dadosTemporarios = {
                 email_usuario: userEmail,
@@ -340,20 +300,13 @@ async function handleCredentialResponse(response) {
                 nid: nidLimpo,
                 tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
                 nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
-                tel_confidente: tc || "N/A",
-                tel1: t1,
+                tel_confidente: document.getElementById("telConfidente").value || "N/A",
+                tel1: document.getElementById("tel1").value,
                 tel2: document.getElementById("tel2").value || "N/A",
                 endereco: document.getElementById("endereco").value,
                 responsavel: document.getElementById("responsavel").value
             };
-
-            Swal.fire({
-                title: 'Confirmar?',
-                text: "NID: " + nidLimpo,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Enviar'
-            }).then((r) => { if (r.isConfirmed) enviarComGps(); });
+            Swal.fire({ title: 'Confirmar?', text: "NID: " + nidLimpo, icon: 'question', showCancelButton: true, confirmButtonText: 'Enviar' }).then((r) => { if (r.isConfirmed) enviarComGps(); });
         };
 
         function enviarComGps() {
@@ -373,12 +326,7 @@ async function handleCredentialResponse(response) {
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dadosTemporarios) })
                 .then(() => {
                     document.getElementById("loader").style.display = "none";
-                    Swal.fire({
-                        title: 'Sucesso!',
-                        text: 'Dados guardados.',
-                        icon: 'success',
-                        confirmButtonText: 'Inserir Outro'
-                    }).then(() => {
+                    Swal.fire({ title: 'Sucesso!', text: 'Dados guardados.', icon: 'success', confirmButtonText: 'Inserir Outro' }).then(() => {
                         document.getElementById("appForm").reset();
                         document.getElementById("nid").value = "__________/____/_____";
                         document.getElementById("searchUS").value = "";
@@ -390,4 +338,3 @@ async function handleCredentialResponse(response) {
     </script>
 </body>
 </html>
-
