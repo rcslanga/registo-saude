@@ -72,6 +72,17 @@
 <input type="text" id="searchUS" class="form-control mb-3" placeholder="Digite o nome da US (ex: Macurungo)" list="listaUS" oninput="autoPreencherCampos(this.value)">
 <datalist id="listaUS"></datalist>
 
+
+
+
+
+            
+            <div class="form-card">
+                <form id="appForm">
+                   <div class="section-header"><i class="fas fa-search"></i> Pesquisar Unidade Sanitária</div>
+<input type="text" id="searchUS" class="form-control mb-3" placeholder="Digite o nome da US (ex: Macurungo)" list="listaUS" oninput="autoPreencherCampos(this.value)">
+<datalist id="listaUS"></datalist>
+
 <div class="row">
     <div class="col-6">
         <label class="small fw-bold">Província</label>
@@ -94,26 +105,6 @@
 <select id="us" class="form-select mb-3" required disabled>
     <option value="">US...</option>
 </select>
-
-
-
-            
-            <div class="form-card">
-                <form id="appForm">
-                    <div class="section-header"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
-                    <select id="prov" class="form-select mb-3" required onchange="filtrarDistritos()">
-                        <option value="">Província...</option>
-                        <option value="Manica">Manica</option>
-                        <option value="Niassa">Niassa</option>
-                        <option value="Sofala">Sofala</option>
-                        <option value="Tete">Tete</option>
-                    </select>
-                    <select id="dist" class="form-select mb-3" required disabled onchange="filtrarUS()">
-                        <option value="">Distrito...</option>
-                    </select>
-                    <select id="us" class="form-select mb-3" required disabled>
-                        <option value="">US...</option>
-                    </select>
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
                     <label class="form-label small fw-bold">NID (Paciente)</label>
@@ -338,6 +329,7 @@ function autoPreencherCampos(valor) {
     </script>
 </body>
 </html>
+
 
 
 
