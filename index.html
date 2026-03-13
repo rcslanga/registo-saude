@@ -92,17 +92,14 @@
                     <input type="hidden" id="us_final">
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
-<label class="form-label-sm">NID (Ex: 1010101010/2026/00001)</label>
+<label class="form-label-sm">NID do Paciente</label>
 <input type="tel" 
        id="nid" 
        class="form-control mb-3" 
-       placeholder="0000000000/0000/00000" 
+       value="__________/____/_____" 
        required 
-       oninput="mascaraNID(this)" 
-       maxlength="21"
-       style="font-family: 'Courier New', monospace; letter-spacing: 1px; font-weight: bold; color: var(--navy); font-size: 1.15rem;">
-
-                    
+       oninput="aplicarMascaraNID(this)"
+       style="font-family: 'Courier New', monospace; letter-spacing: 2px; font-weight: bold; color: var(--navy); font-size: 1.15rem;">
                     
                     <div class="form-check form-switch mb-3 mt-2">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
@@ -154,19 +151,27 @@
             document.getElementById('searchResults').style.display = 'none';
         }
 
-    function mascaraNID(i) {
-    let v = i.value.replace(/\D/g, ""); // Remove tudo o que não é número
+function aplicarMascaraNID(i) {
+    // 1. Pega apenas os números digitados (máximo 19)
+    let v = i.value.replace(/\D/g, "").substring(0, 19);
     
-    // Aplica a lógica: 10 dígitos / 4 dígitos / 5 dígitos
-    if (v.length > 10 && v.length <= 14) {
-        v = v.replace(/^(\d{10})(\d+)/, "$1/$2");
-    } else if (v.length > 14) {
-        v = v.replace(/^(\d{10})(\d{4})(\d+)/, "$1/$2/$3");
+    // 2. Define o molde fixo do Projeto ECHO
+    let m = "__________/____/_____"; 
+    let r = "";
+    let nI = 0;
+
+    // 3. Reconstrói o campo: se houver número, coloca o número; se não, mantém o traço
+    for (let x = 0; x < m.length; x++) {
+        if (m[x] === "/") {
+            r += "/";
+        } else {
+            r += (nI < v.length) ? v[nI++] : "_";
+        }
     }
     
-    i.value = v;
+    // 4. Devolve o valor formatado ao campo
+    i.value = r;
 }
-
         async function handleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
             userEmail = payload.email.toLowerCase().trim();
@@ -206,6 +211,7 @@
     </script>
 </body>
 </html>
+
 
 
 
