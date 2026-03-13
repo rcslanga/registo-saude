@@ -286,9 +286,59 @@
                     });
                 });
         }
+
+// 1. Inicializar a lista de busca ao carregar a página
+window.onload = function() {
+    const datalist = document.getElementById('listaUS');
+    for (const provincia in baseDados) {
+        for (const distrito in baseDados[provincia]) {
+            baseDados[provincia][distrito].forEach(unidade => {
+                const option = document.createElement('option');
+                option.value = unidade;
+                // Guardamos a info extra no texto para referência visual se necessário
+                option.innerText = `${distrito}, ${provincia}`; 
+                datalist.appendChild(option);
+            });
+        }
+    }
+};
+
+// 2. Função de Auto-preenchimento
+function autoPreencherCampos(valor) {
+    if (!valor) return;
+
+    for (const provincia in baseDados) {
+        for (const distrito in baseDados[provincia]) {
+            if (baseDados[provincia][distrito].includes(valor)) {
+                // Preenche Província
+                const selectProv = document.getElementById("prov");
+                selectProv.value = provincia;
+                
+                // Dispara o filtro de distritos manualmente
+                filtrarDistritos();
+                
+                // Preenche Distrito
+                const selectDist = document.getElementById("dist");
+                selectDist.value = distrito;
+                
+                // Dispara o filtro de US manualmente
+                filtrarUS();
+                
+                // Preenche a US
+                const selectUS = document.getElementById("us");
+                selectUS.value = valor;
+                
+                return; // Para assim que encontrar
+            }
+        }
+    }
+}
+
+        
     </script>
 </body>
 </html>
+
 
 
 
