@@ -119,7 +119,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx60Ti4uV1YDBNU-q07J5lhcIsbe-NrkJRvB8eScN3xVhzHbmYxue4W6XnFKUjQypeDig/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqjC0x-JKnEk6Ohz8bCnOofkEhKl9AkVm_-EdyGdSHgLUtklUpxRIYgRU8kcPCZ1WiDg/exec";
         let todasUS = [];
         let userEmail = "";
 
@@ -144,11 +144,18 @@
             document.getElementById('searchResults').style.display = 'none';
         }
 
-        function mascaraNID(i) {
-            let v = i.value.replace(/\D/g, "").substring(0, 19), m = "__________/____/_____", r = "", nI = 0;
-            for (let x = 0; x < m.length; x++) { if (m[x] === "/") r += "/"; else r += (nI < v.length) ? v[nI++] : "_"; }
-            i.value = r;
-        }
+    function mascaraNID(i) {
+    let v = i.value.replace(/\D/g, ""); // Remove tudo o que não é número
+    
+    // Aplica a lógica: 10 dígitos / 4 dígitos / 5 dígitos
+    if (v.length > 10 && v.length <= 14) {
+        v = v.replace(/^(\d{10})(\d+)/, "$1/$2");
+    } else if (v.length > 14) {
+        v = v.replace(/^(\d{10})(\d{4})(\d+)/, "$1/$2/$3");
+    }
+    
+    i.value = v;
+}
 
         async function handleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
@@ -189,4 +196,5 @@
     </script>
 </body>
 </html>
+
 
