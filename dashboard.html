@@ -132,6 +132,28 @@
                 document.getElementById('tabelaUltimos').innerHTML = html;
             });
     };
+
+window.onload = function() {
+    // Certifique-se que esta URL é a do seu script atualizado (terminado em /exec)
+    const API_URL = "https://script.google.com/macros/s/AKfycbzK2k2mf6T9LAU1LaAGR8VGrf2So3eI2BjyrSMJWrR7MjUPyAzdZUABWPdOdn5TqgSLmw/exec";
+
+    fetch(API_URL + "?getStats=1", {
+        method: "GET",
+        mode: "cors" // Força o modo CORS
+    })
+    .then(res => res.json())
+    .then(data => {
+        // ... restante do código para preencher os gráficos ...
+        console.log("Dados carregados com sucesso!");
+    })
+    .catch(err => {
+        console.error("Erro na conexão:", err);
+        // Exibe o erro na tela para você saber o que houve
+        document.getElementById('totalRegistros').innerText = "Erro";
+    });
+};
+
+    
 </script>
 
 </body>
