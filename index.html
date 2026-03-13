@@ -16,18 +16,21 @@
         .form-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin: 15px; border: none; }
         .section-header { color: var(--navy); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; border-bottom: 2px solid #EEE; padding-bottom: 8px; margin: 20px 0 15px 0; display: flex; align-items: center; }
         .section-header i { margin-right: 10px; color: var(--red); }
-        .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1.5px solid #E0E0E0; margin-bottom: 12px; }
+        .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1.5px solid #E0E0E0; margin-bottom: 12px; font-size: 16px; }
         .btn-submit { background: var(--navy); color: white; border: none; border-radius: 16px; padding: 18px; font-weight: 700; width: 100%; box-shadow: 0 6px 20px rgba(0,31,91,0.2); margin-top: 10px; }
         .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .search-results { background: white; border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; display: none; border: 1px solid #ddd; margin-top: -12px; margin-bottom: 15px; }
         .search-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
         #appContent { display: none; }
+        /* Estilo da Tabela de Confirmação */
+        .confirm-table { width: 100%; font-size: 0.9rem; text-align: left; }
+        .confirm-table th { color: var(--navy); width: 40%; padding: 5px 0; }
     </style>
 </head>
 <body>
     <div class="loading-overlay" id="loader">
         <div class="spinner-grow text-primary" style="color: var(--navy) !important;"></div>
-        <p class="mt-2 fw-bold" style="color: var(--navy)">Processando...</p>
+        <p class="mt-2 fw-bold" style="color: var(--navy)">A processar...</p>
     </div>
 
     <div class="app-shell">
@@ -44,13 +47,13 @@
             <div class="app-header"><img src="Novo logo ECHO 2025.png" style="width: 110px; filter: brightness(0) invert(1);"></div>
             <div class="welcome-box">
                 <h6 class="fw-bold mb-1" id="txtOla" style="color: var(--navy)">Olá!</h6>
-                <p class="text-muted small mb-0">Que actualização pretende fazer hoje?</p>
+                <p class="text-muted small mb-0">Confirme os dados antes de submeter.</p>
             </div>
 
             <div class="form-card">
                 <form id="appForm">
                     <div class="section-header"><i class="fas fa-search"></i> Unidade Sanitária</div>
-                    <input type="text" id="searchUS" class="form-control" placeholder="Pesquisar US..." oninput="executarPesquisa(this.value)">
+                    <input type="text" id="searchUS" class="form-control" placeholder="Escreva o nome da US..." oninput="executarPesquisa(this.value)">
                     <div id="searchResults" class="search-results"></div>
                     <div class="row">
                         <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly></div>
@@ -75,12 +78,12 @@
                     <div class="section-header"><i class="fas fa-phone"></i> Contactos</div>
                     <input type="tel" id="tel1" class="form-control" placeholder="Telefone 1 (Principal)" maxlength="9" required>
                     <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2 (Opcional)" maxlength="9">
-                    <textarea id="endereco" class="form-control" placeholder="Endereço/Referência" rows="2" required></textarea>
+                    <textarea id="endereco" class="form-control" placeholder="Endereço/Referência Actualizada" rows="2" required></textarea>
 
-                    <div class="section-header"><i class="fas fa-id-badge"></i> Responsável</div>
+                    <div class="section-header"><i class="fas fa-id-badge"></i> Digitador</div>
                     <select id="responsavel" class="form-select" required></select>
 
-                    <button type="submit" class="btn-submit">SUBMETER DADOS</button>
+                    <button type="submit" class="btn-submit">VERIFICAR E SUBMETER</button>
                 </form>
             </div>
         </div>
@@ -113,10 +116,11 @@
             document.getElementById('searchResults').style.display = 'none';
         }
 
+        // MÁSCARA NID CORRIGIDA (SEM LOOP)
         function aplicarMascaraNID(i) {
-            let pos = i.selectionStart;
-            let originalLength = i.value.length;
-            let v = i.value.replace(/\D/g, "").substring(0, 19);
+            let v = i.value.replace(/\D/g, "");
+            if (v.length > 19) v = v.substring(0, 19); // Trava estrita nos 19
+            
             let m = "__________/____/_____"; 
             let r = "";
             let nI = 0;
@@ -125,10 +129,6 @@
                 else r += (nI < v.length) ? v[nI++] : "_";
             }
             i.value = r;
-            // Ajuste do cursor para não saltar
-            let newPos = pos + (i.value.length - originalLength);
-            if (i.value[pos-1] === "/") newPos++;
-            i.setSelectionRange(newPos, newPos);
         }
 
         async function handleCredentialResponse(response) {
@@ -142,7 +142,7 @@
                     document.getElementById("txtOla").innerText = "Olá, " + data.usuario + "!";
                     todasUS = data.unidades;
                     const sel = document.getElementById("responsavel");
-                    sel.innerHTML = '<option value="">Seleccione o nome...</option>';
+                    sel.innerHTML = '<option value="">Quem está a digitar?</option>';
                     data.responsaveis.forEach(n => {
                         let opt = new Option(n, n);
                         if(n.trim() === data.usuario.trim()) opt.selected = true;
@@ -151,36 +151,54 @@
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("appContent").style.display = "block";
                 }
-            } catch (e) { Swal.fire('Erro', 'Falha ao sincronizar.', 'error'); }
+            } catch (e) { Swal.fire('Erro', 'Falha ao sincronizar dados.', 'error'); }
             document.getElementById("loader").style.display = "none";
         }
 
         document.getElementById('appForm').onsubmit = function(e) {
             e.preventDefault();
-            const nidLimpo = document.getElementById("nid").value.replace(/_/g, "");
-            if(nidLimpo.length < 21) return Swal.fire('NID Incompleto', 'Por favor preencha todos os dígitos.', 'warning');
+            const nidFinal = document.getElementById("nid").value;
+            if(nidFinal.includes("_")) return Swal.fire('NID Incompleto', 'Preencha os 19 dígitos do NID.', 'warning');
+
+            const tel1 = document.getElementById("tel1").value;
+            const tel2 = document.getElementById("tel2").value || "N/A";
+            const morada = document.getElementById("endereco").value;
 
             dadosTemporarios = {
                 email_usuario: userEmail,
                 provincia: document.getElementById("prov").value,
                 distrito: document.getElementById("dist").value,
                 us: document.getElementById("us_final").value || document.getElementById("searchUS").value,
-                nid: nidLimpo,
+                nid: nidFinal,
                 tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
                 nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
                 tel_confidente: document.getElementById("telConfidente").value || "N/A",
-                tel1: document.getElementById("tel1").value,
-                tel2: document.getElementById("tel2").value || "N/A",
-                endereco: document.getElementById("endereco").value,
+                tel1: tel1,
+                tel2: tel2,
+                endereco: morada,
                 responsavel: document.getElementById("responsavel").value
             };
 
+            // PÁGINA DE CONFIRMAÇÃO (SweetAlert2)
             Swal.fire({
-                title: 'Gravar Dados?',
-                icon: 'question',
+                title: '<span style="color:var(--navy)">Confirmar Actualização</span>',
+                html: `
+                    <div style="text-align:left; border: 1px solid #eee; padding: 10px; border-radius: 10px;">
+                        <table class="confirm-table">
+                            <tr><th>NID:</th><td>${nidFinal}</td></tr>
+                            <tr><th>Tel 1:</th><td>${tel1}</td></tr>
+                            <tr><th>Tel 2:</th><td>${tel2}</td></tr>
+                            <tr><th>Morada:</th><td>${morada}</td></tr>
+                            <tr><th>Digitador:</th><td>${dadosTemporarios.responsavel}</td></tr>
+                        </table>
+                    </div>
+                    <p class="mt-3 small text-muted">Deseja gravar estes dados na Folha1?</p>
+                `,
                 showCancelButton: true,
                 confirmButtonColor: '#001F5B',
-                confirmButtonText: 'Confirmar'
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, Gravar Agora',
+                cancelButtonText: 'Corrigir'
             }).then((result) => { if (result.isConfirmed) capturarGPS(); });
         };
 
@@ -198,24 +216,18 @@
         }
 
         function finalizar() {
-            // Mudança para garantir a gravação: Usamos mode 'cors' e tratamos o JSON
             fetch(SCRIPT_URL, { 
                 method: 'POST', 
                 body: JSON.stringify(dadosTemporarios) 
             })
-            .then(res => {
+            .then(() => {
                 document.getElementById("loader").style.display = "none";
-                Swal.fire('Sucesso!', 'Dados gravados na Folha1.', 'success').then(() => {
+                Swal.fire('Sucesso!', 'Dados gravados com sucesso.', 'success').then(() => {
                     document.getElementById("appForm").reset();
                     document.getElementById("nid").value = "__________/____/_____";
                     document.getElementById("camposConfidente").style.display = "none";
                     window.scrollTo(0,0);
                 });
-            })
-            .catch(err => {
-                document.getElementById("loader").style.display = "none";
-                // Mesmo com erro de CORS, os dados costumam entrar no Google Sheets
-                Swal.fire('Aviso', 'Submissão enviada. Verifique a planilha.', 'info');
             });
         }
     </script>
