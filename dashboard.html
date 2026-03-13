@@ -20,7 +20,6 @@
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header-dash">
         <div>
@@ -60,7 +59,7 @@
         </div>
         <div class="col-md-6">
             <div class="chart-container">
-                <h6 class="fw-bold mb-4" style="color: var(--navy)">Produtividade (Top 5 Usuários)</h6>
+                <h6 class="fw-bold mb-4" style="color: var(--navy)">Produtividade (Top Usuários)</h6>
                 <canvas id="chartUsuarios"></canvas>
             </div>
         </div>
@@ -78,7 +77,7 @@
                     </tr>
                 </thead>
                 <tbody id="tabelaUltimos">
-                    <tr><td colspan="4" class="text-center">Carregando registros...</td></tr>
+                    <tr><td colspan="4" class="text-center">A carregar registros...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -86,75 +85,62 @@
 </div>
 
 <script>
-    // URL do seu script (a mesma que você já usa)
-    const API_URL = "SUA_SCRIPT_URL_AQUI"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzK2k2mf6T9LAU1LaAGR8VGrf2So3eI2BjyrSMJWrR7MjUPyAzdZUABWPdOdn5TqgSLmw/exec";
 
     window.onload = function() {
-        // Aqui você fará um fetch enviando um parâmetro para pegar os dados da planilha
-        fetch(API_URL + "?getStats=1")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('totalRegistros').innerText = data.total;
-                document.getElementById('totalUS').innerText = data.totalUS;
-                document.getElementById('totalHoje').innerText = data.hoje;
+        fetch(API_URL + "?getStats=1", {
+            method: "GET"
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Atualizar contadores
+            document.getElementById('totalRegistros').innerText = data.total;
+            document.getElementById('totalUS').innerText = data.totalUS;
+            document.getElementById('totalHoje').innerText = data.hoje;
 
-                // Gráfico Província
-                new Chart(document.getElementById('chartProvincia'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(data.provincias),
-                        datasets: [{
-                            data: Object.values(data.provincias),
-                            backgroundColor: ['#001F5B', '#BF0A30', '#FFC107', '#28A745', '#17A2B8']
-                        }]
-                    },
-                    options: { plugins: { legend: { position: 'bottom' } } }
-                });
+            // Gráfico Província
+            new Chart(document.getElementById('chartProvincia'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.provincias),
+                    datasets: [{
+                        data: Object.values(data.provincias),
+                        backgroundColor: ['#001F5B', '#BF0A30', '#FFC107', '#28A745', '#17A2B8']
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
 
-                // Gráfico Usuários
-                new Chart(document.getElementById('chartUsuarios'), {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(data.usuarios),
-                        datasets: [{
-                            label: 'Registros',
-                            data: Object.values(data.usuarios),
-                            backgroundColor: '#001F5B'
-                        }]
-                    }
-                });
+            // Gráfico Usuários
+            new Chart(document.getElementById('chartUsuarios'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.usuarios),
+                    datasets: [{
+                        label: 'Registros',
+                        data: Object.values(data.usuarios),
+                        backgroundColor: '#001F5B'
+                    }]
+                }
+            });
 
-                // Tabela
-                let html = "";
+            // Tabela
+            let html = "";
+            if (data.ultimos && data.ultimos.length > 0) {
                 data.ultimos.forEach(r => {
                     html += `<tr><td>${r.data}</td><td>${r.nid}</td><td>${r.us}</td><td>${r.resp}</td></tr>`;
                 });
-                document.getElementById('tabelaUltimos').innerHTML = html;
-            });
+            } else {
+                html = '<tr><td colspan="4" class="text-center">Nenhum dado encontrado.</td></tr>';
+            }
+            document.getElementById('tabelaUltimos').innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Erro:", err);
+            document.getElementById('totalRegistros').innerText = "Erro";
+            document.getElementById('tabelaUltimos').innerHTML = '<tr><td colspan="4" class="text-center text-danger">Falha ao carregar dados.</td></tr>';
+        });
     };
-
-window.onload = function() {
-    // Certifique-se que esta URL é a do seu script atualizado (terminado em /exec)
-    const API_URL = "https://script.google.com/macros/s/AKfycbzK2k2mf6T9LAU1LaAGR8VGrf2So3eI2BjyrSMJWrR7MjUPyAzdZUABWPdOdn5TqgSLmw/exec";
-
-    fetch(API_URL + "?getStats=1", {
-        method: "GET",
-        mode: "cors" // Força o modo CORS
-    })
-    .then(res => res.json())
-    .then(data => {
-        // ... restante do código para preencher os gráficos ...
-        console.log("Dados carregados com sucesso!");
-    })
-    .catch(err => {
-        console.error("Erro na conexão:", err);
-        // Exibe o erro na tela para você saber o que houve
-        document.getElementById('totalRegistros').innerText = "Erro";
-    });
-};
-
-    
 </script>
-
 </body>
 </html>
