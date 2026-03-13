@@ -9,263 +9,82 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        :root {
-            --navy: #001F5B;
-            --red: #BF0A30;
-            --bg: #F6F6F6;
-            --surface: #FFFFFF;
-            --text-primary: #121212;
-            --text-secondary: #6B6B6B;
-            --input-bg: #F3F3F3;
-        }
-
-        body {
-            background-color: var(--bg);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0;
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* App Shell */
-        .app-shell {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--surface);
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header Premium */
-        .header-container {
-            padding: 24px 24px 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--surface);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .header-logo { width: 100px; object-fit: contain; }
-
-        .welcome-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--navy);
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-
-        .main-content { padding: 0 24px 32px 24px; flex: 1; }
-
-        /* Form Styling */
-        .section-label {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section-label i { color: var(--red); font-size: 14px; }
-
-        .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 16px;
-            color: var(--text-primary);
-            font-weight: 500;
-            transition: all 0.25s ease;
-            margin-bottom: 16px;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--surface);
-            border-color: var(--navy);
-            box-shadow: none;
-        }
-
-        /* NID Display */
-        #nid {
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-            font-weight: 700;
-            color: var(--navy);
-            font-size: 18px;
-            text-align: center;
-            background-color: rgba(0, 31, 91, 0.04);
-        }
-
-        /* Custom Switch */
-        .form-switch .form-check-input {
-            width: 40px; height: 20px; cursor: pointer;
-        }
-
-        .form-switch .form-check-input:checked { background-color: var(--navy); border-color: var(--navy); }
-
-        /* Boxes e Dividers */
-        .confidente-box {
-            display: none;
-            background: rgba(191, 10, 48, 0.04);
-            padding: 18px;
-            border-radius: 14px;
-            border-left: 4px solid var(--red);
-            margin-bottom: 20px;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-divider { height: 1px; background: #EEE; margin: 24px 0; }
-
-        /* Primary Button */
-        .btn-submit {
-            background: var(--navy);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
-            transition: all 0.2s;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-submit:active { transform: scale(0.98); }
-
-        /* Search Dropdown */
-        .search-results {
-            background: var(--surface);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-height: 220px;
-            overflow-y: auto;
-            display: none;
-            border: 1px solid #EEE;
-            margin-top: -12px;
-            margin-bottom: 15px;
-        }
-
-        .search-item { padding: 14px; border-bottom: 1px solid #F5F5F5; cursor: pointer; }
-        .search-item:hover { background: #F9F9F9; }
-        .search-item strong { color: var(--navy); display: block; font-size: 15px; }
-
-        /* Loading */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
-
-        .spinner-custom {
-            width: 40px; height: 40px;
-            border: 4px solid rgba(0, 31, 91, 0.1);
-            border-left-color: var(--navy);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        :root { --navy: #001F5B; --red: #BF0A30; --bg: #F6F6F6; --surface: #FFFFFF; --text-secondary: #6B6B6B; --input-bg: #F3F3F3; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; margin: 0; -webkit-font-smoothing: antialiased; }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--surface); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
+        .header-container { padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 50; border-bottom: 1px solid #F0F0F0; }
+        .header-logo { width: 90px; }
+        .welcome-title { font-size: 24px; font-weight: 700; color: var(--navy); margin: 0; }
+        .main-content { padding: 20px 24px; flex: 1; }
+        .section-label { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+        .section-label i { color: var(--red); }
+        .form-control, .form-select { background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 14px; font-size: 16px; margin-bottom: 15px; transition: 0.2s; }
+        .form-control:focus { background-color: #FFF; border-color: var(--navy); box-shadow: none; }
+        #nid { font-family: monospace; letter-spacing: 2px; font-weight: 700; color: var(--navy); text-align: center; font-size: 18px; }
+        .confidente-box { display: none; background: #FFF5F6; padding: 15px; border-radius: 12px; border-left: 4px solid var(--red); margin-bottom: 15px; }
+        .btn-submit { background: var(--navy); color: white; border: none; border-radius: 12px; padding: 18px; font-weight: 600; width: 100%; margin-top: 10px; }
+        .search-results { background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; display: none; margin-top: -10px; margin-bottom: 15px; border: 1px solid #EEE; }
+        .search-item { padding: 12px 15px; border-bottom: 1px solid #F5F5F5; cursor: pointer; }
+        .search-item strong { color: var(--navy); display: block; }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--navy); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Login Screen */
-        #loginScreen {
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; padding: 40px; height: 100vh; text-align: center;
-        }
-
-        .confirm-table { width: 100%; font-size: 14px; text-align: left; }
-        .confirm-table th { color: var(--text-secondary); font-weight: 500; width: 35%; padding: 4px 0; }
-        .confirm-table td { font-weight: 600; color: var(--navy); }
-
-        #appContent { display: none; }
+        .confirm-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #EEE; font-size: 14px; }
+        .confirm-label { color: var(--text-secondary); font-weight: 500; }
+        .confirm-value { color: var(--navy); font-weight: 600; text-align: right; }
+        #appContent, #loginScreen { display: none; }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loader">
-        <div class="spinner-custom"></div>
-        <p class="mt-3 fw-bold" style="color: var(--navy)">A processar...</p>
-    </div>
+    <div class="loading-overlay" id="loader"><div class="spinner"></div><p class="mt-3 fw-bold" style="color: var(--navy)">Processando...</p></div>
 
     <div class="app-shell">
-        <div id="loginScreen">
-            <img src="Novo logo ECHO 2025.png" alt="ECHO" style="width: 160px;" class="mb-4">
-            <h1 style="font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 30px;">Projecto ECHO</h1>
-            <div id="g_id_onload" 
-                 data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" 
-                 data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-size="large"></div>
+        <div id="loginScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 40px;">
+            <img src="Novo logo ECHO 2025.png" style="width: 150px;" class="mb-4">
+            <h2 style="color: var(--navy); font-weight: 800; margin-bottom: 30px;">Projecto ECHO</h2>
+            <div id="g_id_onload" data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+            <div class="g_id_signin" data-type="standard"></div>
         </div>
 
         <div id="appContent">
             <div class="header-container">
-                <div>
-                    <h1 class="welcome-title" id="txtOla">Olá!</h1>
-                    <p class="text-muted small mb-0 fw-medium">Confirme os dados antes de gravar.</p>
-                </div>
+                <div><h1 class="welcome-title" id="txtOla">Olá!</h1><p class="text-muted small mb-0">Novo Registro de Paciente</p></div>
                 <img src="Novo logo ECHO 2025.png" class="header-logo">
             </div>
 
             <div class="main-content">
                 <form id="appForm">
-                    <div class="section-label"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
-                    <input type="text" id="searchUS" class="form-control" placeholder="Procurar US..." oninput="executarPesquisa(this.value)" autocomplete="off">
+                    <div class="section-label"><i class="fas fa-hospital"></i> Localização</div>
+                    <input type="text" id="searchUS" class="form-control" placeholder="Procurar Unidade Sanitária..." oninput="executarPesquisa(this.value)" autocomplete="off" required>
                     <div id="searchResults" class="search-results"></div>
-                    
-                    <div class="row g-2 mb-2">
+                    <div class="row g-2">
                         <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly></div>
                         <div class="col-6"><input type="text" id="dist" class="form-control" placeholder="Distrito" readonly></div>
                     </div>
                     <input type="hidden" id="us_final">
 
-                    <div class="section-divider"></div>
-
-                    <div class="section-label"><i class="fas fa-user-circle"></i> Dados do Paciente</div>
-                    <p class="text-secondary small mb-2 fw-medium">NID (10/4/5 dígitos)</p>
+                    <div class="section-label"><i class="fas fa-user"></i> Identificação</div>
                     <input type="tel" id="nid" class="form-control" value="__________/____/_____" required oninput="aplicarMascaraNID(this)">
                     
-                    <div class="form-check form-switch mb-3 d-flex align-items-center gap-2">
+                    <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                        <label class="form-check-label fw-600 small" for="temConfidente">Paciente tem Confidente?</label>
+                        <label class="form-check-label small fw-bold" for="temConfidente">Paciente tem Confidente?</label>
                     </div>
 
                     <div id="camposConfidente" class="confidente-box">
-                        <input type="text" id="nomeConfidente" class="form-control mb-2" placeholder="Nome do Confidente">
+                        <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome do Confidente">
                         <input type="tel" id="telConfidente" class="form-control mb-0" placeholder="Telefone do Confidente" maxlength="9">
                     </div>
 
-                    <div class="section-divider"></div>
-
-                    <div class="section-label"><i class="fas fa-phone-alt"></i> Contactos & Morada</div>
+                    <div class="section-label"><i class="fas fa-phone"></i> Contactos</div>
                     <input type="tel" id="tel1" class="form-control" placeholder="Telefone 1 (Principal)" maxlength="9" required>
-                    <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2 (Opcional)" maxlength="9">
-                    <textarea id="endereco" class="form-control" placeholder="Morada ou Referência" rows="3" required></textarea>
+                    <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2" maxlength="9">
+                    <textarea id="endereco" class="form-control" placeholder="Endereço ou Referência" rows="2" required></textarea>
 
-                    <div class="section-divider"></div>
-
-                    <div class="section-label"><i class="fas fa-id-badge"></i> Responsável</div>
+                    <div class="section-label"><i class="fas fa-user-check"></i> Responsável</div>
                     <select id="responsavel" class="form-select" required></select>
 
-                    <button type="submit" class="btn-submit">VERIFICAR E SUBMETER</button>
+                    <button type="submit" class="btn-submit">REVISAR DADOS</button>
                 </form>
             </div>
         </div>
@@ -274,42 +93,28 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMPjukA6IvdDTrA5ZF264SMAHhEzU543SODh1gMP7OYBKyKOniGtffeotFDlkj7E0S6A/exec";
-        let todasUS = [];
-        let userEmail = "";
-        let dadosTemporarios = {};
+        let todasUS = [], userEmail = "", dadosTemporarios = {};
 
-        function toggleConfidente() {
-            const display = document.getElementById("temConfidente").checked ? "block" : "none";
-            document.getElementById("camposConfidente").style.display = display;
-        }
-
+        function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
+        
         function executarPesquisa(q) {
             const resBox = document.getElementById('searchResults');
             if (q.length < 2) { resBox.style.display = 'none'; return; }
             const matches = todasUS.filter(i => i.u.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-            resBox.innerHTML = matches.map(m => `
-                <div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g, "\\'")}','${m.d.replace(/'/g, "\\'")}','${m.p.replace(/'/g, "\\沉")}')">
-                    <strong>${m.u}</strong><small>${m.p} • ${m.d}</small>
-                </div>`).join('');
+            resBox.innerHTML = matches.map(m => `<div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g, "\\'")}','${m.d.replace(/'/g, "\\'")}','${m.p.replace(/'/g, "\\'")}')"><strong>${m.u}</strong><small>${m.p} • ${m.d}</small></div>`).join('');
             resBox.style.display = matches.length ? 'block' : 'none';
         }
 
         function selecionarUS(u, d, p) {
-            document.getElementById('us_final').value = u;
-            document.getElementById('searchUS').value = u;
-            document.getElementById('dist').value = d;
-            document.getElementById('prov').value = p;
+            document.getElementById('us_final').value = u; document.getElementById('searchUS').value = u;
+            document.getElementById('dist').value = d; document.getElementById('prov').value = p;
             document.getElementById('searchResults').style.display = 'none';
         }
 
         function aplicarMascaraNID(i) {
-            let v = i.value.replace(/\D/g, "");
-            if (v.length > 19) v = v.substring(0, 19);
+            let v = i.value.replace(/\D/g, ""); if (v.length > 19) v = v.substring(0, 19);
             let m = "__________/____/_____"; let r = ""; let nI = 0;
-            for (let x = 0; x < m.length; x++) {
-                if (m[x] === "/") r += "/";
-                else r += (nI < v.length) ? v[nI++] : "_";
-            }
+            for (let x = 0; x < m.length; x++) { if (m[x] === "/") r += "/"; else r += (nI < v.length) ? v[nI++] : "_"; }
             i.value = r;
         }
 
@@ -324,32 +129,28 @@
                     document.getElementById("txtOla").innerText = "Olá, " + data.usuario.split(' ')[0] + "!";
                     todasUS = data.unidades;
                     const sel = document.getElementById("responsavel");
-                    sel.innerHTML = '<option value="">Quem está a digitar?</option>';
+                    sel.innerHTML = '<option value="">Quem está digitando?</option>';
                     data.responsaveis.forEach(n => {
-                        let opt = new Option(n, n);
-                        if(n.trim() === data.usuario.trim()) opt.selected = true;
-                        sel.add(opt);
+                        let opt = new Option(n, n); if(n.trim() === data.usuario.trim()) opt.selected = true; sel.add(opt);
                     });
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("appContent").style.display = "block";
-                } else {
-                    Swal.fire('Acesso Negado', 'Email não autorizado.', 'error');
-                }
+                } else { Swal.fire('Erro', 'Usuário não autorizado.', 'error'); }
             } catch (e) { Swal.fire('Erro', 'Falha na conexão.', 'error'); }
             document.getElementById("loader").style.display = "none";
         }
 
         document.getElementById('appForm').onsubmit = function(e) {
             e.preventDefault();
-            const nidFinal = document.getElementById("nid").value;
-            if(nidFinal.includes("_")) return Swal.fire('NID Incompleto', 'Preencha os 19 dígitos.', 'warning');
+            const nid = document.getElementById("nid").value;
+            if(nid.includes("_")) return Swal.fire('NID Incompleto', 'Preencha o NID corretamente.', 'warning');
 
             dadosTemporarios = {
                 email_usuario: userEmail,
                 provincia: document.getElementById("prov").value,
                 distrito: document.getElementById("dist").value,
-                us: document.getElementById("us_final").value || document.getElementById("searchUS").value,
-                nid: nidFinal,
+                us: document.getElementById("us_final").value,
+                nid: nid,
                 tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
                 nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
                 tel_confidente: document.getElementById("telConfidente").value || "N/A",
@@ -359,21 +160,23 @@
                 responsavel: document.getElementById("responsavel").value
             };
 
+            // MODAL DE CONFIRMAÇÃO ANTES DE GRAVAR
             Swal.fire({
-                title: 'Confirmar Registro',
+                title: '<span style="color:var(--navy)">Revisão dos Dados</span>',
                 html: `
-                    <div style="background:#F9F9F9; padding:15px; border-radius:12px; text-align:left;">
-                        <table class="confirm-table">
-                            <tr><th>NID:</th><td>${nidFinal}</td></tr>
-                            <tr><th>US:</th><td>${dadosTemporarios.us}</td></tr>
-                            <tr><th>Tel 1:</th><td>${dadosTemporarios.tel1}</td></tr>
-                            <tr><th>Digitador:</th><td>${dadosTemporarios.responsavel}</td></tr>
-                        </table>
-                    </div>`,
+                    <div style="text-align:left; background:#F8F9FA; padding:15px; border-radius:12px; border:1px solid #EEE;">
+                        <div class="confirm-row"><span class="confirm-label">US:</span><span class="confirm-value">${dadosTemporarios.us}</span></div>
+                        <div class="confirm-row"><span class="confirm-label">NID:</span><span class="confirm-value">${dadosTemporarios.nid}</span></div>
+                        <div class="confirm-row"><span class="confirm-label">Telefone 1:</span><span class="confirm-value">${dadosTemporarios.tel1}</span></div>
+                        <div class="confirm-row"><span class="confirm-label">Confidente:</span><span class="confirm-value">${dadosTemporarios.tem_confidente}</span></div>
+                        <div class="confirm-row" style="border:none;"><span class="confirm-label">Digitador:</span><span class="confirm-value">${dadosTemporarios.responsavel}</span></div>
+                    </div>
+                    <p class="text-muted small mt-3">Os dados estão corretos para gravação?</p>
+                `,
                 showCancelButton: true,
                 confirmButtonColor: '#001F5B',
-                confirmButtonText: 'Gravar Dados',
-                cancelButtonText: 'Corrigir',
+                confirmButtonText: 'Sim, Gravar Agora',
+                cancelButtonText: 'Voltar e Editar',
                 reverseButtons: true
             }).then((result) => { if (result.isConfirmed) capturarGPS(); });
         };
@@ -385,8 +188,7 @@
                 dadosTemporarios.longitude = pos.coords.longitude;
                 finalizar();
             }, () => {
-                dadosTemporarios.latitude = "Sem GPS";
-                dadosTemporarios.longitude = "Sem GPS";
+                dadosTemporarios.latitude = "Sem GPS"; dadosTemporarios.longitude = "Sem GPS";
                 finalizar();
             }, { timeout: 6000 });
         }
@@ -395,18 +197,38 @@
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(dadosTemporarios) })
             .then(() => {
                 document.getElementById("loader").style.display = "none";
-                Swal.fire('Sucesso!', 'Dados gravados com sucesso.', 'success').then(() => {
-                    document.getElementById("appForm").reset();
-                    document.getElementById("nid").value = "__________/____/_____";
-                    document.getElementById("camposConfidente").style.display = "none";
-                    window.scrollTo(0,0);
+                
+                // PERGUNTA APÓS GRAVAR
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Gravado com Sucesso!',
+                    text: 'O registro foi enviado para a planilha ECHO.',
+                    showCancelButton: true,
+                    confirmButtonColor: '#001F5B',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-plus"></i> Novo Registro',
+                    cancelButtonText: '<i class="fas fa-times"></i> Fechar App'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Limpa o formulário e mantém na mesma tela
+                        document.getElementById("appForm").reset();
+                        document.getElementById("nid").value = "__________/____/_____";
+                        document.getElementById("camposConfidente").style.display = "none";
+                        window.scrollTo(0,0);
+                    } else {
+                        // Recarrega a página para voltar ao login (ou fecha se for webapp instalado)
+                        location.reload();
+                    }
                 });
             })
             .catch(() => {
                 document.getElementById("loader").style.display = "none";
-                Swal.fire('Erro', 'Falha ao comunicar com servidor.', 'error');
+                Swal.fire('Erro', 'Falha ao salvar dados.', 'error');
             });
         }
+
+        // Inicializa a tela de login
+        window.onload = () => { document.getElementById("loginScreen").style.display = "flex"; };
     </script>
 </body>
 </html>
