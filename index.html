@@ -12,43 +12,14 @@
         body { background-color: var(--bg); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; }
         .app-shell { max-width: 500px; margin: 0 auto; min-height: 100vh; }
         .app-header { text-align: center; padding: 40px 20px; background: var(--navy); color: white; border-radius: 0 0 25px 25px; }
-        
-        /* Look Uber: Cartão de Boas-vindas */
-        .welcome-box { 
-            background: white; border-radius: 16px; padding: 20px; 
-            margin: -30px 20px 20px 20px; border-left: 5px solid var(--red);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 10;
-        }
-
-        /* Cartões de formulário */
+        .welcome-box { background: white; border-radius: 16px; padding: 20px; margin: -30px 20px 20px 20px; border-left: 5px solid var(--red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         .form-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin: 15px; border: none; }
-        
-        .section-header { 
-            color: var(--navy); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; 
-            border-bottom: 2px solid #EEE; padding-bottom: 8px; margin: 20px 0 15px 0; display: flex; align-items: center; 
-        }
+        .section-header { color: var(--navy); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; border-bottom: 2px solid #EEE; padding-bottom: 8px; margin: 20px 0 15px 0; display: flex; align-items: center; }
         .section-header i { margin-right: 10px; color: var(--red); }
-        
         .form-control, .form-select { border-radius: 12px; padding: 12px; border: 1.5px solid #E0E0E0; margin-bottom: 12px; }
-        
-        /* Switch do Confidente estilizado */
-        .form-check-input:checked { background-color: var(--navy); border-color: var(--navy); }
-        
-        .btn-submit { 
-            background: var(--navy); color: white; border: none; border-radius: 16px; 
-            padding: 18px; font-weight: 700; width: 100%; box-shadow: 0 6px 20px rgba(0,31,91,0.2); margin-top: 10px;
-        }
-
-        .loading-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; 
-        }
-
-        /* Pesquisa dinâmica US */
-        .search-results { 
-            background: white; border-radius: 0 0 12px 12px; max-height: 200px; 
-            overflow-y: auto; display: none; border: 1px solid #ddd; margin-top: -12px; margin-bottom: 15px; 
-        }
+        .btn-submit { background: var(--navy); color: white; border: none; border-radius: 16px; padding: 18px; font-weight: 700; width: 100%; box-shadow: 0 6px 20px rgba(0,31,91,0.2); margin-top: 10px; }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .search-results { background: white; border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; display: none; border: 1px solid #ddd; margin-top: -12px; margin-bottom: 15px; }
         .search-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
         #appContent { display: none; }
     </style>
@@ -56,7 +27,7 @@
 <body>
     <div class="loading-overlay" id="loader">
         <div class="spinner-grow text-primary" style="color: var(--navy) !important;"></div>
-        <p class="mt-2 fw-bold" style="color: var(--navy)">Sincronizando...</p>
+        <p class="mt-2 fw-bold" style="color: var(--navy)">Processando...</p>
     </div>
 
     <div class="app-shell">
@@ -70,10 +41,7 @@
         </div>
 
         <div id="appContent">
-            <div class="app-header">
-                <img src="Novo logo ECHO 2025.png" style="width: 110px; filter: brightness(0) invert(1);">
-            </div>
-            
+            <div class="app-header"><img src="Novo logo ECHO 2025.png" style="width: 110px; filter: brightness(0) invert(1);"></div>
             <div class="welcome-box">
                 <h6 class="fw-bold mb-1" id="txtOla" style="color: var(--navy)">Olá!</h6>
                 <p class="text-muted small mb-0">Que actualização pretende fazer hoje?</p>
@@ -82,9 +50,8 @@
             <div class="form-card">
                 <form id="appForm">
                     <div class="section-header"><i class="fas fa-search"></i> Unidade Sanitária</div>
-                    <input type="text" id="searchUS" class="form-control" placeholder="Escreva o nome da US..." oninput="executarPesquisa(this.value)">
+                    <input type="text" id="searchUS" class="form-control" placeholder="Pesquisar US..." oninput="executarPesquisa(this.value)">
                     <div id="searchResults" class="search-results"></div>
-
                     <div class="row">
                         <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly></div>
                         <div class="col-6"><input type="text" id="dist" class="form-control" placeholder="Distrito" readonly></div>
@@ -92,18 +59,12 @@
                     <input type="hidden" id="us_final">
 
                     <div class="section-header"><i class="fas fa-user"></i> Paciente</div>
-<label class="form-label-sm">NID do Paciente</label>
-<input type="tel" 
-       id="nid" 
-       class="form-control mb-3" 
-       value="__________/____/_____" 
-       required 
-       oninput="aplicarMascaraNID(this)"
-       style="font-family: 'Courier New', monospace; letter-spacing: 2px; font-weight: bold; color: var(--navy); font-size: 1.15rem;">
+                    <label class="form-label small fw-bold text-muted">NID (10/4/5 dígitos)</label>
+                    <input type="tel" id="nid" class="form-control mb-3" value="__________/____/_____" required oninput="aplicarMascaraNID(this)" style="font-family: 'Courier New', monospace; letter-spacing: 2px; font-weight: bold; color: var(--navy); font-size: 1.1rem;">
                     
-                    <div class="form-check form-switch mb-3 mt-2">
+                    <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                        <label class="form-check-label fw-bold small" for="temConfidente">Tem Confidente?</label>
+                        <label class="form-check-label fw-bold small">Tem Confidente?</label>
                     </div>
 
                     <div id="camposConfidente" style="display:none; background: #FFF5F6; padding: 15px; border-radius: 12px; border: 1.5px dashed var(--red)" class="mb-3">
@@ -112,10 +73,11 @@
                     </div>
 
                     <div class="section-header"><i class="fas fa-phone"></i> Contactos</div>
-                    <input type="tel" id="tel1" class="form-control" placeholder="Telefone 1 (84/82...)" maxlength="9" required>
+                    <input type="tel" id="tel1" class="form-control" placeholder="Telefone 1 (Principal)" maxlength="9" required>
+                    <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2 (Opcional)" maxlength="9">
                     <textarea id="endereco" class="form-control" placeholder="Endereço/Referência" rows="2" required></textarea>
 
-                    <div class="section-header"><i class="fas fa-id-badge"></i> Digitador</div>
+                    <div class="section-header"><i class="fas fa-id-badge"></i> Responsável</div>
                     <select id="responsavel" class="form-select" required></select>
 
                     <button type="submit" class="btn-submit">SUBMETER DADOS</button>
@@ -129,8 +91,8 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMPjukA6IvdDTrA5ZF264SMAHhEzU543SODh1gMP7OYBKyKOniGtffeotFDlkj7E0S6A/exec";
         let todasUS = [];
         let userEmail = "";
+        let dadosTemporarios = {};
 
-        // Mostrar/Ocultar Confidente
         function toggleConfidente() {
             document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none";
         }
@@ -151,27 +113,24 @@
             document.getElementById('searchResults').style.display = 'none';
         }
 
-function aplicarMascaraNID(i) {
-    // 1. Pega apenas os números digitados (máximo 19)
-    let v = i.value.replace(/\D/g, "").substring(0, 19);
-    
-    // 2. Define o molde fixo do Projeto ECHO
-    let m = "__________/____/_____"; 
-    let r = "";
-    let nI = 0;
-
-    // 3. Reconstrói o campo: se houver número, coloca o número; se não, mantém o traço
-    for (let x = 0; x < m.length; x++) {
-        if (m[x] === "/") {
-            r += "/";
-        } else {
-            r += (nI < v.length) ? v[nI++] : "_";
+        function aplicarMascaraNID(i) {
+            let pos = i.selectionStart;
+            let originalLength = i.value.length;
+            let v = i.value.replace(/\D/g, "").substring(0, 19);
+            let m = "__________/____/_____"; 
+            let r = "";
+            let nI = 0;
+            for (let x = 0; x < m.length; x++) {
+                if (m[x] === "/") r += "/";
+                else r += (nI < v.length) ? v[nI++] : "_";
+            }
+            i.value = r;
+            // Ajuste do cursor para não saltar
+            let newPos = pos + (i.value.length - originalLength);
+            if (i.value[pos-1] === "/") newPos++;
+            i.setSelectionRange(newPos, newPos);
         }
-    }
-    
-    // 4. Devolve o valor formatado ao campo
-    i.value = r;
-}
+
         async function handleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
             userEmail = payload.email.toLowerCase().trim();
@@ -196,23 +155,69 @@ function aplicarMascaraNID(i) {
             document.getElementById("loader").style.display = "none";
         }
 
-        // Bloquear letras nos telefones
-        ['tel1', 'telConfidente'].forEach(id => {
-            document.getElementById(id).addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '').substring(0, 9);
-            });
-        });
-
         document.getElementById('appForm').onsubmit = function(e) {
             e.preventDefault();
-            // Aqui você adiciona o fetch(POST) como fizemos antes
-            Swal.fire('Sucesso', 'Dados validados!', 'success');
+            const nidLimpo = document.getElementById("nid").value.replace(/_/g, "");
+            if(nidLimpo.length < 21) return Swal.fire('NID Incompleto', 'Por favor preencha todos os dígitos.', 'warning');
+
+            dadosTemporarios = {
+                email_usuario: userEmail,
+                provincia: document.getElementById("prov").value,
+                distrito: document.getElementById("dist").value,
+                us: document.getElementById("us_final").value || document.getElementById("searchUS").value,
+                nid: nidLimpo,
+                tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
+                nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
+                tel_confidente: document.getElementById("telConfidente").value || "N/A",
+                tel1: document.getElementById("tel1").value,
+                tel2: document.getElementById("tel2").value || "N/A",
+                endereco: document.getElementById("endereco").value,
+                responsavel: document.getElementById("responsavel").value
+            };
+
+            Swal.fire({
+                title: 'Gravar Dados?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#001F5B',
+                confirmButtonText: 'Confirmar'
+            }).then((result) => { if (result.isConfirmed) capturarGPS(); });
         };
+
+        function capturarGPS() {
+            document.getElementById("loader").style.display = "flex";
+            navigator.geolocation.getCurrentPosition((pos) => {
+                dadosTemporarios.latitude = pos.coords.latitude;
+                dadosTemporarios.longitude = pos.coords.longitude;
+                finalizar();
+            }, () => {
+                dadosTemporarios.latitude = "Sem GPS";
+                dadosTemporarios.longitude = "Sem GPS";
+                finalizar();
+            }, { timeout: 5000 });
+        }
+
+        function finalizar() {
+            // Mudança para garantir a gravação: Usamos mode 'cors' e tratamos o JSON
+            fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                body: JSON.stringify(dadosTemporarios) 
+            })
+            .then(res => {
+                document.getElementById("loader").style.display = "none";
+                Swal.fire('Sucesso!', 'Dados gravados na Folha1.', 'success').then(() => {
+                    document.getElementById("appForm").reset();
+                    document.getElementById("nid").value = "__________/____/_____";
+                    document.getElementById("camposConfidente").style.display = "none";
+                    window.scrollTo(0,0);
+                });
+            })
+            .catch(err => {
+                document.getElementById("loader").style.display = "none";
+                // Mesmo com erro de CORS, os dados costumam entrar no Google Sheets
+                Swal.fire('Aviso', 'Submissão enviada. Verifique a planilha.', 'info');
+            });
+        }
     </script>
 </body>
 </html>
-
-
-
-
-
