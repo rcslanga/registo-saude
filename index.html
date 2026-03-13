@@ -3,182 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHO Project Moçambique | Uber Look</title>
+    <title>ECHO Project Moçambique | Revisão Completa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        :root {
-            --navy: #001F5B;
-            --red: #BF0A30;
-            --bg: #F6F6F6;
-            --surface: #FFFFFF;
-            --text-secondary: #6B6B6B;
-            --input-bg: #F3F3F3;
-        }
-
-        body {
-            background-color: var(--bg);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            color: #121212;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .app-shell {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--surface);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.05);
-        }
-
-        .header-container {
-            padding: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--surface);
-            z-index: 50;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
+        :root { --navy: #001F5B; --red: #BF0A30; --bg: #F6F6F6; --surface: #FFFFFF; --text-secondary: #6B6B6B; --input-bg: #F3F3F3; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; margin: 0; -webkit-font-smoothing: antialiased; }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--surface); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
+        .header-container { padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 50; border-bottom: 1px solid #F0F0F0; }
         .header-logo { width: 90px; }
-        .welcome-title { font-size: 24px; font-weight: 700; color: var(--navy); margin: 0; }
-
+        .welcome-title { font-size: 22px; font-weight: 700; color: var(--navy); margin: 0; }
         .main-content { padding: 20px 24px; flex: 1; }
-
-        .section-label {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
+        .section-label { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .section-label i { color: var(--red); }
-
-        .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 16px;
-            margin-bottom: 15px;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            background-color: #FFF;
-            border-color: var(--navy);
-            box-shadow: none;
-        }
-
-        #nid {
-            font-family: monospace;
-            letter-spacing: 2px;
-            font-weight: 700;
-            color: var(--navy);
-            text-align: center;
-            font-size: 18px;
-            background: rgba(0, 31, 91, 0.04);
-        }
-
-        .confidente-box {
-            display: none;
-            background: #FFF5F6;
-            padding: 15px;
-            border-radius: 12px;
-            border-left: 4px solid var(--red);
-            margin-bottom: 15px;
-        }
-
-        .btn-submit {
-            background: var(--navy);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
-            transition: 0.2s;
-        }
-
-        .btn-submit:active { transform: scale(0.98); }
-
-        .search-results {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            border: 1px solid #EEE;
-        }
-
+        .form-control, .form-select { background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 12px; font-size: 16px; margin-bottom: 12px; transition: 0.2s; }
+        .form-control:focus { background-color: #FFF; border-color: var(--navy); box-shadow: none; }
+        #nid { font-family: monospace; letter-spacing: 2px; font-weight: 700; color: var(--navy); text-align: center; font-size: 18px; background: rgba(0, 31, 91, 0.04); }
+        .confidente-box { display: none; background: #FFF5F6; padding: 15px; border-radius: 12px; border-left: 4px solid var(--red); margin-bottom: 12px; }
+        .btn-submit { background: var(--navy); color: white; border: none; border-radius: 12px; padding: 16px; font-weight: 600; width: 100%; margin-top: 10px; }
+        .search-results { background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; display: none; margin-top: -10px; margin-bottom: 15px; border: 1px solid #EEE; }
         .search-item { padding: 12px 15px; border-bottom: 1px solid #F5F5F5; cursor: pointer; }
-        .search-item strong { color: var(--navy); display: block; }
-
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .spinner {
-            width: 40px; height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--navy);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--navy); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Estilo da Tabela de Confirmação */
-        .confirm-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EEE; font-size: 14px; }
-        .confirm-label { color: var(--text-secondary); font-weight: 500; }
-        .confirm-value { color: var(--navy); font-weight: 600; text-align: right; }
-
+        /* Tabela de Revisão */
+        .rev-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+        .rev-table tr { border-bottom: 1px solid #EEE; }
+        .rev-table tr:last-child { border: none; }
+        .rev-table td { padding: 8px 0; vertical-align: top; }
+        .rev-label { color: var(--text-secondary); font-weight: 500; width: 40%; }
+        .rev-value { color: var(--navy); font-weight: 600; text-align: right; }
         #appContent, #loginScreen { display: none; }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loader">
-        <div class="spinner"></div>
-        <p class="mt-3 fw-bold" style="color: var(--navy)">Processando...</p>
-    </div>
+    <div class="loading-overlay" id="loader"><div class="spinner"></div><p class="mt-3 fw-bold" style="color: var(--navy)">Processando...</p></div>
 
     <div class="app-shell">
         <div id="loginScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 40px;">
-            <img src="Novo logo ECHO 2025.png" style="width: 150px;" class="mb-4">
-            <h2 style="color: var(--navy); font-weight: 800; margin-bottom: 30px;">Projecto ECHO</h2>
+            <img src="Novo logo ECHO 2025.png" style="width: 140px;" class="mb-4">
+            <h2 style="color: var(--navy); font-weight: 800;">Projecto ECHO</h2>
             <div id="g_id_onload" data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div class="g_id_signin mt-4" data-type="standard"></div>
         </div>
 
         <div id="appContent">
             <div class="header-container">
-                <div>
-                    <h1 class="welcome-title" id="txtOla">Olá!</h1>
-                    <p class="text-muted small mb-0 fw-medium">Novo Registro de Paciente</p>
-                </div>
+                <div><h1 class="welcome-title" id="txtOla">Olá!</h1><p class="text-muted small mb-0">Registro de Paciente</p></div>
                 <img src="Novo logo ECHO 2025.png" class="header-logo">
             </div>
 
@@ -187,19 +60,18 @@
                     <div class="section-label"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
                     <input type="text" id="searchUS" class="form-control" placeholder="Procurar US..." oninput="executarPesquisa(this.value)" autocomplete="off" required>
                     <div id="searchResults" class="search-results"></div>
-                    
                     <div class="row g-2">
                         <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly></div>
                         <div class="col-6"><input type="text" id="dist" class="form-control" placeholder="Distrito" readonly></div>
                     </div>
                     <input type="hidden" id="us_final">
 
-                    <div class="section-label mt-3"><i class="fas fa-user"></i> Identificação</div>
+                    <div class="section-label mt-2"><i class="fas fa-id-card"></i> Identificação</div>
                     <input type="tel" id="nid" class="form-control" value="__________/____/_____" required oninput="aplicarMascaraNID(this)">
                     
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                        <label class="form-check-label small fw-bold" for="temConfidente">Paciente tem Confidente?</label>
+                        <label class="form-check-label small fw-bold" for="temConfidente">Tem Confidente?</label>
                     </div>
 
                     <div id="camposConfidente" class="confidente-box">
@@ -207,15 +79,15 @@
                         <input type="tel" id="telConfidente" class="form-control mb-0" placeholder="Telefone do Confidente" maxlength="9">
                     </div>
 
-                    <div class="section-label mt-3"><i class="fas fa-phone"></i> Contactos & Morada</div>
+                    <div class="section-label"><i class="fas fa-phone"></i> Contactos & Morada</div>
                     <input type="tel" id="tel1" class="form-control" placeholder="Telefone 1 (Principal)" maxlength="9" required>
-                    <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2 (Opcional)" maxlength="9">
-                    <textarea id="endereco" class="form-control" placeholder="Endereço ou Referência" rows="2" required></textarea>
+                    <input type="tel" id="tel2" class="form-control" placeholder="Telefone 2" maxlength="9">
+                    <textarea id="endereco" class="form-control" placeholder="Morada/Referência Completa" rows="2" required></textarea>
 
-                    <div class="section-label mt-3"><i class="fas fa-id-badge"></i> Responsável</div>
+                    <div class="section-label"><i class="fas fa-user-check"></i> Responsável</div>
                     <select id="responsavel" class="form-select" required></select>
 
-                    <button type="submit" class="btn-submit">REVISAR E SUBMETER</button>
+                    <button type="submit" class="btn-submit">REVISAR DADOS COMPLETOS</button>
                 </form>
             </div>
         </div>
@@ -226,32 +98,24 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMPjukA6IvdDTrA5ZF264SMAHhEzU543SODh1gMP7OYBKyKOniGtffeotFDlkj7E0S6A/exec";
         let todasUS = [], userEmail = "", dadosTemporarios = {};
 
-        function toggleConfidente() {
-            document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none";
-        }
-
+        function toggleConfidente() { document.getElementById("camposConfidente").style.display = document.getElementById("temConfidente").checked ? "block" : "none"; }
+        
         function executarPesquisa(q) {
             const resBox = document.getElementById('searchResults');
             if (q.length < 2) { resBox.style.display = 'none'; return; }
             const matches = todasUS.filter(i => i.u.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-            resBox.innerHTML = matches.map(m => `
-                <div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g, "\\'")}','${m.d.replace(/'/g, "\\'")}','${m.p.replace(/'/g, "\\沉")}')">
-                    <strong>${m.u}</strong><small>${m.p} • ${m.d}</small>
-                </div>`).join('');
+            resBox.innerHTML = matches.map(m => `<div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g, "\\'")}','${m.d.replace(/'/g, "\\'")}','${m.p.replace(/'/g, "\\'")}')"><strong>${m.u}</strong><small>${m.p} • ${m.d}</small></div>`).join('');
             resBox.style.display = matches.length ? 'block' : 'none';
         }
 
         function selecionarUS(u, d, p) {
-            document.getElementById('us_final').value = u;
-            document.getElementById('searchUS').value = u;
-            document.getElementById('dist').value = d;
-            document.getElementById('prov').value = p;
+            document.getElementById('us_final').value = u; document.getElementById('searchUS').value = u;
+            document.getElementById('dist').value = d; document.getElementById('prov').value = p;
             document.getElementById('searchResults').style.display = 'none';
         }
 
         function aplicarMascaraNID(i) {
-            let v = i.value.replace(/\D/g, "");
-            if (v.length > 19) v = v.substring(0, 19);
+            let v = i.value.replace(/\D/g, ""); if (v.length > 19) v = v.substring(0, 19);
             let m = "__________/____/_____"; let r = ""; let nI = 0;
             for (let x = 0; x < m.length; x++) { if (m[x] === "/") r += "/"; else r += (nI < v.length) ? v[nI++] : "_"; }
             i.value = r;
@@ -270,21 +134,19 @@
                     const sel = document.getElementById("responsavel");
                     sel.innerHTML = '<option value="">Quem está digitando?</option>';
                     data.responsaveis.forEach(n => {
-                        let opt = new Option(n, n);
-                        if(n.trim() === data.usuario.trim()) opt.selected = true;
-                        sel.add(opt);
+                        let opt = new Option(n, n); if(n.trim() === data.usuario.trim()) opt.selected = true; sel.add(opt);
                     });
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("appContent").style.display = "block";
-                } else { Swal.fire('Acesso Negado', 'Email não autorizado.', 'error'); }
-            } catch (e) { Swal.fire('Erro', 'Falha na conexão.', 'error'); }
+                }
+            } catch (e) { Swal.fire('Erro', 'Falha na sincronização.', 'error'); }
             document.getElementById("loader").style.display = "none";
         }
 
         document.getElementById('appForm').onsubmit = function(e) {
             e.preventDefault();
             const nid = document.getElementById("nid").value;
-            if(nid.includes("_")) return Swal.fire('NID Incompleto', 'Preencha os 19 dígitos do NID.', 'warning');
+            if(nid.includes("_")) return Swal.fire('NID Incompleto', 'Verifique os números digitados.', 'warning');
 
             dadosTemporarios = {
                 email_usuario: userEmail,
@@ -301,21 +163,27 @@
                 responsavel: document.getElementById("responsavel").value
             };
 
-            // ETAPA DE CONFIRMAÇÃO ANTES DE GRAVAR
+            // REVISÃO DE TODOS OS DADOS
             Swal.fire({
-                title: '<span style="color:var(--navy)">Confirmar Dados</span>',
+                title: '<small>Revisão Geral</small>',
                 html: `
-                    <div style="text-align:left; background:#F9F9F9; padding:15px; border-radius:12px; border:1px solid #EEE;">
-                        <div class="confirm-row"><span class="confirm-label">NID:</span><span class="confirm-value">${dadosTemporarios.nid}</span></div>
-                        <div class="confirm-row"><span class="confirm-label">Unidade Sanitária:</span><span class="confirm-value">${dadosTemporarios.us}</span></div>
-                        <div class="confirm-row"><span class="confirm-label">Telefone 1:</span><span class="confirm-value">${dadosTemporarios.tel1}</span></div>
-                        <div class="confirm-row" style="border:none;"><span class="confirm-label">Responsável:</span><span class="confirm-value">${dadosTemporarios.responsavel}</span></div>
+                    <div style="background:#fcfcfc; padding:12px; border:1px solid #eee; border-radius:12px;">
+                        <table class="rev-table">
+                            <tr><td class="rev-label">US:</td><td class="rev-value">${dadosTemporarios.us}</td></tr>
+                            <tr><td class="rev-label">NID:</td><td class="rev-value">${dadosTemporarios.nid}</td></tr>
+                            <tr><td class="rev-label">Tel 1:</td><td class="rev-value">${dadosTemporarios.tel1}</td></tr>
+                            <tr><td class="rev-label">Tel 2:</td><td class="rev-value">${dadosTemporarios.tel2}</td></tr>
+                            <tr><td class="rev-label">Confidente:</td><td class="rev-value">${dadosTemporarios.tem_confidente}</td></tr>
+                            ${dadosTemporarios.tem_confidente === 'Sim' ? `<tr><td class="rev-label">Nome Conf:</td><td class="rev-value">${dadosTemporarios.nome_confidente}</td></tr>` : ''}
+                            <tr><td class="rev-label">Morada:</td><td class="rev-value">${dadosTemporarios.endereco}</td></tr>
+                            <tr><td class="rev-label">Digitador:</td><td class="rev-value">${dadosTemporarios.responsavel}</td></tr>
+                        </table>
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonColor: '#001F5B',
-                confirmButtonText: 'Confirmar e Gravar',
-                cancelButtonText: 'Corrigir',
+                confirmButtonText: 'Tudo Correto, Gravar',
+                cancelButtonText: 'Editar Dados',
                 reverseButtons: true
             }).then((result) => { if (result.isConfirmed) capturarGPS(); });
         };
@@ -327,8 +195,7 @@
                 dadosTemporarios.longitude = pos.coords.longitude;
                 finalizar();
             }, () => {
-                dadosTemporarios.latitude = "Sem GPS";
-                dadosTemporarios.longitude = "Sem GPS";
+                dadosTemporarios.latitude = "Sem GPS"; dadosTemporarios.longitude = "Sem GPS";
                 finalizar();
             }, { timeout: 6000 });
         }
@@ -337,38 +204,29 @@
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(dadosTemporarios) })
             .then(() => {
                 document.getElementById("loader").style.display = "none";
-                
-                // PERGUNTA APÓS GRAVAR
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Gravado!',
-                    text: 'Os dados foram enviados com sucesso.',
+                    icon: 'success', title: 'Dados Gravados!',
+                    text: 'Deseja iniciar um novo registro para esta mesma US?',
                     showCancelButton: true,
                     confirmButtonColor: '#001F5B',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Novo Registro',
-                    cancelButtonText: 'Sair/Fechar'
+                    confirmButtonText: 'Novo Registro (Mesma US)',
+                    cancelButtonText: 'Fechar Sessão'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Reseta campos específicos, mas mantém a US se quiser agilizar
+                        // Limpa os dados do paciente mas MANTÉM a US e Responsável
                         document.getElementById("nid").value = "__________/____/_____";
                         document.getElementById("tel1").value = "";
                         document.getElementById("tel2").value = "";
                         document.getElementById("endereco").value = "";
                         document.getElementById("temConfidente").checked = false;
+                        document.getElementById("nomeConfidente").value = "";
+                        document.getElementById("telConfidente").value = "";
                         toggleConfidente();
                         window.scrollTo(0,0);
-                    } else {
-                        location.reload(); // Volta para o login
-                    }
+                    } else { location.reload(); }
                 });
-            })
-            .catch(() => {
-                document.getElementById("loader").style.display = "none";
-                Swal.fire('Erro', 'Houve um problema ao gravar.', 'error');
             });
         }
-
         window.onload = () => { document.getElementById("loginScreen").style.display = "flex"; };
     </script>
 </body>
