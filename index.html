@@ -471,8 +471,9 @@
                     <!-- Contactos -->
                     <div class="section-label"><i class="fas fa-phone"></i> Contactos & Morada</div>
                     <input type="tel" inputmode="numeric" id="tel1" class="form-control"
-                        placeholder="Telefone 1 (Principal)" maxlength="9" required oninput="validarTelefone(this)">
+                        placeholder="Telefone 1 (Principal — opcional)" maxlength="9" oninput="onTel1Input(this)">
                     <div id="hintTel1" class="field-hint">Formato: 8X/9X + 7 dígitos</div>
+
 
                     <input type="tel" inputmode="numeric" id="tel2" class="form-control"
                         placeholder="Telefone 2 (Opcional)" maxlength="9" oninput="validarTelefone(this)">
@@ -653,7 +654,7 @@
         const hint = document.getElementById(hintId);
 
         // Aceita vazio se campo não obrigatório (tel2, telConfidente)
-        const obrigatorio = (input.id === "tel1");
+        const obrigatorio = false; // tel1 is now optional — motivo required if empty
         if (val === "" && !obrigatorio) {
             input.classList.remove("is-invalid");
             if (hint) hint.classList.remove("show");
@@ -665,6 +666,10 @@
         input.classList.toggle("is-invalid", !valido && val.length > 0);
         if (hint) hint.classList.toggle("show", !valido && val.length > 0);
         return valido || (val === "" && !obrigatorio);
+    }
+
+    function onTel1Input(input) {
+        validarTelefone(input);
     }
 
     function toggleConfidente() {
@@ -821,8 +826,11 @@
             document.getElementById("nid").classList.remove("is-invalid");
         }
 
-        // Validar Tel1
-        if (!validarTelefone(document.getElementById("tel1"))) erros = true;
+        // Validar Tel1 (opcional — só valida formato se preenchido)
+        const tel1Val = document.getElementById("tel1").value;
+        if (tel1Val && !validarTelefone(document.getElementById("tel1"))) {
+            erros = true;
+        }
 
         // Validar Tel2 se preenchido
         const tel2 = document.getElementById("tel2");
@@ -859,7 +867,7 @@
             tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
             nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
             tel_confidente: document.getElementById("telConfidente").value || "N/A",
-            tel1: document.getElementById("tel1").value,
+            tel1: document.getElementById("tel1").value || "N/A",
             tel2: document.getElementById("tel2").value || "N/A",
             endereco: document.getElementById("endereco").value,
             responsavel: document.getElementById("responsavel").value
