@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -11,513 +10,192 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --navy: #001F5B;
-            --navy-light: #0A2F7A;
-            --red: #BF0A30;
-            --green: #1A7A4A;
-            --amber: #F59E0B;
-            --bg: #F0F4FA;
-            --surface: #FFFFFF;
-            --border: #E8EDF5;
-            --text-muted: #7A8BA0;
-            --text-main: #1A2B4A;
+            --navy: #001F5B; --navy-light: #0A2F7A; --red: #BF0A30;
+            --green: #1A7A4A; --amber: #F59E0B; --bg: #F0F4FA;
+            --surface: #FFFFFF; --border: #E8EDF5;
+            --text-muted: #7A8BA0; --text-main: #1A2B4A;
         }
-
         * { box-sizing: border-box; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-main); margin: 0; }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Inter', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-        }
+        /* TOP BAR */
+        .topbar { background: var(--navy); color: white; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 12px rgba(0,31,91,0.3); }
+        .topbar-brand { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .topbar-brand span { background: var(--red); color: white; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
+        .last-update { font-size: 12px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 6px; }
+        .refresh-dot { width: 7px; height: 7px; background: #4ADE80; border-radius: 50%; }
+        .refresh-dot.loading { animation: blink 0.8s infinite; }
+        .btn-topbar { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-topbar:hover { background: rgba(255,255,255,0.2); color: white; }
 
-        /* ── TOP BAR ── */
-        .topbar {
-            background: var(--navy);
-            color: white;
-            padding: 0 28px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,31,91,0.3);
-        }
+        .refresh-progress { height: 2px; background: var(--border); }
+        .refresh-progress-bar { height: 100%; background: var(--navy); width: 0%; transition: width 0.5s linear; }
 
-        .topbar-brand {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .topbar-brand span {
-            background: var(--red);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .last-update {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .refresh-dot {
-            width: 7px;
-            height: 7px;
-            background: #4ADE80;
-            border-radius: 50%;
-        }
-
-        .refresh-dot.loading {
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
-        }
-
-        .btn-novo {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 8px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .btn-novo:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        /* ── MAIN LAYOUT ── */
         .main-wrap { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
 
-        /* ── FILTER BAR ── */
-        .filter-bar {
-            background: var(--surface);
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-        }
+        /* NID SEARCH */
+        .nid-search-bar { background: var(--surface); border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .nid-search-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .nid-search-label i { color: var(--navy); }
+        .nid-search-row { display: flex; gap: 10px; align-items: stretch; }
+        .nid-search-input { flex: 1; border: 2px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 15px; font-family: monospace; font-weight: 700; letter-spacing: 2px; color: var(--navy); outline: none; background: #F8FAFD; transition: 0.2s; text-transform: uppercase; }
+        .nid-search-input:focus { border-color: var(--navy); background: white; }
+        .nid-search-input::placeholder { font-family: 'Inter', sans-serif; font-weight: 400; letter-spacing: 0; color: #aaa; font-size: 14px; }
+        .btn-nid-search { background: var(--navy); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; white-space: nowrap; }
+        .btn-nid-search:hover { background: var(--navy-light); }
+        .btn-nid-search:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .filter-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
+        .nid-result-panel { display: none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .nid-result-panel.show { display: block; animation: slideDown 0.25s ease; }
 
-        .filter-select, .filter-input {
-            border: 1.5px solid var(--border);
-            border-radius: 9px;
-            padding: 8px 12px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-            background: #F8FAFD;
-            cursor: pointer;
-            transition: 0.2s;
-            outline: none;
-        }
+        .nid-result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .nid-result-title { font-size: 15px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+        .nid-status-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; }
+        .nid-status-badge.found { background: rgba(26,122,74,0.1); color: var(--green); }
+        .nid-status-badge.not-found { background: rgba(191,10,48,0.1); color: var(--red); }
 
-        .filter-select:focus, .filter-input:focus {
-            border-color: var(--navy);
-            background: white;
-        }
+        .contact-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; }
+        .chip-yes { background: rgba(26,122,74,0.1); color: var(--green); }
+        .chip-no { background: rgba(191,10,48,0.08); color: var(--red); }
+        .chip-info { background: rgba(0,31,91,0.07); color: var(--navy); }
 
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .history-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .history-timeline { }
+        .history-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #F5F7FA; }
+        .history-item:last-child { border: none; }
+        .history-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--navy); margin-top: 4px; flex-shrink: 0; }
+        .history-dot.first { background: var(--green); }
+        .history-content { flex: 1; }
+        .history-date { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+        .history-detail { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+        .history-detail strong { color: var(--text-main); }
 
-        .btn-filter-clear {
-            background: none;
-            border: 1.5px solid var(--border);
-            border-radius: 9px;
-            padding: 8px 14px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .nid-not-found { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
+        .nid-not-found i { font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.3; }
+        .nid-searching { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text-muted); font-size: 14px; }
+        .mini-spinner { width: 18px; height: 18px; border: 3px solid #E8ECF5; border-top-color: var(--navy); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 
-        .btn-filter-clear:hover {
-            border-color: var(--red);
-            color: var(--red);
-        }
-
-        .active-filters {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-tag {
-            background: rgba(0,31,91,0.08);
-            color: var(--navy);
-            border-radius: 20px;
-            padding: 3px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
+        /* FILTER BAR */
+        .filter-bar { background: var(--surface); border-radius: 14px; padding: 14px 20px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .filter-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .filter-select, .filter-input { border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: var(--text-main); background: #F8FAFD; cursor: pointer; transition: 0.2s; outline: none; }
+        .filter-select:focus, .filter-input:focus { border-color: var(--navy); background: white; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .btn-filter-clear { background: none; border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .btn-filter-clear:hover { border-color: var(--red); color: var(--red); }
+        .active-filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .filter-tag { background: rgba(0,31,91,0.08); color: var(--navy); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .filter-tag:hover { background: rgba(191,10,48,0.08); color: var(--red); }
 
-        /* ── STAT CARDS ── */
-        .stat-card {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 22px 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--navy);
-            border-radius: 16px 16px 0 0;
-        }
-
+        /* STAT CARDS */
+        .stat-card { background: var(--surface); border-radius: 16px; padding: 22px 24px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.25s; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--navy); border-radius: 16px 16px 0 0; }
         .stat-card.card-red::before { background: var(--red); }
         .stat-card.card-green::before { background: var(--green); }
-
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-
-        .stat-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-bottom: 14px;
-        }
-
+        .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 14px; }
         .icon-navy { background: rgba(0,31,91,0.08); color: var(--navy); }
         .icon-red { background: rgba(191,10,48,0.08); color: var(--red); }
         .icon-green { background: rgba(26,122,74,0.08); color: var(--green); }
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+        .stat-label { color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-skeleton { height: 36px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; width: 80px; margin-bottom: 6px; }
 
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--navy);
-            line-height: 1;
-            margin-bottom: 6px;
-        }
+        /* CHARTS */
+        .chart-card { background: var(--surface); border-radius: 16px; padding: 22px 24px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-top: 20px; height: 100%; }
+        .chart-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+        .chart-badge { background: rgba(0,31,91,0.07); color: var(--navy); border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
 
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-skeleton {
-            height: 36px;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.2s infinite;
-            border-radius: 8px;
-            width: 80px;
-            margin-bottom: 6px;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* ── CHARTS ── */
-        .chart-card {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 22px 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            margin-top: 20px;
-            height: 100%;
-        }
-
-        .chart-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .chart-badge {
-            background: rgba(0,31,91,0.07);
-            color: var(--navy);
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* ── TABLE ── */
-        .table-card {
-            background: var(--surface);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .table-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--navy);
-        }
-
-        .search-input {
-            border: 1.5px solid var(--border);
-            border-radius: 9px;
-            padding: 7px 12px 7px 34px;
-            font-size: 13px;
-            width: 220px;
-            background: #F8FAFD;
-            outline: none;
-            transition: 0.2s;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237A8BA0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 10px center;
-        }
-
+        /* TABLE */
+        .table-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-top: 20px; overflow: hidden; }
+        .table-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .table-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+        .search-input { border: 1.5px solid var(--border); border-radius: 9px; padding: 7px 12px 7px 34px; font-size: 13px; width: 240px; background: #F8FAFD url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237A8BA0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center; outline: none; transition: 0.2s; }
         .search-input:focus { border-color: var(--navy); background-color: white; }
-
         .table-custom { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-        .table-custom thead tr {
-            background: #F8FAFD;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .table-custom th {
-            padding: 12px 18px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-align: left;
-        }
-
-        .table-custom td {
-            padding: 12px 18px;
-            border-bottom: 1px solid #F5F7FA;
-            vertical-align: middle;
-        }
-
-        .table-custom tbody tr:hover { background: #F8FAFD; }
+        .table-custom thead tr { background: #F8FAFD; border-bottom: 2px solid var(--border); }
+        .table-custom th { padding: 12px 18px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; text-align: left; }
+        .table-custom td { padding: 11px 18px; border-bottom: 1px solid #F5F7FA; vertical-align: middle; }
+        .table-custom tbody tr { cursor: pointer; }
+        .table-custom tbody tr:hover { background: #F0F4FF; }
         .table-custom tbody tr:last-child td { border: none; }
+        .nid-cell { font-family: monospace; font-weight: 700; font-size: 12px; color: var(--navy); background: rgba(0,31,91,0.05); padding: 3px 8px; border-radius: 6px; }
+        .prov-badge { background: rgba(0,31,91,0.07); color: var(--navy); border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+        .contact-icon { font-size: 14px; }
+        .contact-icon.has { color: var(--green); }
+        .contact-icon.none { color: #CBD5E0; }
 
-        .nid-cell {
-            font-family: monospace;
-            font-weight: 700;
-            font-size: 12px;
-            color: var(--navy);
-            background: rgba(0,31,91,0.05);
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .prov-badge {
-            background: rgba(0,31,91,0.07);
-            color: var(--navy);
-            border-radius: 6px;
-            padding: 2px 7px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        /* ── PAGINATION ── */
-        .pagination-bar {
-            padding: 14px 22px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 4px;
-        }
-
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.15s;
-            color: var(--text-main);
-        }
-
+        /* PAGINATION */
+        .pagination-bar { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
+        .pagination-controls { display: flex; gap: 4px; }
+        .page-btn { width: 32px; height: 32px; border: 1.5px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: 0.15s; color: var(--text-main); }
         .page-btn:hover { border-color: var(--navy); color: var(--navy); }
         .page-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* ── ERROR / EMPTY STATE ── */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 40px;
-            margin-bottom: 14px;
-            display: block;
-            opacity: 0.3;
-        }
-
-        /* ── LOADING STATE ── */
-        .loading-state {
-            text-align: center;
-            padding: 50px 20px;
-        }
-
-        .big-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #E8ECF5;
-            border-top-color: var(--navy);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 14px;
-        }
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 40px; margin-bottom: 14px; display: block; opacity: 0.3; }
+        .loading-state { text-align: center; padding: 50px 20px; }
+        .big-spinner { width: 40px; height: 40px; border: 4px solid #E8ECF5; border-top-color: var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── AUTO-REFRESH PROGRESS ── */
-        .refresh-progress {
-            height: 2px;
-            background: var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .refresh-progress-bar {
-            height: 100%;
-            background: var(--navy);
-            width: 0%;
-            transition: width 0.5s linear;
-        }
-
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .main-wrap { padding: 16px; }
+            .main-wrap { padding: 14px; }
             .filter-bar { flex-direction: column; align-items: stretch; }
-            .filter-group { flex-wrap: wrap; }
+            .nid-search-row { flex-direction: column; }
             .search-input { width: 100%; }
-            .topbar-brand span { display: none; }
+            .topbar-brand span, .last-update { display: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
     <div class="topbar-brand">
-        <i class="fas fa-chart-line"></i>
-        ECHO Dashboard
-        <span>LIVE</span>
+        <i class="fas fa-chart-line"></i> ECHO Dashboard <span>LIVE</span>
     </div>
     <div class="topbar-right">
         <div class="last-update">
             <div class="refresh-dot" id="refreshDot"></div>
             <span id="lastUpdateText">A carregar...</span>
         </div>
-        <a href="https://registo-saude.vercel.app" class="btn-novo">
-            <i class="fas fa-plus me-1"></i> Novo Registo
+        <a href="https://registo-saude.vercel.app" class="btn-topbar">
+            <i class="fas fa-plus"></i> Novo Registo
         </a>
     </div>
 </div>
 
-<!-- AUTO-REFRESH PROGRESS -->
-<div class="refresh-progress">
-    <div class="refresh-progress-bar" id="progressBar"></div>
-</div>
+<div class="refresh-progress"><div class="refresh-progress-bar" id="progressBar"></div></div>
 
 <div class="main-wrap">
 
-    <!-- FILTER BAR -->
+    <!-- NID LOOKUP -->
+    <div class="nid-search-bar">
+        <div class="nid-search-label">
+            <i class="fas fa-search"></i> Consulta de Paciente por NID
+        </div>
+        <div class="nid-search-row">
+            <input type="tel" inputmode="numeric" class="nid-search-input" id="nidLookupInput"
+                placeholder="Digite o NID do paciente..."
+                onkeydown="if(event.key==='Enter') consultarNID()">
+            <button class="btn-nid-search" id="btnNidSearch" onclick="consultarNID()">
+                <i class="fas fa-search"></i> Consultar
+            </button>
+        </div>
+        <div class="nid-result-panel" id="nidResultPanel"></div>
+    </div>
+
+    <!-- FILTERS -->
     <div class="filter-bar">
         <span class="filter-label"><i class="fas fa-filter me-1"></i>Filtros</span>
-
         <div class="filter-group">
-            <select class="filter-select" id="filtPeriodo" onchange="aplicarFiltros()">
+            <select class="filter-select" id="filtPeriodo" onchange="onPeriodoChange()">
                 <option value="all">Todos os períodos</option>
                 <option value="today">Hoje</option>
                 <option value="week">Esta semana</option>
@@ -525,23 +203,26 @@
                 <option value="custom">Personalizado</option>
             </select>
         </div>
-
         <div class="filter-group" id="customDateGroup" style="display:none">
             <input type="date" class="filter-input" id="filtDataInicio" onchange="aplicarFiltros()">
-            <span style="color:var(--text-muted); font-size:12px">a</span>
+            <span style="color:var(--text-muted);font-size:12px">a</span>
             <input type="date" class="filter-input" id="filtDataFim" onchange="aplicarFiltros()">
         </div>
-
         <div class="filter-group">
             <select class="filter-select" id="filtProvincia" onchange="aplicarFiltros()">
                 <option value="all">Todas as províncias</option>
             </select>
         </div>
-
+        <div class="filter-group">
+            <select class="filter-select" id="filtContacto" onchange="aplicarFiltros()">
+                <option value="all">Todos os contactos</option>
+                <option value="yes">Com contacto</option>
+                <option value="no">Sem contacto</option>
+            </select>
+        </div>
         <button class="btn-filter-clear" onclick="limparFiltros()">
             <i class="fas fa-times me-1"></i>Limpar
         </button>
-
         <div class="active-filters" id="activeTags"></div>
     </div>
 
@@ -570,35 +251,25 @@
         </div>
     </div>
 
-    <!-- CHARTS ROW -->
+    <!-- CHARTS -->
     <div class="row g-3" style="margin-top:4px;">
         <div class="col-lg-5">
             <div class="chart-card">
-                <div class="chart-title">
-                    Por Província
-                    <span class="chart-badge" id="badgeProv">—</span>
-                </div>
+                <div class="chart-title">Por Província <span class="chart-badge" id="badgeProv">—</span></div>
                 <canvas id="chartProvincia" height="220"></canvas>
             </div>
         </div>
         <div class="col-lg-7">
             <div class="chart-card">
-                <div class="chart-title">
-                    Evolução Temporal
-                    <span class="chart-badge" id="badgeTemporal">últimos 14 dias</span>
-                </div>
+                <div class="chart-title">Evolução Temporal <span class="chart-badge" id="badgeTemporal">últimos 14 dias</span></div>
                 <canvas id="chartTemporal" height="220"></canvas>
             </div>
         </div>
     </div>
-
     <div class="row g-3" style="margin-top:4px;">
         <div class="col-12">
-            <div class="chart-card" style="padding-bottom: 10px;">
-                <div class="chart-title">
-                    Produtividade — Top Utilizadores
-                    <span class="chart-badge" id="badgeUsers">—</span>
-                </div>
+            <div class="chart-card" style="padding-bottom:10px;">
+                <div class="chart-title">Produtividade — Top Utilizadores <span class="chart-badge" id="badgeUsers">—</span></div>
                 <canvas id="chartUsuarios" height="100"></canvas>
             </div>
         </div>
@@ -609,14 +280,13 @@
         <div class="table-header">
             <div class="table-title">
                 <i class="fas fa-list me-2" style="color:var(--navy);opacity:0.6"></i>
-                Registos Recentes
-                <span id="tableCount" style="color:var(--text-muted); font-weight:500; font-size:13px; margin-left:8px;"></span>
+                Todos os Registos
+                <span id="tableCount" style="color:var(--text-muted);font-weight:500;font-size:13px;margin-left:8px;"></span>
             </div>
             <input type="text" class="search-input" id="tableSearch"
-                placeholder="Pesquisar NID ou US..."
+                placeholder="Pesquisar NID, US, responsável..."
                 oninput="pesquisarTabela(this.value)">
         </div>
-
         <div style="overflow-x:auto;">
             <table class="table-custom">
                 <thead>
@@ -625,55 +295,185 @@
                         <th>NID</th>
                         <th>Unidade Sanitária</th>
                         <th>Província</th>
+                        <th style="text-align:center">Contacto</th>
                         <th>Responsável</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaUltimos">
-                    <tr><td colspan="5"><div class="loading-state">
+                    <tr><td colspan="6"><div class="loading-state">
                         <div class="big-spinner"></div>
-                        <p style="color:var(--text-muted); font-size:14px;">A carregar registos...</p>
+                        <p style="color:var(--text-muted);font-size:14px;">A carregar registos...</p>
                     </div></td></tr>
                 </tbody>
             </table>
         </div>
-
         <div class="pagination-bar" id="paginationBar" style="display:none">
             <span id="paginationInfo"></span>
             <div class="pagination-controls" id="paginationControls"></div>
         </div>
     </div>
-
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONFIGURAÇÃO
-// ══════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbymnRIMH7cZisvZfqdv84sybC72drizYc2MqkcuBggv9QYYL2MFFP87Qg_Chythvwe2ZA/exec";
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
+const REFRESH_INTERVAL = 5 * 60 * 1000;
 const ROWS_PER_PAGE = 15;
 const PALETTE = ['#001F5B','#BF0A30','#1A7A4A','#F59E0B','#17A2B8','#6F42C1','#E83E8C','#20C997','#FD7E14','#6C757D'];
 
-let dadosBrutos = null; // todos os dados carregados da API
-let dadosFiltrados = []; // após filtros ativos
-let dadosPesquisa = [];  // após pesquisa na tabela
+let dadosBrutos = null, dadosFiltrados = [], dadosPesquisa = [];
 let paginaAtual = 1;
 let chartProv = null, chartTemporal = null, chartUsers = null;
-let refreshTimer = null, progressInterval = null;
-let progressStart = null;
+let refreshTimer = null, progressInterval = null, progressStart = null;
 
-// ══════════════════════════════════════════════
-//  CARREGAR DADOS
-// ══════════════════════════════════════════════
+// ── NID LOOKUP ──
+async function consultarNID() {
+    const raw = (document.getElementById('nidLookupInput').value || '').trim();
+    if (raw.length < 3) return;
+
+    const panel = document.getElementById('nidResultPanel');
+    panel.className = 'nid-result-panel show';
+    panel.innerHTML = '<div class="nid-searching"><div class="mini-spinner"></div> A consultar...</div>';
+    document.getElementById('btnNidSearch').disabled = true;
+
+    // Search local data first
+    const local = buscarNIDLocal(raw);
+
+    if (local.length > 0) {
+        renderizarResultadoNID(raw, local);
+    } else {
+        // Fallback to API
+        try {
+            const res = await fetch(`${API_URL}?getNID=${encodeURIComponent(raw)}`);
+            const data = await res.json();
+            if (data && data.registos && data.registos.length > 0) {
+                renderizarResultadoNID(raw, data.registos);
+            } else {
+                renderizarNIDNaoEncontrado(raw);
+            }
+        } catch {
+            renderizarNIDNaoEncontrado(raw);
+        }
+    }
+
+    document.getElementById('btnNidSearch').disabled = false;
+}
+
+function buscarNIDLocal(nid) {
+    if (!dadosBrutos || !dadosBrutos.ultimos) return [];
+    const q = nid.replace(/[\s\-]/g, '').toLowerCase();
+    return dadosBrutos.ultimos.filter(r =>
+        (r.nid || '').replace(/[\s\-]/g, '').toLowerCase().includes(q)
+    );
+}
+
+function renderizarResultadoNID(nid, registos) {
+    const sorted = [...registos].sort((a, b) => {
+        const da = parseData(a.data), db = parseData(b.data);
+        return (!da || !db) ? 0 : db - da;
+    });
+    const u = sorted[0];
+    const temTel = temContacto(u);
+    const temConf = (u.tem_confidente || u.confidente || '').toLowerCase() === 'sim';
+
+    document.getElementById('nidResultPanel').innerHTML = `
+        <div class="nid-result-header">
+            <div class="nid-result-title">
+                <i class="fas fa-user-circle" style="color:var(--navy)"></i>
+                <span style="font-family:monospace;letter-spacing:1px">${u.nid || nid}</span>
+            </div>
+            <span class="nid-status-badge found">
+                <i class="fas fa-check-circle"></i>
+                ${sorted.length} registo${sorted.length > 1 ? 's' : ''} encontrado${sorted.length > 1 ? 's' : ''}
+            </span>
+        </div>
+
+        <div class="contact-chips">
+            <div class="chip ${temTel ? 'chip-yes' : 'chip-no'}">
+                <i class="fas fa-${temTel ? 'phone' : 'phone-slash'}"></i>
+                Contacto: <strong>${temTel ? 'Sim' : 'Não'}</strong>
+            </div>
+            <div class="chip ${temConf ? 'chip-yes' : 'chip-no'}">
+                <i class="fas fa-${temConf ? 'user-friends' : 'user-slash'}"></i>
+                ${temConf ? 'Tem confidente' : 'Sem confidente'}
+            </div>
+            <div class="chip chip-info">
+                <i class="fas fa-hospital"></i> ${u.us || '—'}
+            </div>
+            <div class="chip chip-info">
+                <i class="fas fa-map-marker-alt"></i> ${u.prov || u.provincia || '—'}
+            </div>
+        </div>
+
+        <div class="history-section-label">
+            <i class="fas fa-history me-1"></i> Histórico de Actualizações
+        </div>
+        <div class="history-timeline">
+            ${sorted.map((r, i) => `
+                <div class="history-item">
+                    <div class="history-dot ${i === 0 ? 'first' : ''}"></div>
+                    <div class="history-content">
+                        <div class="history-date">
+                            ${r.data || '—'}
+                            ${i === 0 ? '<span style="background:rgba(26,122,74,0.1);color:var(--green);border-radius:4px;padding:1px 6px;font-size:10px;margin-left:6px;font-weight:700;">✓ Mais recente</span>' : ''}
+                        </div>
+                        <div class="history-detail">
+                            <strong>US:</strong> ${r.us || '—'} &nbsp;·&nbsp;
+                            <strong>Prov:</strong> ${r.prov || r.provincia || '—'} &nbsp;·&nbsp;
+                            <strong>Tel:</strong> ${contactoStr(r)} &nbsp;·&nbsp;
+                            <strong>Confidente:</strong> ${r.tem_confidente || r.confidente || 'Não'} &nbsp;·&nbsp;
+                            <strong>Por:</strong> ${r.resp || '—'}
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderizarNIDNaoEncontrado(nid) {
+    document.getElementById('nidResultPanel').innerHTML = `
+        <div class="nid-result-header">
+            <div class="nid-result-title" style="color:var(--text-muted)">
+                <i class="fas fa-user-circle"></i>
+                <span style="font-family:monospace;letter-spacing:1px">${nid}</span>
+            </div>
+            <span class="nid-status-badge not-found"><i class="fas fa-times-circle"></i> Não encontrado</span>
+        </div>
+        <div class="nid-not-found">
+            <i class="fas fa-search"></i>
+            Este NID não foi encontrado na base de dados.<br>
+            <small>Verifique o número e tente novamente.</small>
+        </div>
+    `;
+}
+
+function temContacto(r) {
+    if (!r) return false;
+    const t = r.tel1 || r.tel || '';
+    return t && t !== 'N/A' && t !== '' && t !== 'Sem telefone';
+}
+
+function contactoStr(r) {
+    // Only show Sim/Não — no phone number
+    return temContacto(r)
+        ? '<span style="color:var(--green);font-weight:700">Sim</span>'
+        : '<span style="color:var(--red)">Não</span>';
+}
+
+function consultarNIDDaTabela(nid) {
+    document.getElementById('nidLookupInput').value = nid;
+    document.querySelector('.nid-search-bar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(consultarNID, 350);
+}
+
+// ── LOAD DATA ──
 async function carregarDados() {
     setRefreshDot(true);
-
     try {
         const res = await fetch(API_URL + "?getStats=1");
         const data = await res.json();
         dadosBrutos = data;
 
-        // Popular filtro de províncias
         const provSel = document.getElementById('filtProvincia');
         const provAtual = provSel.value;
         provSel.innerHTML = '<option value="all">Todas as províncias</option>';
@@ -684,398 +484,211 @@ async function carregarDados() {
                 provSel.add(opt);
             });
         }
-
-        // Atualizar cards de topo (sempre totais globais)
         animarNumero('valTotal', data.total || 0);
         animarNumero('valUS', data.totalUS || 0);
         animarNumero('valHoje', data.hoje || 0);
-
-        // Aplicar filtros e renderizar
         aplicarFiltros();
         atualizarLastUpdate();
         iniciarAutoRefresh();
-
     } catch (err) {
-        console.error("Erro ao carregar dados:", err);
-        document.getElementById('tabelaUltimos').innerHTML = `
-            <tr><td colspan="5">
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Falha ao carregar dados. <a href="#" onclick="carregarDados()">Tentar novamente</a></p>
-                </div>
-            </td></tr>`;
-        ['valTotal','valUS','valHoje'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el.classList.contains('stat-skeleton')) el.innerHTML = '—';
-        });
+        document.getElementById('tabelaUltimos').innerHTML =
+            `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Falha ao carregar. <a href="#" onclick="carregarDados()">Tentar novamente</a></p></div></td></tr>`;
+        ['valTotal','valUS','valHoje'].forEach(id => { const el=document.getElementById(id); el.textContent='—'; el.className='stat-value'; });
     }
-
     setRefreshDot(false);
 }
 
-// ══════════════════════════════════════════════
-//  FILTROS
-// ══════════════════════════════════════════════
+// ── FILTERS ──
+function onPeriodoChange() {
+    document.getElementById('customDateGroup').style.display =
+        document.getElementById('filtPeriodo').value === 'custom' ? 'flex' : 'none';
+    aplicarFiltros();
+}
+
 function aplicarFiltros() {
     if (!dadosBrutos) return;
-
     const periodo = document.getElementById('filtPeriodo').value;
     const prov = document.getElementById('filtProvincia').value;
+    const contacto = document.getElementById('filtContacto').value;
 
-    // Mostrar/ocultar seletor de datas customizadas
-    document.getElementById('customDateGroup').style.display = periodo === 'custom' ? 'flex' : 'none';
-
-    // Filtrar registos da tabela
     let registos = dadosBrutos.ultimos || [];
-
-    // Filtro por período
     const hoje = new Date(); hoje.setHours(0,0,0,0);
-    if (periodo !== 'all' && registos.length > 0) {
+
+    if (periodo !== 'all') {
         registos = registos.filter(r => {
-            const d = parseData(r.data);
-            if (!d) return true;
+            const d = parseData(r.data); if (!d) return true;
             if (periodo === 'today') return d >= hoje;
-            if (periodo === 'week') { const s = new Date(hoje); s.setDate(s.getDate() - s.getDay()); return d >= s; }
-            if (periodo === 'month') { const m = new Date(hoje.getFullYear(), hoje.getMonth(), 1); return d >= m; }
+            if (periodo === 'week') { const s=new Date(hoje); s.setDate(s.getDate()-s.getDay()); return d>=s; }
+            if (periodo === 'month') return d >= new Date(hoje.getFullYear(), hoje.getMonth(), 1);
             if (periodo === 'custom') {
-                const ini = document.getElementById('filtDataInicio').value;
-                const fim = document.getElementById('filtDataFim').value;
-                if (ini && d < new Date(ini)) return false;
-                if (fim && d > new Date(fim + 'T23:59:59')) return false;
+                const ini=document.getElementById('filtDataInicio').value;
+                const fim=document.getElementById('filtDataFim').value;
+                if (ini && d<new Date(ini)) return false;
+                if (fim && d>new Date(fim+'T23:59:59')) return false;
                 return true;
             }
             return true;
         });
     }
+    if (prov !== 'all') registos = registos.filter(r => (r.prov||r.provincia||'').toLowerCase()===prov.toLowerCase());
+    if (contacto === 'yes') registos = registos.filter(r => temContacto(r));
+    if (contacto === 'no') registos = registos.filter(r => !temContacto(r));
 
-    // Filtro por província (no registo)
-    if (prov !== 'all') {
-        registos = registos.filter(r => (r.prov || r.provincia || '').toLowerCase() === prov.toLowerCase());
-    }
-
-    dadosFiltrados = registos;
-    dadosPesquisa = registos;
-
-    // Atualizar tags de filtros ativos
-    renderizarTags(periodo, prov);
-
-    // Atualizar gráficos com dados filtrados (ou globais se sem filtro)
-    renderizarGraficos(periodo === 'all' && prov === 'all' ? dadosBrutos : { registos });
-
-    // Resetar paginação e renderizar tabela
-    paginaAtual = 1;
-    renderizarTabela();
+    dadosFiltrados = registos; dadosPesquisa = registos;
+    renderizarTags(periodo, prov, contacto);
+    renderizarGraficos(periodo==='all' && prov==='all' ? dadosBrutos : {registos, provincias:{}, usuarios:{}});
+    paginaAtual = 1; renderizarTabela();
 }
 
 function limparFiltros() {
-    document.getElementById('filtPeriodo').value = 'all';
-    document.getElementById('filtProvincia').value = 'all';
-    document.getElementById('filtDataInicio').value = '';
-    document.getElementById('filtDataFim').value = '';
-    document.getElementById('tableSearch').value = '';
-    document.getElementById('customDateGroup').style.display = 'none';
+    ['filtPeriodo','filtProvincia','filtContacto'].forEach(id => document.getElementById(id).value='all');
+    document.getElementById('filtDataInicio').value='';
+    document.getElementById('filtDataFim').value='';
+    document.getElementById('tableSearch').value='';
+    document.getElementById('customDateGroup').style.display='none';
     aplicarFiltros();
 }
 
-function renderizarTags(periodo, prov) {
-    const tags = document.getElementById('activeTags');
-    let html = '';
-    const periodoLabels = { today:'Hoje', week:'Esta semana', month:'Este mês', custom:'Período personalizado' };
-    if (periodo !== 'all') html += `<div class="filter-tag" onclick="document.getElementById('filtPeriodo').value='all';aplicarFiltros()"><i class="fas fa-times"></i>${periodoLabels[periodo]}</div>`;
-    if (prov !== 'all') html += `<div class="filter-tag" onclick="document.getElementById('filtProvincia').value='all';aplicarFiltros()"><i class="fas fa-times"></i>${prov}</div>`;
-    tags.innerHTML = html;
+function renderizarTags(periodo, prov, contacto) {
+    const labels = {today:'Hoje',week:'Esta semana',month:'Este mês',custom:'Período personalizado'};
+    let html='';
+    if (periodo!=='all') html+=`<div class="filter-tag" onclick="document.getElementById('filtPeriodo').value='all';onPeriodoChange()"><i class="fas fa-times"></i>${labels[periodo]}</div>`;
+    if (prov!=='all') html+=`<div class="filter-tag" onclick="document.getElementById('filtProvincia').value='all';aplicarFiltros()"><i class="fas fa-times"></i>${prov}</div>`;
+    if (contacto!=='all') html+=`<div class="filter-tag" onclick="document.getElementById('filtContacto').value='all';aplicarFiltros()"><i class="fas fa-times"></i>${contacto==='yes'?'Com contacto':'Sem contacto'}</div>`;
+    document.getElementById('activeTags').innerHTML=html;
 }
 
-// ══════════════════════════════════════════════
-//  PESQUISA NA TABELA
-// ══════════════════════════════════════════════
+// ── TABLE SEARCH ──
 function pesquisarTabela(q) {
     q = q.toLowerCase().trim();
     dadosPesquisa = q
         ? dadosFiltrados.filter(r =>
-            (r.nid || '').toLowerCase().includes(q) ||
-            (r.us || '').toLowerCase().includes(q) ||
-            (r.resp || '').toLowerCase().includes(q)
-          )
+            (r.nid||'').toLowerCase().includes(q) ||
+            (r.us||'').toLowerCase().includes(q) ||
+            (r.resp||'').toLowerCase().includes(q) ||
+            (r.prov||r.provincia||'').toLowerCase().includes(q))
         : dadosFiltrados;
-    paginaAtual = 1;
-    renderizarTabela();
+    paginaAtual=1; renderizarTabela();
 }
 
-// ══════════════════════════════════════════════
-//  TABELA COM PAGINAÇÃO
-// ══════════════════════════════════════════════
+// ── TABLE RENDER ──
 function renderizarTabela() {
     const tbody = document.getElementById('tabelaUltimos');
     const total = dadosPesquisa.length;
-
     document.getElementById('tableCount').textContent = total > 0 ? `(${total})` : '';
 
     if (total === 0) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-search"></i><p>Nenhum registo encontrado</p></div></td></tr>`;
-        document.getElementById('paginationBar').style.display = 'none';
-        return;
+        tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="fas fa-search"></i><p>Nenhum registo encontrado</p></div></td></tr>`;
+        document.getElementById('paginationBar').style.display='none'; return;
     }
 
-    const totalPag = Math.ceil(total / ROWS_PER_PAGE);
-    if (paginaAtual > totalPag) paginaAtual = totalPag;
+    const totalPag = Math.ceil(total/ROWS_PER_PAGE);
+    if (paginaAtual > totalPag) paginaAtual=totalPag;
+    const inicio = (paginaAtual-1)*ROWS_PER_PAGE;
+    const pagina = dadosPesquisa.slice(inicio, inicio+ROWS_PER_PAGE);
 
-    const inicio = (paginaAtual - 1) * ROWS_PER_PAGE;
-    const fim = Math.min(inicio + ROWS_PER_PAGE, total);
-    const pagina = dadosPesquisa.slice(inicio, fim);
+    tbody.innerHTML = pagina.map(r => {
+        const tc = temContacto(r);
+        const nidEsc = (r.nid||'').replace(/'/g,"\\'");
+        return `<tr onclick="consultarNIDDaTabela('${nidEsc}')" title="Clique para consultar este NID">
+            <td style="color:var(--text-muted);white-space:nowrap;font-size:12px">${r.data||'—'}</td>
+            <td><span class="nid-cell">${r.nid||'—'}</span></td>
+            <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.us||'—'}</td>
+            <td>${r.prov||r.provincia?`<span class="prov-badge">${r.prov||r.provincia}</span>`:'—'}</td>
+            <td style="text-align:center">
+                <i class="fas fa-${tc?'phone':'phone-slash'} contact-icon ${tc?'has':'none'}" title="${tc?'Tem contacto':'Sem contacto'}"></i>
+            </td>
+            <td style="font-size:12px">${r.resp||'—'}</td>
+        </tr>`;
+    }).join('');
 
-    tbody.innerHTML = pagina.map(r => `
-        <tr>
-            <td style="color:var(--text-muted); white-space:nowrap;">${r.data || '—'}</td>
-            <td><span class="nid-cell">${r.nid || '—'}</span></td>
-            <td style="font-weight:500;">${r.us || '—'}</td>
-            <td>${r.prov || r.provincia ? `<span class="prov-badge">${r.prov || r.provincia}</span>` : '—'}</td>
-            <td>${r.resp || '—'}</td>
-        </tr>
-    `).join('');
-
-    // Paginação
-    const bar = document.getElementById('paginationBar');
-    bar.style.display = 'flex';
-    document.getElementById('paginationInfo').textContent = `${inicio + 1}–${fim} de ${total}`;
-
-    // Botões de páginas
-    const ctrl = document.getElementById('paginationControls');
-    let btns = `<button class="page-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left" style="font-size:10px;"></i></button>`;
-
-    const range = paginasVisiveis(paginaAtual, totalPag);
-    range.forEach(p => {
-        if (p === '...') btns += `<button class="page-btn" disabled>…</button>`;
-        else btns += `<button class="page-btn ${p === paginaAtual ? 'active' : ''}" onclick="irPagina(${p})">${p}</button>`;
+    document.getElementById('paginationBar').style.display='flex';
+    document.getElementById('paginationInfo').textContent=`${inicio+1}–${Math.min(inicio+ROWS_PER_PAGE,total)} de ${total}`;
+    let btns=`<button class="page-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}><i class="fas fa-chevron-left" style="font-size:10px"></i></button>`;
+    paginasVisiveis(paginaAtual,totalPag).forEach(p => {
+        btns += p==='...' ? `<button class="page-btn" disabled>…</button>`
+            : `<button class="page-btn ${p===paginaAtual?'active':''}" onclick="irPagina(${p})">${p}</button>`;
     });
-
-    btns += `<button class="page-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === totalPag ? 'disabled' : ''}><i class="fas fa-chevron-right" style="font-size:10px;"></i></button>`;
-    ctrl.innerHTML = btns;
+    btns+=`<button class="page-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPag?'disabled':''}><i class="fas fa-chevron-right" style="font-size:10px"></i></button>`;
+    document.getElementById('paginationControls').innerHTML=btns;
 }
 
 function irPagina(p) {
-    const total = Math.ceil(dadosPesquisa.length / ROWS_PER_PAGE);
-    if (p < 1 || p > total) return;
-    paginaAtual = p;
-    renderizarTabela();
-    document.querySelector('.table-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const total=Math.ceil(dadosPesquisa.length/ROWS_PER_PAGE);
+    if (p<1||p>total) return;
+    paginaAtual=p; renderizarTabela();
+    document.querySelector('.table-card').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function paginasVisiveis(atual, total) {
-    if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
-    if (atual <= 4) return [1, 2, 3, 4, 5, '...', total];
-    if (atual >= total - 3) return [1, '...', total-4, total-3, total-2, total-1, total];
-    return [1, '...', atual-1, atual, atual+1, '...', total];
+function paginasVisiveis(atual,total) {
+    if (total<=7) return Array.from({length:total},(_,i)=>i+1);
+    if (atual<=4) return [1,2,3,4,5,'...',total];
+    if (atual>=total-3) return [1,'...',total-4,total-3,total-2,total-1,total];
+    return [1,'...',atual-1,atual,atual+1,'...',total];
 }
 
-// ══════════════════════════════════════════════
-//  GRÁFICOS
-// ══════════════════════════════════════════════
+// ── CHARTS ──
 function renderizarGraficos(data) {
-    renderizarGraficoProvincia(data);
-    renderizarGraficoTemporal(data);
-    renderizarGraficoUsuarios(data);
-}
-
-function renderizarGraficoProvincia(data) {
-    const ctx = document.getElementById('chartProvincia');
     const provincias = data.provincias || {};
     const labels = Object.keys(provincias);
-    const valores = Object.values(provincias);
-
     document.getElementById('badgeProv').textContent = `${labels.length} províncias`;
-
     if (chartProv) chartProv.destroy();
-    chartProv = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels,
-            datasets: [{
-                data: valores,
-                backgroundColor: PALETTE.slice(0, labels.length),
-                borderWidth: 2,
-                borderColor: '#fff',
-                hoverOffset: 6
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { font: { size: 12, family: 'Inter' }, padding: 12, boxWidth: 12 }
-                }
-            },
-            cutout: '60%',
-            responsive: true
-        }
+    chartProv = new Chart(document.getElementById('chartProvincia'), {
+        type:'doughnut',
+        data:{labels,datasets:[{data:Object.values(provincias),backgroundColor:PALETTE.slice(0,labels.length),borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+        options:{plugins:{legend:{position:'bottom',labels:{font:{size:12,family:'Inter'},padding:12,boxWidth:12}}},cutout:'60%',responsive:true}
     });
-}
 
-function renderizarGraficoTemporal(data) {
-    const ctx = document.getElementById('chartTemporal');
-
-    // Constrói dados dos últimos 14 dias a partir dos registos
     const registos = data.ultimos || dadosBrutos?.ultimos || [];
     const contagens = {};
-
-    for (let i = 13; i >= 0; i--) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const chave = d.toLocaleDateString('pt-MZ', { day:'2-digit', month:'2-digit' });
-        contagens[chave] = 0;
-    }
-
-    registos.forEach(r => {
-        const d = parseData(r.data);
-        if (!d) return;
-        const chave = d.toLocaleDateString('pt-MZ', { day:'2-digit', month:'2-digit' });
-        if (chave in contagens) contagens[chave]++;
-    });
-
-    // Se não tem registos individuais, usa o dado "hoje" do API
-    if (registos.length === 0 && dadosBrutos?.hoje) {
-        const hoje = new Date().toLocaleDateString('pt-MZ', { day:'2-digit', month:'2-digit' });
-        if (hoje in contagens) contagens[hoje] = dadosBrutos.hoje;
-    }
-
+    for (let i=13;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); contagens[d.toLocaleDateString('pt-MZ',{day:'2-digit',month:'2-digit'})]=0; }
+    registos.forEach(r => { const d=parseData(r.data); if(!d) return; const k=d.toLocaleDateString('pt-MZ',{day:'2-digit',month:'2-digit'}); if(k in contagens) contagens[k]++; });
     if (chartTemporal) chartTemporal.destroy();
-    chartTemporal = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Object.keys(contagens),
-            datasets: [{
-                label: 'Registos',
-                data: Object.values(contagens),
-                borderColor: '#001F5B',
-                backgroundColor: 'rgba(0,31,91,0.07)',
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#001F5B',
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1, font: { size: 11 } },
-                    grid: { color: '#F0F4FA' }
-                },
-                x: {
-                    ticks: { font: { size: 11 } },
-                    grid: { display: false }
-                }
-            }
-        }
+    chartTemporal = new Chart(document.getElementById('chartTemporal'), {
+        type:'line',
+        data:{labels:Object.keys(contagens),datasets:[{label:'Registos',data:Object.values(contagens),borderColor:'#001F5B',backgroundColor:'rgba(0,31,91,0.07)',fill:true,tension:0.4,pointBackgroundColor:'#001F5B',pointRadius:4,pointHoverRadius:6}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#F0F4FA'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
     });
-}
 
-function renderizarGraficoUsuarios(data) {
-    const ctx = document.getElementById('chartUsuarios');
     const usuarios = data.usuarios || {};
-    const labels = Object.keys(usuarios).slice(0, 10);
-    const valores = labels.map(k => usuarios[k]);
-
-    document.getElementById('badgeUsers').textContent = `${labels.length} utilizadores`;
-    document.getElementById('badgeTemporal').textContent = 'últimos 14 dias';
-
+    const ulabels = Object.keys(usuarios).slice(0,10);
+    document.getElementById('badgeUsers').textContent=`${ulabels.length} utilizadores`;
     if (chartUsers) chartUsers.destroy();
-    chartUsers = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Registos',
-                data: valores,
-                backgroundColor: labels.map((_, i) => i === 0 ? '#001F5B' : 'rgba(0,31,91,0.15)'),
-                borderRadius: 6,
-                borderSkipped: false
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1, font: { size: 11 } },
-                    grid: { color: '#F0F4FA' }
-                },
-                x: {
-                    ticks: { font: { size: 11 }, maxRotation: 30 },
-                    grid: { display: false }
-                }
-            }
-        }
+    chartUsers = new Chart(document.getElementById('chartUsuarios'), {
+        type:'bar',
+        data:{labels:ulabels,datasets:[{label:'Registos',data:ulabels.map(k=>usuarios[k]),backgroundColor:ulabels.map((_,i)=>i===0?'#001F5B':'rgba(0,31,91,0.15)'),borderRadius:6,borderSkipped:false}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#F0F4FA'}},x:{ticks:{font:{size:11},maxRotation:30},grid:{display:false}}}}
     });
 }
 
-// ══════════════════════════════════════════════
-//  UTILIDADES
-// ══════════════════════════════════════════════
+// ── UTILS ──
 function parseData(str) {
     if (!str) return null;
-    // Tenta DD/MM/YYYY HH:MM e variações
-    const m = str.match(/(\d{2})[\/-](\d{2})[\/-](\d{4})/);
-    if (m) return new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
-    const d = new Date(str);
-    return isNaN(d) ? null : d;
+    const m=str.match(/(\d{2})[\/-](\d{2})[\/-](\d{4})/);
+    if (m) return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+    const d=new Date(str); return isNaN(d)?null:d;
 }
 
 function animarNumero(id, fim) {
-    const el = document.getElementById(id);
-    el.className = 'stat-value';
-    let atual = 0;
-    const passo = Math.max(1, Math.floor(fim / 30));
-    const intervalo = setInterval(() => {
-        atual = Math.min(atual + passo, fim);
-        el.textContent = atual.toLocaleString('pt-MZ');
-        if (atual >= fim) clearInterval(intervalo);
-    }, 30);
+    const el=document.getElementById(id); el.className='stat-value';
+    let atual=0; const passo=Math.max(1,Math.floor(fim/30));
+    const iv=setInterval(()=>{ atual=Math.min(atual+passo,fim); el.textContent=atual.toLocaleString('pt-MZ'); if(atual>=fim) clearInterval(iv); },30);
 }
 
 function atualizarLastUpdate() {
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('lastUpdateText').textContent = `Actualizado às ${hora}`;
+    document.getElementById('lastUpdateText').textContent='Actualizado às '+new Date().toLocaleTimeString('pt-MZ',{hour:'2-digit',minute:'2-digit'});
 }
 
-function setRefreshDot(loading) {
-    document.getElementById('refreshDot').classList.toggle('loading', loading);
-}
+function setRefreshDot(l) { document.getElementById('refreshDot').classList.toggle('loading',l); }
 
-// ══════════════════════════════════════════════
-//  AUTO-REFRESH (5 MIN)
-// ══════════════════════════════════════════════
 function iniciarAutoRefresh() {
-    if (refreshTimer) clearInterval(refreshTimer);
+    if (refreshTimer) clearTimeout(refreshTimer);
     if (progressInterval) clearInterval(progressInterval);
-
-    progressStart = Date.now();
-    const bar = document.getElementById('progressBar');
-    bar.style.width = '0%';
-
-    progressInterval = setInterval(() => {
-        const elapsed = Date.now() - progressStart;
-        const pct = Math.min((elapsed / REFRESH_INTERVAL) * 100, 100);
-        bar.style.width = pct + '%';
-    }, 500);
-
-    refreshTimer = setTimeout(() => {
-        clearInterval(progressInterval);
-        carregarDados();
-    }, REFRESH_INTERVAL);
+    progressStart=Date.now();
+    const bar=document.getElementById('progressBar'); bar.style.width='0%';
+    progressInterval=setInterval(()=>{ bar.style.width=Math.min((Date.now()-progressStart)/REFRESH_INTERVAL*100,100)+'%'; },500);
+    refreshTimer=setTimeout(()=>{ clearInterval(progressInterval); carregarDados(); },REFRESH_INTERVAL);
 }
-
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-document.getElementById('filtPeriodo').addEventListener('change', function() {
-    document.getElementById('customDateGroup').style.display = this.value === 'custom' ? 'flex' : 'none';
-    aplicarFiltros();
-});
 
 window.onload = carregarDados;
 </script>
