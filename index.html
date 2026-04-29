@@ -1,1067 +1,860 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ECHO Project Moçambique | Actualização de Dados</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ECHO Project Moçambique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
-            --navy: #001F5B;
-            --navy-light: #002878;
-            --red: #BF0A30;
-            --green: #1A7A4A;
-            --bg: #F6F6F6;
-            --surface: #FFFFFF;
-            --text-secondary: #6B6B6B;
-            --input-bg: #F3F3F3;
-            --warning: #F59E0B;
+            --navy: #001F5B; --navy-light: #002878; --red: #BF0A30;
+            --green: #1A7A4A; --bg: #F4F6FB; --surface: #FFFFFF;
+            --muted: #6B7280; --input-bg: #F3F4F6; --warning: #F59E0B;
+            --border: #E5E7EB; --step-done: #1A7A4A; --step-active: #001F5B; --step-todo: #D1D5DB;
         }
-
         * { box-sizing: border-box; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; -webkit-font-smoothing: antialiased; }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .app-shell {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--surface);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.07);
-        }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--surface); display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,0.08); }
 
         /* ── HEADER ── */
-        .header-container {
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--surface);
-            z-index: 50;
-            border-bottom: 1px solid #F0F0F0;
-        }
+        .header-container { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 50; border-bottom: 1px solid var(--border); }
+        .header-logo { width: 72px; }
+        .welcome-title { font-size: 18px; font-weight: 800; color: var(--navy); margin: 0; }
+        .header-actions { display: flex; align-items: center; gap: 14px; }
+        .btn-history { background: none; border: none; color: var(--navy); font-size: 1.1rem; cursor: pointer; position: relative; padding: 4px; }
+        .history-badge { position: absolute; top: -2px; right: -2px; background: var(--red); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; display: none; }
+        .history-badge.show { display: flex; }
 
-        .header-logo { width: 80px; }
+        /* ── STEP WIZARD ── */
+        .step-bar { padding: 14px 20px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
+        .step-track { display: flex; align-items: center; gap: 0; }
+        .step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+        .step-item:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 50%; width: 100%; height: 2px; background: var(--step-todo); z-index: 0; transition: background 0.3s; }
+        .step-item.done:not(:last-child)::after { background: var(--step-done); }
+        .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; z-index: 1; transition: all 0.3s; background: var(--step-todo); color: white; }
+        .step-item.active .step-circle { background: var(--step-active); transform: scale(1.15); box-shadow: 0 0 0 4px rgba(0,31,91,0.15); }
+        .step-item.done .step-circle { background: var(--step-done); }
+        .step-label { font-size: 9px; font-weight: 700; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; text-align: center; }
+        .step-item.active .step-label { color: var(--navy); }
+        .step-item.done .step-label { color: var(--green); }
 
-        .welcome-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--navy);
-            margin: 0;
-            line-height: 1.2;
-        }
+        /* ── STEP PANELS ── */
+        .step-panel { display: none; animation: fadeSlide 0.25s ease; }
+        .step-panel.active { display: block; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* ── SESSION TOAST ── */
-        .session-toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: #1A2B4A;
-            color: white;
-            border-radius: 40px;
-            padding: 10px 20px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 9000;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-            opacity: 0;
-            white-space: nowrap;
-        }
-
-        .session-toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .toast-icon {
-            width: 22px;
-            height: 22px;
-            background: #4ADE80;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #1A2B4A;
-            flex-shrink: 0;
-        }
-
-        /* ── OFFLINE BANNER ── */
-        .offline-banner {
-            display: none;
-            background: var(--warning);
-            color: white;
-            text-align: center;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            gap: 6px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .offline-banner.show { display: flex; }
-
-        /* ── PENDING SYNC BANNER ── */
-        .sync-banner {
-            display: none;
-            background: var(--navy);
-            color: white;
-            text-align: center;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            gap: 8px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .sync-banner.show { display: flex; }
-
-        .sync-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--warning);
-            border-radius: 50%;
-            animation: blink 1.2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
-        }
-
-        /* ── FORM ELEMENTS ── */
         .main-content { padding: 20px; flex: 1; }
 
-        .section-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 8px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
-
+        /* ── SECTION LABELS ── */
+        .section-label { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 8px; margin-top: 4px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.6px; }
         .section-label i { color: var(--red); }
 
-        .form-control, .form-select {
-            background-color: var(--input-bg);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 16px;
-            margin-bottom: 10px;
-            transition: 0.2s;
-            width: 100%;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: #FFF;
-            border-color: var(--navy);
-            box-shadow: none;
-            outline: none;
-        }
-
-        .form-control.is-invalid {
-            border-color: var(--red) !important;
-            background-color: #fff5f6;
-        }
-
-        .field-hint {
-            font-size: 11px;
-            color: var(--red);
-            margin-top: -8px;
-            margin-bottom: 8px;
-            padding-left: 4px;
-            display: none;
-        }
-
+        /* ── INPUTS ── */
+        .form-control, .form-select { background: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 12px; font-size: 16px; margin-bottom: 10px; transition: 0.2s; width: 100%; }
+        .form-control:focus, .form-select:focus { background: #FFF; border-color: var(--navy); box-shadow: none; outline: none; }
+        .form-control.is-invalid { border-color: var(--red) !important; background: #fff5f6; }
+        .form-control.is-valid { border-color: var(--green) !important; background: #f0fff4; }
+        .field-hint { font-size: 11px; color: var(--red); margin-top: -8px; margin-bottom: 8px; padding-left: 4px; display: none; }
         .field-hint.show { display: block; }
 
-        #nid {
-            font-family: monospace;
-            letter-spacing: 2px;
-            font-weight: 700;
-            color: var(--navy);
-            text-align: center;
-            font-size: 18px;
-            background: rgba(0, 31, 91, 0.04);
-        }
+        /* ── NID SEGMENTED DISPLAY ── */
+        .nid-wrapper { margin-bottom: 10px; }
+        .nid-input-hidden { display: none; }
+        .nid-segments { display: flex; gap: 6px; align-items: center; }
+        .nid-seg { flex: 1; background: rgba(0,31,91,0.04); border: 2px solid transparent; border-radius: 12px; padding: 10px 8px; font-family: monospace; font-weight: 800; font-size: 17px; color: var(--navy); text-align: center; letter-spacing: 2px; transition: 0.2s; outline: none; }
+        .nid-seg:focus { background: white; border-color: var(--navy); }
+        .nid-seg.is-invalid { border-color: var(--red); background: #fff5f6; }
+        .nid-sep { font-weight: 800; color: var(--muted); font-size: 18px; flex-shrink: 0; }
+        .nid-seg[data-seg="0"] { flex: 2.2; letter-spacing: 3px; }
+        .nid-seg[data-seg="1"] { flex: 1; }
+        .nid-seg[data-seg="2"] { flex: 1.2; }
 
-        .confidente-box {
-            display: none;
-            background: #FFF5F6;
-            padding: 15px;
-            border-radius: 12px;
-            border-left: 4px solid var(--red);
-            margin-bottom: 10px;
-        }
+        /* NID duplicate warning */
+        .nid-dup-warning { display: none; background: #FFF8EE; border-radius: 10px; padding: 10px 14px; border-left: 3px solid var(--warning); margin-bottom: 10px; font-size: 13px; color: #92400E; font-weight: 600; }
+        .nid-dup-warning.show { display: flex; align-items: center; gap: 8px; }
+        .nid-ok-badge { display: none; background: rgba(26,122,74,0.1); border-radius: 10px; padding: 8px 14px; margin-bottom: 10px; font-size: 13px; color: var(--green); font-weight: 600; }
+        .nid-ok-badge.show { display: flex; align-items: center; gap: 8px; }
+
+        /* ── CONFIDENTE ── */
+        .confidente-box { display: none; background: #FFF5F6; padding: 15px; border-radius: 12px; border-left: 4px solid var(--red); margin-bottom: 10px; }
 
         /* ── SEARCH ── */
         .search-wrapper { position: relative; }
-
-        .search-results {
-            position: absolute;
-            top: calc(100% - 10px);
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-            z-index: 100;
-            border: 1px solid #EEE;
-            border-top: none;
-        }
-
-        .search-item {
-            padding: 11px 14px;
-            border-bottom: 1px solid #F5F5F5;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.15s;
-        }
-
+        .search-results { position: absolute; top: calc(100% - 10px); left: 0; right: 0; background: white; border-radius: 0 0 12px 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); max-height: 200px; overflow-y: auto; display: none; z-index: 100; border: 1px solid #EEE; border-top: none; }
+        .search-item { padding: 11px 14px; border-bottom: 1px solid #F5F5F5; cursor: pointer; font-size: 14px; transition: background 0.15s; }
         .search-item:hover { background: #F0F4FF; }
-        .search-item:last-child { border: none; }
         .search-item strong { display: block; color: var(--navy); }
-        .search-item small { color: var(--text-secondary); }
+        .search-item small { color: var(--muted); }
 
-        /* ── SUBMIT BUTTON ── */
-        .btn-submit {
-            background: var(--navy);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-weight: 700;
-            font-size: 15px;
-            width: 100%;
-            margin-top: 10px;
-            letter-spacing: 0.5px;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .btn-submit:active { transform: scale(0.98); background: var(--navy-light); }
+        /* ── STEP NAV BUTTONS ── */
+        .step-nav { display: flex; gap: 10px; margin-top: 16px; }
+        .btn-next { background: var(--navy); color: white; border: none; border-radius: 12px; padding: 15px; font-weight: 700; font-size: 15px; flex: 1; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-next:active { transform: scale(0.98); }
+        .btn-back { background: var(--input-bg); color: var(--navy); border: none; border-radius: 12px; padding: 15px 20px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-submit { background: var(--navy); color: white; border: none; border-radius: 12px; padding: 16px; font-weight: 700; font-size: 15px; width: 100%; margin-top: 10px; letter-spacing: 0.5px; transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden; }
+        .btn-submit::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%); transform: translateX(-100%); transition: transform 0.4s ease; }
+        .btn-submit:hover::after { transform: translateX(100%); }
+        .btn-submit:active { transform: scale(0.98); }
 
         /* ── REVIEW TABLE ── */
         .rev-table { width: 100%; font-size: 13px; border-collapse: collapse; }
         .rev-table tr { border-bottom: 1px solid #EEE; }
         .rev-table tr:last-child { border: none; }
         .rev-table td { padding: 8px 0; vertical-align: top; }
-        .rev-label { color: var(--text-secondary); font-weight: 500; width: 40%; }
+        .rev-label { color: var(--muted); font-weight: 500; width: 40%; }
         .rev-value { color: var(--navy); font-weight: 600; text-align: right; }
 
-        /* ── LOADING ── */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.92);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+        /* ── BANNERS ── */
+        .offline-banner { display: none; background: var(--warning); color: white; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; gap: 6px; align-items: center; justify-content: center; }
+        .offline-banner.show { display: flex; }
+        .sync-banner { display: none; background: var(--navy); color: white; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; gap: 8px; align-items: center; justify-content: center; cursor: pointer; }
+        .sync-banner.show { display: flex; }
+        .sync-dot { width: 8px; height: 8px; background: var(--warning); border-radius: 50%; animation: blink 1.2s infinite; }
 
+        /* ── SESSION HISTORY DRAWER ── */
+        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; }
+        .drawer-overlay.show { display: block; }
+        .history-drawer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 480px; background: white; border-radius: 20px 20px 0 0; z-index: 201; padding: 0 0 24px; transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1); max-height: 70vh; overflow-y: auto; }
+        .history-drawer.show { transform: translateX(-50%) translateY(0); }
+        .drawer-handle { width: 36px; height: 4px; background: #E5E7EB; border-radius: 2px; margin: 12px auto 16px; }
+        .drawer-title { font-size: 15px; font-weight: 800; color: var(--navy); padding: 0 20px 12px; border-bottom: 1px solid var(--border); }
+        .drawer-item { padding: 12px 20px; border-bottom: 1px solid #F5F7FA; display: flex; align-items: center; gap: 12px; }
+        .drawer-item:last-child { border: none; }
+        .drawer-nid { font-family: monospace; font-size: 13px; font-weight: 800; color: var(--navy); background: rgba(0,31,91,0.06); padding: 4px 8px; border-radius: 6px; }
+        .drawer-meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+        .drawer-empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
+
+        /* ── SESSION TOAST ── */
+        .session-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1A2B4A; color: white; border-radius: 40px; padding: 10px 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; z-index: 9000; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; opacity: 0; white-space: nowrap; }
+        .session-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast-icon { width: 22px; height: 22px; background: #4ADE80; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #1A2B4A; }
+
+        /* ── LOADER ── */
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.92); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .loading-overlay.show { display: flex; }
+        .spinner { width: 44px; height: 44px; border: 4px solid #E8ECF5; border-top: 4px solid var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loader-text { margin-top: 14px; font-weight: 700; color: var(--navy); font-size: 14px; }
+        .loader-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
 
-        .spinner {
-            width: 44px;
-            height: 44px;
-            border: 4px solid #E8ECF5;
-            border-top: 4px solid var(--navy);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .loader-text {
-            margin-top: 14px;
-            font-weight: 700;
-            color: var(--navy);
-            font-size: 14px;
-        }
-
-        .loader-sub {
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* ── GPS PROGRESS ── */
-        .gps-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        .gps-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--warning);
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-
-        /* ── LOGIN SCREEN ── */
-        #loginScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 40px;
-            background: linear-gradient(160deg, #F8F9FF 0%, #EEF1FA 100%);
-        }
-
-        .login-title {
-            color: var(--navy);
-            font-weight: 800;
-            font-size: 26px;
-            margin-bottom: 6px;
-        }
-
-        .login-sub {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 32px;
-        }
-
+        /* ── LOGIN ── */
+        #loginScreen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 40px; background: linear-gradient(160deg, #F8F9FF 0%, #EEF1FA 100%); }
+        .login-title { color: var(--navy); font-weight: 800; font-size: 26px; margin-bottom: 6px; }
+        .login-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
         #appContent { display: none; }
 
-        /* ── PENDING QUEUE INDICATOR ── */
-        .queue-count {
-            background: var(--red);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     </style>
 </head>
-
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loader">
-        <div class="spinner"></div>
-        <p class="loader-text" id="loaderText">Processando...</p>
-        <p class="loader-sub" id="loaderSub"></p>
+
+<div class="loading-overlay" id="loader">
+    <div class="spinner"></div>
+    <p class="loader-text" id="loaderText">Processando...</p>
+    <p class="loader-sub" id="loaderSub"></p>
+</div>
+
+<!-- History Drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="fecharDrawer()"></div>
+<div class="history-drawer" id="historyDrawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title"><i class="fas fa-history me-2" style="color:var(--red)"></i>Registos desta sessão</div>
+    <div id="drawerContent"><div class="drawer-empty"><i class="fas fa-inbox" style="font-size:28px;opacity:0.3;display:block;margin-bottom:8px"></i>Nenhum registo ainda</div></div>
+</div>
+
+<!-- Session Toast -->
+<div class="session-toast" id="sessionToast">
+    <div class="toast-icon"><i class="fas fa-check"></i></div>
+    <span id="sessionToastText">Registo gravado</span>
+</div>
+
+<div class="app-shell">
+    <!-- Login -->
+    <div id="loginScreen">
+        <img src="Novo logo ECHO 2025.png" style="width:140px" class="mb-4">
+        <h2 class="login-title">Projecto ECHO</h2>
+        <p class="login-sub">Faça login com a sua conta Google autorizada</p>
+        <div id="g_id_onload" data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+        <div class="g_id_signin" data-type="standard"></div>
     </div>
 
-    <div class="app-shell">
-        <!-- Login Screen -->
-        <div id="loginScreen">
-            <img src="Novo logo ECHO 2025.png" style="width: 140px;" class="mb-4">
-            <h2 class="login-title">Projecto ECHO</h2>
-            <p class="login-sub">Faça login com a sua conta Google autorizada</p>
-            <div id="g_id_onload"
-                data-client_id="895843191645-1ioi0feh6ocfu4dabghbda88bagjhrg8.apps.googleusercontent.com"
-                data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" data-type="standard"></div>
+    <!-- App -->
+    <div id="appContent">
+        <div class="offline-banner" id="offlineBanner"><i class="fas fa-wifi-slash"></i> Sem ligação à internet</div>
+        <div class="sync-banner" id="syncBanner" onclick="sincronizarPendentes()">
+            <div class="sync-dot"></div>
+            <span id="syncBannerText">Registos pendentes</span>
         </div>
 
-        <!-- App Content -->
-        <div id="appContent">
-
-            <!-- Offline Banner -->
-            <div class="offline-banner" id="offlineBanner">
-                <i class="fas fa-wifi-slash"></i>
-                Sem ligação à internet
+        <!-- Header -->
+        <div class="header-container">
+            <div>
+                <h1 class="welcome-title" id="txtOla">Olá!</h1>
+                <p style="color:var(--muted);font-size:12px;margin:0;font-weight:500">Registo de Paciente</p>
             </div>
-
-            <!-- Pending Sync Banner -->
-            <div class="sync-banner" id="syncBanner" onclick="sincronizarPendentes()">
-                <div class="sync-dot"></div>
-                <span id="syncBannerText">Registos pendentes — Toque para sincronizar</span>
+            <div class="header-actions">
+                <button class="btn-history" onclick="abrirDrawer()" title="Histórico da sessão">
+                    <i class="fas fa-history"></i>
+                    <span class="history-badge" id="historyBadge">0</span>
+                </button>
+                <a href="https://registo-saude.vercel.app/dashboard.html" style="color:var(--navy);font-size:1.1rem">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <img src="Novo logo ECHO 2025.png" class="header-logo">
             </div>
+        </div>
 
-            <!-- Session Toast -->
-            <div class="session-toast" id="sessionToast">
-                <div class="toast-icon"><i class="fas fa-check"></i></div>
-                <span id="sessionToastText">Registo gravado</span>
-            </div>
-
-            <!-- Header -->
-            <div class="header-container">
-                <div>
-                    <h1 class="welcome-title" id="txtOla">Olá!</h1>
-                    <p class="text-muted small mb-0 fw-medium">Registo de Paciente</p>
+        <!-- Step Bar -->
+        <div class="step-bar">
+            <div class="step-track">
+                <div class="step-item active" id="step-ind-0">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">US</div>
                 </div>
-                <div class="text-end d-flex align-items-center gap-3">
-                    <a href="https://registo-saude.vercel.app/dashboard.html" title="Ver Estatísticas" style="color: var(--navy); font-size: 1.2rem;">
-                        <i class="fas fa-chart-line"></i>
-                    </a>
-                    <img src="Novo logo ECHO 2025.png" class="header-logo">
+                <div class="step-item" id="step-ind-1">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Paciente</div>
+                </div>
+                <div class="step-item" id="step-ind-2">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Contactos</div>
+                </div>
+                <div class="step-item" id="step-ind-3">
+                    <div class="step-circle"><i class="fas fa-check" style="font-size:9px"></i></div>
+                    <div class="step-label">Revisão</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+
+            <!-- STEP 1: US -->
+            <div class="step-panel active" id="panel-0">
+                <div class="section-label"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
+                <div class="search-wrapper">
+                    <input type="text" id="searchUS" class="form-control" placeholder="Procurar Unidade Sanitária..."
+                        oninput="executarPesquisa(this.value)" autocomplete="off">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div id="hintUS" class="field-hint"><i class="fas fa-exclamation-circle"></i> Selecione uma US da lista</div>
+                <div class="row g-2">
+                    <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly style="cursor:default;color:#888"></div>
+                    <div class="col-6"><input type="text" id="dist" class="form-control" placeholder="Distrito" readonly style="cursor:default;color:#888"></div>
+                </div>
+                <input type="hidden" id="us_final">
+                <div class="step-nav">
+                    <button class="btn-next" onclick="avancarPasso(1)">Seguinte <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- Form -->
-            <div class="main-content">
-                <form id="appForm" novalidate>
+            <!-- STEP 2: NID + Confidente -->
+            <div class="step-panel" id="panel-1">
+                <div class="section-label"><i class="fas fa-id-card"></i> Identificação NID</div>
 
-                    <!-- US -->
-                    <div class="section-label"><i class="fas fa-hospital"></i> Unidade Sanitária</div>
-                    <div class="search-wrapper">
-                        <input type="text" id="searchUS" class="form-control" placeholder="Procurar Unidade Sanitária..."
-                            oninput="executarPesquisa(this.value)" autocomplete="off" required>
-                        <div id="searchResults" class="search-results"></div>
+                <!-- Segmented NID -->
+                <div class="nid-wrapper">
+                    <div class="nid-segments">
+                        <input type="tel" inputmode="numeric" class="nid-seg" id="nid0" data-seg="0" maxlength="10" placeholder="__________" oninput="nidSegInput(0)" onkeydown="nidSegKey(event,0)">
+                        <span class="nid-sep">/</span>
+                        <input type="tel" inputmode="numeric" class="nid-seg" id="nid1" data-seg="1" maxlength="4" placeholder="____" oninput="nidSegInput(1)" onkeydown="nidSegKey(event,1)">
+                        <span class="nid-sep">/</span>
+                        <input type="tel" inputmode="numeric" class="nid-seg" id="nid2" data-seg="2" maxlength="5" placeholder="_____" oninput="nidSegInput(2)" onkeydown="nidSegKey(event,2)">
                     </div>
-                    <div id="hintUS" class="field-hint"><i class="fas fa-exclamation-circle"></i> Selecione uma US da lista</div>
-                    <div class="row g-2">
-                        <div class="col-6"><input type="text" id="prov" class="form-control" placeholder="Província" readonly style="cursor:default; color:#888;"></div>
-                        <div class="col-6"><input type="text" id="dist" class="form-control" placeholder="Distrito" readonly style="cursor:default; color:#888;"></div>
-                    </div>
-                    <input type="hidden" id="us_final">
+                    <input type="hidden" id="nid">
+                </div>
 
-                    <!-- NID -->
-                    <div class="section-label mt-2"><i class="fas fa-id-card"></i> Identificação NID</div>
-                    <input type="tel" inputmode="numeric" id="nid" class="form-control"
-                        value="__________/____/_____" required oninput="aplicarMascaraNID(this)">
+                <div class="nid-dup-warning" id="nidDupWarning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="nidDupText">Este NID já tem registo</span>
+                </div>
+                <div class="nid-ok-badge" id="nidOkBadge">
+                    <i class="fas fa-check-circle"></i> NID completo
+                </div>
 
-                    <!-- Confidente -->
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
-                        <label class="form-check-label small fw-bold" for="temConfidente">Tem Confidente?</label>
-                    </div>
+                <div class="form-check form-switch mb-3 mt-2">
+                    <input class="form-check-input" type="checkbox" id="temConfidente" onchange="toggleConfidente()">
+                    <label class="form-check-label small fw-bold" for="temConfidente">Tem Confidente?</label>
+                </div>
+                <div id="camposConfidente" class="confidente-box">
+                    <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome do Confidente">
+                    <input type="tel" inputmode="numeric" id="telConfidente" class="form-control mb-0" placeholder="Telefone do Confidente" maxlength="9" oninput="validarTelefone(this)">
+                    <div id="hintTelConf" class="field-hint" style="margin-bottom:0">Formato: 8X/9X + 7 dígitos</div>
+                </div>
 
-                    <div id="camposConfidente" class="confidente-box">
-                        <input type="text" id="nomeConfidente" class="form-control" placeholder="Nome do Confidente">
-                        <input type="tel" inputmode="numeric" id="telConfidente" class="form-control mb-0"
-                            placeholder="Telefone do Confidente" maxlength="9" oninput="validarTelefone(this)">
-                        <div id="hintTelConf" class="field-hint" style="margin-bottom:0">Formato: 8X/9X + 7 dígitos</div>
-                    </div>
+                <div class="step-nav">
+                    <button class="btn-back" onclick="voltarPasso(0)"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn-next" onclick="avancarPasso(2)">Seguinte <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
 
-                    <!-- Contactos -->
-                    <div class="section-label"><i class="fas fa-phone"></i> Contactos & Morada</div>
-                    <input type="tel" inputmode="numeric" id="tel1" class="form-control"
-                        placeholder="Telefone 1 (Principal — opcional)" maxlength="9" oninput="onTel1Input(this)">
-                    <div id="hintTel1" class="field-hint">Formato: 8X/9X + 7 dígitos</div>
+            <!-- STEP 3: Contactos -->
+            <div class="step-panel" id="panel-2">
+                <div class="section-label"><i class="fas fa-phone"></i> Contactos & Morada</div>
+                <input type="tel" inputmode="numeric" id="tel1" class="form-control" placeholder="Telefone 1 (opcional)" maxlength="9" oninput="validarTelefone(this)">
+                <div id="hintTel1" class="field-hint">Formato: 8X/9X + 7 dígitos</div>
+                <input type="tel" inputmode="numeric" id="tel2" class="form-control" placeholder="Telefone 2 (opcional)" maxlength="9" oninput="validarTelefone(this)">
+                <div id="hintTel2" class="field-hint">Formato: 8X/9X + 7 dígitos</div>
+                <textarea id="endereco" class="form-control" placeholder="Morada / Referência Completa" rows="2" required></textarea>
 
+                <div class="section-label mt-2"><i class="fas fa-user-check"></i> Responsável</div>
+                <select id="responsavel" class="form-select" required></select>
 
-                    <input type="tel" inputmode="numeric" id="tel2" class="form-control"
-                        placeholder="Telefone 2 (Opcional)" maxlength="9" oninput="validarTelefone(this)">
-                    <div id="hintTel2" class="field-hint">Formato: 8X/9X + 7 dígitos</div>
+                <div class="step-nav">
+                    <button class="btn-back" onclick="voltarPasso(1)"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn-next" onclick="avancarPasso(3)">Rever Dados <i class="fas fa-eye"></i></button>
+                </div>
+            </div>
 
-                    <textarea id="endereco" class="form-control" placeholder="Morada/Referência Completa" rows="2" required></textarea>
-
-                    <!-- Responsável -->
-                    <div class="section-label"><i class="fas fa-user-check"></i> Responsável</div>
-                    <select id="responsavel" class="form-select" required></select>
-
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-eye me-2"></i>REVISAR DADOS COMPLETOS
+            <!-- STEP 4: Review + Submit -->
+            <div class="step-panel" id="panel-3">
+                <div style="background:#f9f9f9;padding:16px;border-radius:14px;border:1px solid #eee;margin-bottom:16px">
+                    <table class="rev-table" id="revTable"></table>
+                </div>
+                <div class="step-nav">
+                    <button class="btn-back" onclick="voltarPasso(2)"><i class="fas fa-arrow-left"></i> Editar</button>
+                    <button class="btn-submit" onclick="capturarGPS()">
+                        <i class="fas fa-save me-2"></i>GRAVAR REGISTO
                     </button>
-                </form>
+                </div>
+            </div>
+
+        </div><!-- main-content -->
+    </div><!-- appContent -->
+</div><!-- app-shell -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY2aqCzKD8q_17d_2Kiqwbf6kUw50mZRVq_6PRLzW8riYWU0YKCltwfsxb_APfGem4tQ/exec";
+const OFFLINE_KEY = "echo_offline_queue";
+const SESSION_KEY = "echo_session";
+const SESSION_TTL = 8 * 60 * 60 * 1000;
+const SESSION_COUNT_KEY = "echo_session_count_" + new Date().toDateString();
+const SESSION_HISTORY_KEY = "echo_session_history_" + new Date().toDateString();
+
+let todasUS = [], userEmail = "", dadosTemporarios = {}, usValidada = false;
+let passoAtual = 0;
+let dadosCarregados = []; // cache dos registos para detecção de duplicados
+
+// ═══════════════════════════════════════════
+//  STEP WIZARD
+// ═══════════════════════════════════════════
+function atualizarStepBar(passo) {
+    for (let i = 0; i < 4; i++) {
+        const ind = document.getElementById(`step-ind-${i}`);
+        ind.classList.remove('active', 'done');
+        if (i < passo) ind.classList.add('done');
+        else if (i === passo) ind.classList.add('active');
+    }
+}
+
+function mostrarPasso(p) {
+    document.querySelectorAll('.step-panel').forEach(el => el.classList.remove('active'));
+    document.getElementById(`panel-${p}`).classList.add('active');
+    atualizarStepBar(p);
+    passoAtual = p;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function voltarPasso(p) { mostrarPasso(p); }
+
+function avancarPasso(p) {
+    // Validate current step before advancing
+    if (passoAtual === 0 && !validarPasso0()) return;
+    if (passoAtual === 1 && !validarPasso1()) return;
+    if (passoAtual === 2 && !validarPasso2()) return;
+    if (p === 3) construirRevisao();
+    mostrarPasso(p);
+}
+
+function validarPasso0() {
+    if (!usValidada || !document.getElementById('us_final').value) {
+        document.getElementById('searchUS').classList.add('is-invalid');
+        document.getElementById('hintUS').classList.add('show');
+        return false;
+    }
+    return true;
+}
+
+function validarPasso1() {
+    const nid = getNIDCompleto();
+    if (!nidCompleto()) {
+        ['nid0','nid1','nid2'].forEach(id => document.getElementById(id).classList.add('is-invalid'));
+        Swal.fire({ icon:'warning', title:'NID Incompleto', text:'Preencha todos os segmentos do NID.', confirmButtonColor:'#001F5B' });
+        return false;
+    }
+    if (document.getElementById('temConfidente').checked) {
+        const telConf = document.getElementById('telConfidente');
+        if (telConf.value && !validarTelefone(telConf)) return false;
+    }
+    return true;
+}
+
+function validarPasso2() {
+    const tel1 = document.getElementById('tel1');
+    if (tel1.value && !validarTelefone(tel1)) return false;
+    const tel2 = document.getElementById('tel2');
+    if (tel2.value && !validarTelefone(tel2)) return false;
+    if (!document.getElementById('responsavel').value) {
+        Swal.fire({ icon:'warning', title:'Responsável obrigatório', text:'Selecione quem está digitando.', confirmButtonColor:'#001F5B' });
+        return false;
+    }
+    return true;
+}
+
+function construirRevisao() {
+    dadosTemporarios = {
+        email_usuario: userEmail,
+        provincia: document.getElementById('prov').value,
+        distrito: document.getElementById('dist').value,
+        us: document.getElementById('us_final').value,
+        nid: getNIDCompleto(),
+        tem_confidente: document.getElementById('temConfidente').checked ? 'Sim' : 'Não',
+        nome_confidente: document.getElementById('nomeConfidente').value || 'N/A',
+        tel_confidente: document.getElementById('telConfidente').value || 'N/A',
+        tel1: document.getElementById('tel1').value || 'N/A',
+        tel2: document.getElementById('tel2').value || 'N/A',
+        endereco: document.getElementById('endereco').value,
+        responsavel: document.getElementById('responsavel').value
+    };
+
+    const rows = [
+        ['US', dadosTemporarios.us],
+        ['Província', dadosTemporarios.provincia],
+        ['Distrito', dadosTemporarios.distrito],
+        ['NID', `<span style="font-family:monospace;font-weight:800">${dadosTemporarios.nid}</span>`],
+        ['Telefone 1', dadosTemporarios.tel1],
+        ['Telefone 2', dadosTemporarios.tel2],
+        ['Confidente', dadosTemporarios.tem_confidente],
+        dadosTemporarios.tem_confidente === 'Sim' ? ['Nome Conf.', dadosTemporarios.nome_confidente] : null,
+        ['Morada', dadosTemporarios.endereco],
+        ['Digitado por', dadosTemporarios.responsavel]
+    ].filter(Boolean);
+
+    document.getElementById('revTable').innerHTML = rows.map(([l, v]) =>
+        `<tr><td class="rev-label">${l}</td><td class="rev-value">${v || '—'}</td></tr>`
+    ).join('');
+}
+
+// ═══════════════════════════════════════════
+//  NID SEGMENTADO
+// ═══════════════════════════════════════════
+const NID_LENS = [10, 4, 5];
+
+function nidSegInput(seg) {
+    const el = document.getElementById(`nid${seg}`);
+    // digits only
+    el.value = el.value.replace(/\D/g, '');
+    el.classList.remove('is-invalid');
+
+    // Auto-advance to next segment
+    if (el.value.length === NID_LENS[seg] && seg < 2) {
+        document.getElementById(`nid${seg + 1}`).focus();
+    }
+
+    // Update hidden NID
+    const full = getNIDCompleto();
+    document.getElementById('nid').value = full;
+
+    // Show ok/dup badges when complete
+    if (nidCompleto()) {
+        verificarDuplicadoNID(full);
+        document.getElementById('nidOkBadge').classList.add('show');
+    } else {
+        document.getElementById('nidOkBadge').classList.remove('show');
+        document.getElementById('nidDupWarning').classList.remove('show');
+    }
+}
+
+function nidSegKey(e, seg) {
+    // Backspace on empty — go back to previous segment
+    if (e.key === 'Backspace' && document.getElementById(`nid${seg}`).value === '' && seg > 0) {
+        const prev = document.getElementById(`nid${seg - 1}`);
+        prev.focus();
+        prev.value = prev.value.slice(0, -1);
+        nidSegInput(seg - 1);
+    }
+}
+
+function getNIDCompleto() {
+    const s0 = document.getElementById('nid0').value.padEnd(10, '_');
+    const s1 = document.getElementById('nid1').value.padEnd(4, '_');
+    const s2 = document.getElementById('nid2').value.padEnd(5, '_');
+    return `${s0}/${s1}/${s2}`;
+}
+
+function nidCompleto() {
+    return document.getElementById('nid0').value.length === 10 &&
+           document.getElementById('nid1').value.length === 4 &&
+           document.getElementById('nid2').value.length === 5;
+}
+
+function verificarDuplicadoNID(nid) {
+    if (dadosCarregados.length === 0) return;
+    const existe = dadosCarregados.some(r =>
+        (r.nid || '').replace(/[\s\-]/g, '') === nid.replace(/[\s\-]/g, '')
+    );
+    const warn = document.getElementById('nidDupWarning');
+    if (existe) {
+        const reg = dadosCarregados.find(r => (r.nid || '').replace(/[\s\-]/g, '') === nid.replace(/[\s\-]/g, ''));
+        document.getElementById('nidDupText').textContent =
+            `⚠️ NID já registado em ${reg.data || '—'} (${reg.us || '—'})`;
+        warn.classList.add('show');
+    } else {
+        warn.classList.remove('show');
+    }
+}
+
+// ═══════════════════════════════════════════
+//  SESSION HISTORY DRAWER
+// ═══════════════════════════════════════════
+function getSessionHistory() {
+    try { return JSON.parse(localStorage.getItem(SESSION_HISTORY_KEY) || '[]'); }
+    catch { return []; }
+}
+
+function addToSessionHistory(dados) {
+    const hist = getSessionHistory();
+    hist.unshift({ nid: dados.nid, us: dados.us, prov: dados.provincia, hora: new Date().toLocaleTimeString('pt-MZ', { hour:'2-digit', minute:'2-digit' }) });
+    localStorage.setItem(SESSION_HISTORY_KEY, JSON.stringify(hist.slice(0, 20)));
+    renderizarDrawer();
+    const badge = document.getElementById('historyBadge');
+    badge.textContent = hist.length;
+    badge.classList.add('show');
+}
+
+function renderizarDrawer() {
+    const hist = getSessionHistory();
+    const el = document.getElementById('drawerContent');
+    if (hist.length === 0) {
+        el.innerHTML = '<div class="drawer-empty"><i class="fas fa-inbox" style="font-size:28px;opacity:0.3;display:block;margin-bottom:8px"></i>Nenhum registo ainda</div>';
+        return;
+    }
+    el.innerHTML = hist.map(h => `
+        <div class="drawer-item">
+            <span class="drawer-nid">${h.nid}</span>
+            <div class="drawer-meta">
+                <div style="font-weight:600;color:#1A2B4A">${h.us || '—'}</div>
+                <div>${h.prov || '—'} · ${h.hora}</div>
             </div>
         </div>
-    </div>
+    `).join('');
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-    // ══════════════════════════════════════════════
-    //  CONFIGURAÇÃO
-    // ══════════════════════════════════════════════
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY2aqCzKD8q_17d_2Kiqwbf6kUw50mZRVq_6PRLzW8riYWU0YKCltwfsxb_APfGem4tQ/exec";
-    const OFFLINE_QUEUE_KEY = "echo_offline_queue";
-    const SESSION_COUNT_KEY = "echo_session_count_" + new Date().toDateString();
+function abrirDrawer() {
+    renderizarDrawer();
+    document.getElementById('historyDrawer').classList.add('show');
+    document.getElementById('drawerOverlay').classList.add('show');
+}
 
-    let todasUS = [], userEmail = "", dadosTemporarios = {}, usValidada = false;
+function fecharDrawer() {
+    document.getElementById('historyDrawer').classList.remove('show');
+    document.getElementById('drawerOverlay').classList.remove('show');
+}
 
-    // ══════════════════════════════════════════════
-    //  ESTADO DA SESSÃO
-    // ══════════════════════════════════════════════
-    function getSessionCount() {
-        return parseInt(localStorage.getItem(SESSION_COUNT_KEY) || "0");
-    }
+// ═══════════════════════════════════════════
+//  SESSION COUNT + TOAST
+// ═══════════════════════════════════════════
+function getSessionCount() { return parseInt(localStorage.getItem(SESSION_COUNT_KEY) || '0'); }
 
-    function incrementSessionCount() {
-        const count = getSessionCount() + 1;
-        localStorage.setItem(SESSION_COUNT_KEY, count);
-        mostrarToast(count);
-        return count;
-    }
+function incrementSession() {
+    const c = getSessionCount() + 1;
+    localStorage.setItem(SESSION_COUNT_KEY, c);
+    mostrarToast(c);
+    return c;
+}
 
-    let toastTimer = null;
-    function mostrarToast(count) {
-        const toast = document.getElementById("sessionToast");
-        document.getElementById("sessionToastText").textContent =
-            `Gravado! ${count} registo${count > 1 ? 's' : ''} hoje`;
-        toast.classList.add("show");
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
-    }
+let toastTimer = null;
+function mostrarToast(count) {
+    const t = document.getElementById('sessionToast');
+    document.getElementById('sessionToastText').textContent = `Gravado! ${count} registo${count > 1 ? 's' : ''} hoje`;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-    // ══════════════════════════════════════════════
-    //  OFFLINE / REDE
-    // ══════════════════════════════════════════════
-    function verificarEstadoRede() {
-        const offline = !navigator.onLine;
-        document.getElementById("offlineBanner").classList.toggle("show", offline);
-        atualizarBannerSync();
-    }
+// ═══════════════════════════════════════════
+//  VALIDAÇÕES
+// ═══════════════════════════════════════════
+function validarTelefone(input) {
+    const val = input.value.replace(/\D/g, '');
+    const hintId = 'hint' + input.id.charAt(0).toUpperCase() + input.id.slice(1);
+    const hint = document.getElementById(hintId);
+    const obrigatorio = false;
+    if (val === '' && !obrigatorio) { input.classList.remove('is-invalid'); if (hint) hint.classList.remove('show'); return true; }
+    const valido = /^[89]\d{8}$/.test(val);
+    input.classList.toggle('is-invalid', !valido && val.length > 0);
+    input.classList.toggle('is-valid', valido);
+    if (hint) hint.classList.toggle('show', !valido && val.length > 0);
+    return valido || val === '';
+}
 
-    function getFilaPendente() {
-        try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || "[]"); }
-        catch { return []; }
-    }
+function toggleConfidente() {
+    document.getElementById('camposConfidente').style.display =
+        document.getElementById('temConfidente').checked ? 'block' : 'none';
+}
 
-    function salvarFilaPendente(fila) {
-        localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(fila));
-    }
+// ═══════════════════════════════════════════
+//  US SEARCH
+// ═══════════════════════════════════════════
+function executarPesquisa(q) {
+    const resBox = document.getElementById('searchResults');
+    usValidada = false;
+    document.getElementById('us_final').value = '';
+    document.getElementById('prov').value = '';
+    document.getElementById('dist').value = '';
+    if (q.length < 2) { resBox.style.display = 'none'; return; }
+    const matches = todasUS.filter(i => i.u.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+    resBox.innerHTML = matches.map(m =>
+        `<div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g,"\\'")}','${m.d.replace(/'/g,"\\'")}','${m.p.replace(/'/g,"\\'")}')">
+            <strong>${m.u}</strong><small>${m.p} · ${m.d}</small>
+        </div>`
+    ).join('');
+    resBox.style.display = matches.length ? 'block' : 'none';
+}
 
-    function adicionarNaFila(dados) {
-        const fila = getFilaPendente();
-        fila.push({ ...dados, _timestamp: new Date().toISOString() });
-        salvarFilaPendente(fila);
-        atualizarBannerSync();
-    }
+function selecionarUS(u, d, p) {
+    document.getElementById('us_final').value = u;
+    document.getElementById('searchUS').value = u;
+    document.getElementById('dist').value = d;
+    document.getElementById('prov').value = p;
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('hintUS').classList.remove('show');
+    document.getElementById('searchUS').classList.remove('is-invalid');
+    usValidada = true;
+}
 
-    function atualizarBannerSync() {
-        const fila = getFilaPendente();
-        const banner = document.getElementById("syncBanner");
-        if (fila.length > 0 && navigator.onLine) {
-            document.getElementById("syncBannerText").textContent =
-                `${fila.length} registo${fila.length > 1 ? 's' : ''} pendente${fila.length > 1 ? 's' : ''} — Toque para sincronizar`;
-            banner.classList.add("show");
-        } else {
-            banner.classList.remove("show");
-        }
-    }
-
-    async function sincronizarPendentes() {
-        const fila = getFilaPendente();
-        if (fila.length === 0 || !navigator.onLine) return;
-
-        setLoader(true, "Sincronizando registos...", `${fila.length} registo(s) em fila`);
-        let sucesso = 0, falha = 0;
-        const filaRestante = [];
-
-        for (const dados of fila) {
-            try {
-                const ok = await enviarParaAPI(dados);
-                if (ok) sucesso++;
-                else { falha++; filaRestante.push(dados); }
-            } catch {
-                falha++;
-                filaRestante.push(dados);
-            }
-        }
-
-        salvarFilaPendente(filaRestante);
-        setLoader(false);
-        atualizarBannerSync();
-
-        const msg = sucesso > 0
-            ? `${sucesso} registo(s) sincronizado(s) com sucesso.${falha > 0 ? ` ${falha} falharam.` : ''}`
-            : `Falha na sincronização. Tente novamente.`;
-
-        Swal.fire({
-            icon: sucesso > 0 ? 'success' : 'error',
-            title: sucesso > 0 ? 'Sincronizado!' : 'Erro',
-            text: msg,
-            confirmButtonColor: '#001F5B'
-        });
-    }
-
-    // ══════════════════════════════════════════════
-    //  API — FETCH SEGURO COM DETEÇÃO DE ERRO REAL
-    // ══════════════════════════════════════════════
-    async function enviarParaAPI(dados) {
-        // Apps Script com CORS: usa no-cors mas tentamos ler a resposta
-        // Para deteção real de erro, o Apps Script deve retornar JSON com {status:"ok"}
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' }, // evita preflight CORS
-                body: JSON.stringify(dados),
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
-
-            // Tenta ler o JSON de resposta
-            try {
-                const result = await response.json();
-                // Se o Apps Script retornar {status: "ok"}, confirmamos
-                if (result && result.status === "ok") return true;
-                // Se retornar qualquer coisa, consideramos sucesso
-                return true;
-            } catch {
-                // Se não conseguir ler JSON mas a resposta chegou (200), consideramos sucesso
-                return response.ok || response.status === 0; // status 0 = no-cors
-            }
-        } catch (err) {
-            clearTimeout(timeout);
-            if (err.name === 'AbortError') throw new Error('timeout');
-            throw err;
-        }
-    }
-
-    // ══════════════════════════════════════════════
-    //  LOADER
-    // ══════════════════════════════════════════════
-    function setLoader(show, text = "Processando...", sub = "") {
-        document.getElementById("loader").classList.toggle("show", show);
-        document.getElementById("loaderText").textContent = text;
-        document.getElementById("loaderSub").textContent = sub;
-    }
-
-    // ══════════════════════════════════════════════
-    //  VALIDAÇÕES
-    // ══════════════════════════════════════════════
-    function validarTelefone(input) {
-        const val = input.value.replace(/\D/g, "");
-        const hintId = "hint" + input.id.charAt(0).toUpperCase() + input.id.slice(1);
-        const hint = document.getElementById(hintId);
-
-        // Aceita vazio se campo não obrigatório (tel2, telConfidente)
-        const obrigatorio = false; // tel1 is now optional — motivo required if empty
-        if (val === "" && !obrigatorio) {
-            input.classList.remove("is-invalid");
-            if (hint) hint.classList.remove("show");
-            return true;
-        }
-
-        // Validação: 9 dígitos, começa com 8 ou 9
-        const valido = /^[89]\d{8}$/.test(val);
-        input.classList.toggle("is-invalid", !valido && val.length > 0);
-        if (hint) hint.classList.toggle("show", !valido && val.length > 0);
-        return valido || (val === "" && !obrigatorio);
-    }
-
-    function onTel1Input(input) {
-        validarTelefone(input);
-    }
-
-    function toggleConfidente() {
-        const checked = document.getElementById("temConfidente").checked;
-        document.getElementById("camposConfidente").style.display = checked ? "block" : "none";
-    }
-
-    function aplicarMascaraNID(i) {
-        let v = i.value.replace(/\D/g, "");
-        if (v.length > 19) v = v.substring(0, 19);
-        let m = "__________/____/_____";
-        let r = "", nI = 0;
-        for (let x = 0; x < m.length; x++) {
-            if (m[x] === "/") r += "/";
-            else r += (nI < v.length) ? v[nI++] : "_";
-        }
-        i.value = r;
-    }
-
-    // ══════════════════════════════════════════════
-    //  PESQUISA DE US
-    // ══════════════════════════════════════════════
-    function executarPesquisa(q) {
-        const resBox = document.getElementById('searchResults');
-        usValidada = false;
-        document.getElementById('us_final').value = "";
-        document.getElementById('prov').value = "";
-        document.getElementById('dist').value = "";
-
-        if (q.length < 2) { resBox.style.display = 'none'; return; }
-
-        const matches = todasUS.filter(i => i.u.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-        resBox.innerHTML = matches.map(m =>
-            `<div class="search-item" onclick="selecionarUS('${m.u.replace(/'/g,"\\'")}','${m.d.replace(/'/g,"\\'")}','${m.p.replace(/'/g,"\\'")}')">
-                <strong>${m.u}</strong>
-                <small>${m.p} • ${m.d}</small>
-            </div>`
-        ).join('');
-        resBox.style.display = matches.length ? 'block' : 'none';
-    }
-
-    function selecionarUS(u, d, p) {
-        document.getElementById('us_final').value = u;
-        document.getElementById('searchUS').value = u;
-        document.getElementById('dist').value = d;
-        document.getElementById('prov').value = p;
+document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrapper'))
         document.getElementById('searchResults').style.display = 'none';
-        document.getElementById('hintUS').classList.remove('show');
-        document.getElementById('searchUS').classList.remove('is-invalid');
-        usValidada = true;
-    }
+});
 
-    // Fechar lista ao clicar fora
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-wrapper')) {
-            document.getElementById('searchResults').style.display = 'none';
-        }
+// ═══════════════════════════════════════════
+//  OFFLINE / SYNC
+// ═══════════════════════════════════════════
+function verificarEstadoRede() {
+    document.getElementById('offlineBanner').classList.toggle('show', !navigator.onLine);
+    atualizarBannerSync();
+}
+
+function getFilaPendente() { try { return JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]'); } catch { return []; } }
+function salvarFilaPendente(f) { localStorage.setItem(OFFLINE_KEY, JSON.stringify(f)); }
+
+function adicionarNaFila(dados) {
+    const f = getFilaPendente();
+    f.push({ ...dados, _ts: new Date().toISOString() });
+    salvarFilaPendente(f);
+    atualizarBannerSync();
+}
+
+function atualizarBannerSync() {
+    const f = getFilaPendente();
+    const b = document.getElementById('syncBanner');
+    if (f.length > 0 && navigator.onLine) {
+        document.getElementById('syncBannerText').textContent = `${f.length} registo(s) pendente(s) — Toque para sincronizar`;
+        b.classList.add('show');
+    } else { b.classList.remove('show'); }
+}
+
+async function enviarParaAPI(dados) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 12000);
+    try {
+        const r = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(dados), signal: ctrl.signal });
+        clearTimeout(t);
+        try { const j = await r.json(); return j.status === 'ok' || true; } catch { return r.ok || r.status === 0; }
+    } catch(e) { clearTimeout(t); throw e; }
+}
+
+async function sincronizarPendentes() {
+    const fila = getFilaPendente();
+    if (!fila.length || !navigator.onLine) return;
+    setLoader(true, 'Sincronizando...', `${fila.length} registo(s)`);
+    let ok = 0; const resto = [];
+    for (const d of fila) {
+        try { if (await enviarParaAPI(d)) ok++; else resto.push(d); }
+        catch { resto.push(d); }
+    }
+    salvarFilaPendente(resto);
+    setLoader(false);
+    atualizarBannerSync();
+    Swal.fire({ icon: ok > 0 ? 'success' : 'error', title: ok > 0 ? 'Sincronizado!' : 'Erro', text: `${ok} registo(s) enviado(s).`, confirmButtonColor:'#001F5B' });
+}
+
+window.addEventListener('online', () => {
+    verificarEstadoRede();
+    const f = getFilaPendente();
+    if (f.length) setTimeout(() => {
+        Swal.fire({ icon:'info', title:'Ligação Restaurada', text:`${f.length} registo(s) para sincronizar.`, confirmButtonColor:'#001F5B', confirmButtonText:'Sincronizar', showCancelButton:true, cancelButtonText:'Depois' })
+        .then(r => { if (r.isConfirmed) sincronizarPendentes(); });
+    }, 800);
+});
+window.addEventListener('offline', verificarEstadoRede);
+
+// ═══════════════════════════════════════════
+//  LOADER
+// ═══════════════════════════════════════════
+function setLoader(show, text='Processando...', sub='') {
+    document.getElementById('loader').classList.toggle('show', show);
+    document.getElementById('loaderText').textContent = text;
+    document.getElementById('loaderSub').textContent = sub;
+}
+
+// ═══════════════════════════════════════════
+//  SESSÃO GOOGLE
+// ═══════════════════════════════════════════
+function guardarSessao(data) { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...data, _ts: Date.now() })); }
+function carregarSessao() {
+    try {
+        const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+        if (!s || Date.now() - s._ts > SESSION_TTL) { sessionStorage.removeItem(SESSION_KEY); return null; }
+        return s;
+    } catch { return null; }
+}
+function terminarSessao() { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
+
+function ativarApp(data) {
+    userEmail = data.email || userEmail;
+    document.getElementById('txtOla').textContent = 'Olá, ' + data.usuario.split(' ')[0] + '!';
+    todasUS = data.unidades;
+
+    // Pre-load dados para detecção de duplicados (silencioso)
+    fetch(SCRIPT_URL + '?getStats=1').then(r => r.json()).then(d => {
+        dadosCarregados = d.ultimos || [];
+    }).catch(() => {});
+
+    const sel = document.getElementById('responsavel');
+    sel.innerHTML = '<option value="">Quem está digitando?</option>';
+    data.responsaveis.forEach(n => {
+        const opt = new Option(n, n);
+        if (n.trim() === data.usuario.trim()) opt.selected = true;
+        sel.add(opt);
     });
 
-    // ══════════════════════════════════════════════
-    //  GESTÃO DE SESSÃO (sem reautenticação Google)
-    // ══════════════════════════════════════════════
-    const SESSION_KEY = "echo_session";
-    const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 horas
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appContent').style.display = 'block';
+    setTimeout(atualizarBannerSync, 500);
 
-    function guardarSessao(data) {
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify({
-            ...data,
-            _ts: Date.now()
-        }));
+    // Restore session history badge
+    const hist = getSessionHistory();
+    if (hist.length) {
+        document.getElementById('historyBadge').textContent = hist.length;
+        document.getElementById('historyBadge').classList.add('show');
     }
+}
 
-    function carregarSessao() {
-        try {
-            const raw = sessionStorage.getItem(SESSION_KEY);
-            if (!raw) return null;
-            const s = JSON.parse(raw);
-            if (Date.now() - s._ts > SESSION_TTL) {
-                sessionStorage.removeItem(SESSION_KEY);
-                return null;
-            }
-            return s;
-        } catch { return null; }
-    }
-
-    function terminarSessao() {
-        sessionStorage.removeItem(SESSION_KEY);
-        location.reload();
-    }
-
-    function ativarApp(data) {
-        userEmail = data.email || userEmail;
-        document.getElementById("txtOla").innerText = "Olá, " + data.usuario.split(' ')[0] + "!";
-        todasUS = data.unidades;
-
-        const sel = document.getElementById("responsavel");
-        sel.innerHTML = '<option value="">Quem está digitando?</option>';
-        data.responsaveis.forEach(n => {
-            let opt = new Option(n, n);
-            if (n.trim() === data.usuario.trim()) opt.selected = true;
-            sel.add(opt);
-        });
-
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("appContent").style.display = "block";
-        setTimeout(atualizarBannerSync, 500);
-    }
-
-    // ══════════════════════════════════════════════
-    //  GOOGLE SSO
-    // ══════════════════════════════════════════════
-    async function handleCredentialResponse(response) {
-        const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-        userEmail = payload.email.toLowerCase().trim();
-        setLoader(true, "A verificar acesso...", "");
-
-        try {
-            const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
-            const data = await res.json();
-
-            if (data.status === "AUTORIZADO") {
-                guardarSessao({ ...data, email: userEmail });
-                ativarApp({ ...data, email: userEmail });
-            } else {
-                Swal.fire('Acesso Negado', 'Este email não está autorizado.', 'error');
-            }
-        } catch (e) {
-            Swal.fire('Erro de Ligação', 'Não foi possível verificar o seu acesso. Verifique a internet.', 'error');
+async function handleCredentialResponse(response) {
+    const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    userEmail = payload.email.toLowerCase().trim();
+    setLoader(true, 'A verificar acesso...', '');
+    try {
+        const res = await fetch(`${SCRIPT_URL}?check=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+        if (data.status === 'AUTORIZADO') {
+            guardarSessao({ ...data, email: userEmail });
+            ativarApp({ ...data, email: userEmail });
+        } else {
+            Swal.fire('Acesso Negado', 'Este email não está autorizado.', 'error');
         }
+    } catch { Swal.fire('Erro de Ligação', 'Verifique a internet.', 'error'); }
+    setLoader(false);
+}
 
+// ═══════════════════════════════════════════
+//  GPS + GRAVAR
+// ═══════════════════════════════════════════
+function capturarGPS() {
+    setLoader(true, 'A obter localização GPS...', 'Aguarde');
+    const t = setTimeout(() => { dadosTemporarios.latitude = 'Timeout'; dadosTemporarios.longitude = 'Timeout'; finalizar(); }, 8000);
+    navigator.geolocation.getCurrentPosition(
+        pos => { clearTimeout(t); dadosTemporarios.latitude = pos.coords.latitude; dadosTemporarios.longitude = pos.coords.longitude; finalizar(); },
+        ()   => { clearTimeout(t); dadosTemporarios.latitude = 'Sem GPS'; dadosTemporarios.longitude = 'Sem GPS'; finalizar(); },
+        { timeout: 7000, enableHighAccuracy: true }
+    );
+}
+
+async function finalizar() {
+    if (!navigator.onLine) {
         setLoader(false);
+        adicionarNaFila(dadosTemporarios);
+        addToSessionHistory(dadosTemporarios);
+        incrementSession();
+        mostrarSucesso(true);
+        return;
     }
-
-    // ══════════════════════════════════════════════
-    //  SUBMISSÃO DO FORMULÁRIO
-    // ══════════════════════════════════════════════
-    document.getElementById('appForm').onsubmit = function(e) {
-        e.preventDefault();
-        let erros = false;
-
-        // Validar US
-        if (!usValidada || !document.getElementById('us_final').value) {
-            document.getElementById('searchUS').classList.add('is-invalid');
-            document.getElementById('hintUS').classList.add('show');
-            erros = true;
-        }
-
-        // Validar NID
-        const nid = document.getElementById("nid").value;
-        if (nid.includes("_")) {
-            document.getElementById("nid").classList.add("is-invalid");
-            erros = true;
-        } else {
-            document.getElementById("nid").classList.remove("is-invalid");
-        }
-
-        // Validar Tel1 (opcional — só valida formato se preenchido)
-        const tel1Val = document.getElementById("tel1").value;
-        if (tel1Val && !validarTelefone(document.getElementById("tel1"))) {
-            erros = true;
-        }
-
-        // Validar Tel2 se preenchido
-        const tel2 = document.getElementById("tel2");
-        if (tel2.value && !validarTelefone(tel2)) erros = true;
-
-        // Validar tel confidente se ativo
-        if (document.getElementById("temConfidente").checked) {
-            const telConf = document.getElementById("telConfidente");
-            if (telConf.value && !validarTelefone(telConf)) erros = true;
-        }
-
-        // Validar responsável
-        if (!document.getElementById("responsavel").value) {
-            Swal.fire('Campo obrigatório', 'Selecione o responsável pelo registo.', 'warning');
-            return;
-        }
-
-        if (erros) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Dados Incompletos',
-                text: 'Corrija os campos assinalados antes de continuar.',
-                confirmButtonColor: '#001F5B'
-            });
-            return;
-        }
-
-        dadosTemporarios = {
-            email_usuario: userEmail,
-            provincia: document.getElementById("prov").value,
-            distrito: document.getElementById("dist").value,
-            us: document.getElementById("us_final").value,
-            nid: nid,
-            tem_confidente: document.getElementById("temConfidente").checked ? "Sim" : "Não",
-            nome_confidente: document.getElementById("nomeConfidente").value || "N/A",
-            tel_confidente: document.getElementById("telConfidente").value || "N/A",
-            tel1: document.getElementById("tel1").value || "N/A",
-            tel2: document.getElementById("tel2").value || "N/A",
-            endereco: document.getElementById("endereco").value,
-            responsavel: document.getElementById("responsavel").value
-        };
-
-        // Modal de revisão
-        Swal.fire({
-            title: '<small style="font-weight:800;color:#001F5B">Revisão dos Dados</small>',
-            html: `
-                <div style="background:#f9f9f9; padding:14px; border:1px solid #eee; border-radius:12px; text-align:left;">
-                    <table class="rev-table">
-                        <tr><td class="rev-label">US:</td><td class="rev-value">${dadosTemporarios.us}</td></tr>
-                        <tr><td class="rev-label">Província:</td><td class="rev-value">${dadosTemporarios.provincia}</td></tr>
-                        <tr><td class="rev-label">NID:</td><td class="rev-value" style="font-family:monospace">${dadosTemporarios.nid}</td></tr>
-                        <tr><td class="rev-label">Tel 1:</td><td class="rev-value">${dadosTemporarios.tel1}</td></tr>
-                        <tr><td class="rev-label">Tel 2:</td><td class="rev-value">${dadosTemporarios.tel2}</td></tr>
-                        <tr><td class="rev-label">Confidente:</td><td class="rev-value">${dadosTemporarios.tem_confidente}</td></tr>
-                        ${dadosTemporarios.tem_confidente === 'Sim' ? `<tr><td class="rev-label">Nome Conf.:</td><td class="rev-value">${dadosTemporarios.nome_confidente}</td></tr>` : ''}
-                        <tr><td class="rev-label">Morada:</td><td class="rev-value">${dadosTemporarios.endereco}</td></tr>
-                        <tr><td class="rev-label">Digitador:</td><td class="rev-value">${dadosTemporarios.responsavel}</td></tr>
-                    </table>
-                </div>
-            `,
-            showCancelButton: true,
-            confirmButtonColor: '#001F5B',
-            confirmButtonText: '✓ Tudo Correto, Gravar',
-            cancelButtonText: 'Editar Dados',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) capturarGPS();
-        });
-    };
-
-    // ══════════════════════════════════════════════
-    //  GPS
-    // ══════════════════════════════════════════════
-    function capturarGPS() {
-        setLoader(true, "A obter localização GPS...", "Aguarde alguns segundos");
-
-        const gpsTimeout = setTimeout(() => {
-            // GPS demorou muito — continua sem coordenadas
-            dadosTemporarios.latitude = "Timeout";
-            dadosTemporarios.longitude = "Timeout";
-            finalizar();
-        }, 8000);
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                clearTimeout(gpsTimeout);
-                dadosTemporarios.latitude = pos.coords.latitude;
-                dadosTemporarios.longitude = pos.coords.longitude;
-                finalizar();
-            },
-            () => {
-                clearTimeout(gpsTimeout);
-                dadosTemporarios.latitude = "Sem GPS";
-                dadosTemporarios.longitude = "Sem GPS";
-                finalizar();
-            },
-            { timeout: 7000, enableHighAccuracy: true }
-        );
+    setLoader(true, 'A gravar dados...', 'Enviando');
+    try {
+        await enviarParaAPI(dadosTemporarios);
+        setLoader(false);
+        addToSessionHistory(dadosTemporarios);
+        incrementSession();
+        // Add to local cache for duplicate detection
+        dadosCarregados.unshift({ nid: dadosTemporarios.nid, us: dadosTemporarios.us, data: new Date().toLocaleDateString('pt-MZ') });
+        mostrarSucesso(false);
+    } catch {
+        setLoader(false);
+        adicionarNaFila(dadosTemporarios);
+        addToSessionHistory(dadosTemporarios);
+        incrementSession();
+        Swal.fire({ icon:'warning', title:'Guardado Localmente', text:'Será sincronizado quando houver ligação.', confirmButtonColor:'#001F5B' })
+        .then(() => mostrarSucesso(true));
     }
+}
 
-    // ══════════════════════════════════════════════
-    //  GRAVAR (COM FALLBACK OFFLINE)
-    // ══════════════════════════════════════════════
-    async function finalizar() {
-        if (!navigator.onLine) {
-            // Sem rede — guardar na fila offline
-            setLoader(false);
-            adicionarNaFila(dadosTemporarios);
-            incrementSessionCount();
-            mostrarSucesso(true);
-            return;
-        }
-
-        setLoader(true, "A gravar dados...", "Enviando para o servidor");
-
-        try {
-            const ok = await enviarParaAPI(dadosTemporarios);
-
-            if (ok) {
-                setLoader(false);
-                incrementSessionCount();
-                mostrarSucesso(false);
-            } else {
-                throw new Error("Resposta inválida");
-            }
-        } catch (err) {
-            setLoader(false);
-            // Falha de rede — guardar offline
-            adicionarNaFila(dadosTemporarios);
-            incrementSessionCount();
-            Swal.fire({
-                icon: 'warning',
-                title: 'Guardado Localmente',
-                text: 'Não foi possível enviar agora. O registo foi guardado e será enviado automaticamente quando houver ligação.',
-                confirmButtonColor: '#001F5B',
-                confirmButtonText: 'Entendido'
-            }).then(() => mostrarSucesso(true));
-        }
-    }
-
-    function mostrarSucesso(offline = false) {
-        Swal.fire({
-            icon: 'success',
-            title: offline ? 'Guardado Localmente' : 'Dados Gravados!',
-            text: offline
-                ? 'Será sincronizado automaticamente quando houver internet.'
-                : 'O registo foi enviado com sucesso.',
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonColor: '#001F5B',
-            denyButtonColor: '#6c757d',
-            cancelButtonColor: '#BF0A30',
-            confirmButtonText: 'Novo Registo (Mesma US)',
-            denyButtonText: 'Ver Dashboard',
-            cancelButtonText: 'Fechar Sessão'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                limparFormulario(true); // mantém US e responsável
-            } else if (result.isDenied) {
-                window.location.href = "dashboard.html";
-            } else {
-                terminarSessao(); // limpa sessão e pede novo login
-            }
-        });
-    }
-
-    // ══════════════════════════════════════════════
-    //  LIMPEZA DO FORMULÁRIO
-    // ══════════════════════════════════════════════
-    function limparFormulario(manterUS = false) {
-        document.getElementById("nid").value = "__________/____/_____";
-        document.getElementById("tel1").value = "";
-        document.getElementById("tel2").value = "";
-        document.getElementById("endereco").value = "";
-        document.getElementById("temConfidente").checked = false;
-        document.getElementById("nomeConfidente").value = "";
-        document.getElementById("telConfidente").value = "";
-        toggleConfidente();
-
-        // Limpar estados de erro
-        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        document.querySelectorAll('.field-hint.show').forEach(el => el.classList.remove('show'));
-
-        if (!manterUS) {
-            document.getElementById("searchUS").value = "";
-            document.getElementById("prov").value = "";
-            document.getElementById("dist").value = "";
-            document.getElementById("us_final").value = "";
-            usValidada = false;
-        }
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // ══════════════════════════════════════════════
-    //  SINCRONIZAÇÃO AUTOMÁTICA AO VOLTAR À REDE
-    // ══════════════════════════════════════════════
-    window.addEventListener('online', () => {
-        verificarEstadoRede();
-        const fila = getFilaPendente();
-        if (fila.length > 0) {
-            setTimeout(() => {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Ligação Restaurada',
-                    text: `Tem ${fila.length} registo(s) para sincronizar.`,
-                    confirmButtonColor: '#001F5B',
-                    confirmButtonText: 'Sincronizar Agora',
-                    showCancelButton: true,
-                    cancelButtonText: 'Mais Tarde'
-                }).then(r => { if (r.isConfirmed) sincronizarPendentes(); });
-            }, 800);
-        }
+function mostrarSucesso(offline = false) {
+    Swal.fire({
+        icon: 'success',
+        title: offline ? 'Guardado Localmente' : '✓ Gravado!',
+        text: offline ? 'Sincronização pendente.' : 'Registo enviado com sucesso.',
+        showCancelButton: true, showDenyButton: true,
+        confirmButtonColor: '#001F5B', denyButtonColor: '#6c757d', cancelButtonColor: '#BF0A30',
+        confirmButtonText: 'Novo Registo (Mesma US)', denyButtonText: 'Ver Dashboard', cancelButtonText: 'Fechar Sessão'
+    }).then(r => {
+        if (r.isConfirmed) { limparFormulario(true); mostrarPasso(1); setTimeout(() => document.getElementById('nid0').focus(), 300); }
+        else if (r.isDenied) { window.location.href = 'dashboard.html'; }
+        else { terminarSessao(); }
     });
+}
 
-    window.addEventListener('offline', verificarEstadoRede);
+function limparFormulario(manterUS = false) {
+    ['nid0','nid1','nid2'].forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).classList.remove('is-invalid','is-valid'); });
+    document.getElementById('nid').value = '';
+    document.getElementById('nidOkBadge').classList.remove('show');
+    document.getElementById('nidDupWarning').classList.remove('show');
+    ['tel1','tel2','nomeConfidente','telConfidente','endereco'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('is-invalid','is-valid');
+    });
+    document.getElementById('temConfidente').checked = false;
+    toggleConfidente();
+    document.querySelectorAll('.field-hint.show').forEach(el => el.classList.remove('show'));
+    if (!manterUS) {
+        document.getElementById('searchUS').value = '';
+        document.getElementById('prov').value = '';
+        document.getElementById('dist').value = '';
+        document.getElementById('us_final').value = '';
+        usValidada = false;
+        mostrarPasso(0);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    // ══════════════════════════════════════════════
-    //  INIT
-    // ══════════════════════════════════════════════
-    window.onload = () => {
-        verificarEstadoRede();
-        const sessao = carregarSessao();
-        if (sessao) {
-            // Sessão ativa — entrar direto sem Google SSO
-            ativarApp(sessao);
-        } else {
-            document.getElementById("loginScreen").style.display = "flex";
-        }
-    };
-    </script>
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+window.onload = () => {
+    verificarEstadoRede();
+    const sessao = carregarSessao();
+    if (sessao) ativarApp(sessao);
+    else document.getElementById('loginScreen').style.display = 'flex';
+};
+</script>
 </body>
 </html>
